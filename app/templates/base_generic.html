@@ -18,16 +18,27 @@
 </head>
 
 <body>
-<div class="page-header">
-    <h1><a href="/">System of organization and accounting of excursions in JINR</a></h1>
-</div>
-<div class="content container">
-    <div class="row">
-        <div class="col-md-8">
-            {% block content %}
-            {% endblock %}
-        </div>
+    <div class="page-header col-md-12">
+        <h1><a href="/">System of organization and accounting of excursions in JINR</a></h1>
+        <nav class="nav">
+            {% if user.is_authenticated %}
+                <h4>Hello, {{ user.get_full_name }}!</h4>
+                <button type="button" class="btn btn-outline-primary">
+                    <a href="{% url 'logout'%}?next={{request.path}}" role="button">Logout</a>
+                </button>
+            {% else %}
+                <p><a class="btn btn-primary" href="{% url 'login'%}?next={{request.path}}" role="button">Login</a></p>   
+            {% endif %}
+        </nav>
     </div>
+
+    <div class="container-fluid">
+        
+
+
+        {% block content %}
+                
+        {% endblock %}
 </div>
 </body>
 </html>

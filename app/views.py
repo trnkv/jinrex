@@ -1,17 +1,33 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-
-from .models import Excursion, Area, Facility, Organizator, Incharge, Guide
-
-from .forms import ExcursionForm
-
+from django.shortcuts import render_to_response
 from django.http import JsonResponse
 
+from .models import Excursion, Area, Facility, Organizator, Incharge, Guide
+from .forms import ExcursionForm
+
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def index(request):
     """Функция отображения для домашней страницы сайта."""
     return render(request, 'index.html', context={})
 
 
+@login_required
+def get_areas(request):
+	if request.method == 'POST':
+		if 'id_facility' in request.POST:
+			id_facility = request.POST.get('id_facility')
+			list_of_dict_areas = list(Area.objects.filter(id_facility=id_facility).values('name_area'))
+			areas = []
+			for d in list_of_dict_areas:
+				areas.append(d['name_area'])
+			return JsonResponse({'result':areas})
+			#return render_to_response('excursion_form.html', {'areas': areas})
+
+
+@login_required
 def get_excursion_form(request):
 	if request.method == 'POST':
 		form = ExcursionForm(request.POST)
@@ -21,11 +37,7 @@ def get_excursion_form(request):
 
 			areas_ids = request.POST.getlist('id_area')
 
-			print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-
 			guide = Guide.objects.get(id_guide=request.POST.get('id_guide'))
-
-			print(guide)
 
 			new_ex = Excursion.objects.create(id_facility=facility_id,
 				id_guide=guide,
@@ -49,7 +61,7 @@ def get_excursion_form(request):
 
 	return render(request, 'excursion_form.html', {'form':form})
 
-
+@login_required
 def submitted(request):
     """Функция отображения для домашней страницы сайта."""
     return render(request, 'submitted.html', context={})

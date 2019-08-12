@@ -1,11 +1,93 @@
 {% extends "base_generic.html" %}
 
+{% load crispy_forms_tags %}
+
 {% block content %}
 
 <form action="send_blank/" method="post">
 	{% csrf_token %}
-	{{ form }}
-	<input type="submit" value="SEND"/>
+	{{ form|crispy }}
+	<input class="btn btn-primary" type="submit" value="SEND"/>
 </form>
+
+
+
+<script type="text/javascript">
+
+    $("#id_id_facility").change(function() {
+
+          var id_facility = $(this).val();
+
+          if (id_facility !== ""){
+          	$.ajax ({
+	            url: "get_areas/",
+	            type: "post",
+	            data: {
+	            	csrfmiddlewaretoken: getCookie('csrftoken'),
+	                'id_facility': id_facility,
+	            },
+	            success: function(data) {
+	            	$('#id_id_area li').each(function () {
+					    var str = $(this).text().replace(/\s+/g, '');
+						if (!data['result'].includes(str)) {
+							$(this).hide();
+						}
+						else $(this).show();
+					});
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+	                console.log(xhr.status);
+	                console.log(xhr.responseText);
+	                console.log(thrownError);
+	            },
+        	});
+          }
+          else {
+          	$.ajax ({
+	            url: "get_areas/",
+	            type: "post",
+	            data: {
+	            	csrfmiddlewaretoken: getCookie('csrftoken'),
+	                'id_facility': 0,
+	            },
+	            success: function(data) {
+	            	document.location.reload(true);
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+	                console.log(xhr.status);
+	                console.log(xhr.responseText);
+	                console.log(thrownError);
+	            },
+        	});
+          }
+    })
+
+    function addCheckbox(name) {
+	   var container = $('#div_areas');
+	   var inputs = container.find('input');
+	   var id = inputs.length+1;
+
+	   $('<input />', { type: 'checkbox', id: 'cb'+id, value: name }).appendTo(container);
+	   $('<label />', { 'for': 'cb'+id, text: name }).appendTo(container);
+	}
+
+
+    function getCookie(name){
+	    var cookieValue = null;
+	    if (document.cookie && document.cookie !== '') {
+	        var cookies = document.cookie.split(';');
+	        for (var i = 0; i < cookies.length; i++) {
+	            var cookie = jQuery.trim(cookies[i]);
+	            // Does this cookie string begin with the name we want?
+	            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+	                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                break;
+	            }
+	        }
+    	}
+    	return cookieValue;
+	}
+
+</script>
 
 {% endblock %}

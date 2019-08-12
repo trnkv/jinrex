@@ -19,3 +19,5 @@ class ExcursionForm(ModelForm):
 		'occasion_excursion','date_excursion','time_period_excursion',
 		'language_excursion','auditory_excursion','participants_excursion',
 		'age_excursion']
+
+#class ExcursionForm(forms.Form):
