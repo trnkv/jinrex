@@ -5,6 +5,7 @@ from django.http import JsonResponse
 
 from .models import Excursion, Area, Facility, Organizator, Incharge, Guide
 from .forms import ExcursionForm
+from .delete import ExcursionDelete
 
 from django.contrib.auth.decorators import login_required
 
@@ -63,5 +64,56 @@ def get_excursion_form(request):
 
 @login_required
 def submitted(request):
-    """Функция отображения для домашней страницы сайта."""
+    """Функция отображения успешной отправки заявки на экскурсию."""
     return render(request, 'submitted.html', context={})
+
+@login_required
+def view_excursions(request):
+	excursions = Excursion.objects.all().values()
+	excursions = [val for val in excursions if val in excursions]
+
+	excursions_all = dict()
+
+	for d in excursions:
+
+		this_facilities = list(Facility.objects.filter(id_facility=d['id_facility_id']).values('name_facility'))
+		this_areas = list(Area.objects.filter(id_facility=d['id_facility_id']).values('name_area'))
+		this_organizator = d['name_organizator']
+		this_guide = list(Guide.objects.filter(id_guide=d['id_guide_id']).values('lastName_guide'))
+		this_occasion = d['occasion_excursion']
+		this_date = d['date_excursion']
+		this_time = d['time_period_excursion']
+		this_language = d['language_excursion']
+		this_auditory = d['auditory_excursion']
+		this_participants = d['participants_excursion']
+		this_age = d['age_excursion']
+
+		areas=[]
+
+		for a in this_areas:
+			areas.append(a['name_area'])
+
+		excursions_all[d['id_facility_id']] = {
+		'facility':this_facilities[0]['name_facility'],
+		'areas':areas,
+		'organizator': this_organizator,
+		'guide':this_guide[0]['lastName_guide'],
+		'occasion':this_occasion,
+		'date':this_date,
+		'time':this_time,
+		'language':this_language,
+		'auditory':this_auditory,
+		'participants':this_participants,
+		'age':this_age,
+		}
+
+	#return JsonResponse({'excursions':excursions_all})
+	return render(request, 'schedule.html', context={'excursions':excursions_all})
+
+
+
+@login_required
+def delete_excursion(request):
+	cleaner = ExcursionDelete()
+	return render(request, 'ex_confirm_delete.html', context={'excursion':cleaner})
+

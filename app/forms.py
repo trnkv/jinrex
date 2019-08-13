@@ -20,4 +20,10 @@ class ExcursionForm(ModelForm):
 		'language_excursion','auditory_excursion','participants_excursion',
 		'age_excursion']
 
-#class ExcursionForm(forms.Form):
+		labels = {
+			"id_facility": "Select facility",
+			"id_area": "Select areas",
+			"id_guide": "Select desired guide",
+			"participants_excursion": "Enter the number of participants",
+			"age_excursion": "Enter the age of the participants",
+        }

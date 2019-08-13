@@ -120,17 +120,17 @@ class Excursion(models.Model):
     Model representing an excursion.
     """
     id_excursion = models.AutoField(verbose_name='id_excursion', serialize=False, auto_created=True, primary_key=True, help_text="Unique ID for this particular excursion")
-    id_facility = models.ForeignKey('Facility', on_delete=models.DO_NOTHING)
+    id_facility = models.ForeignKey('Facility', on_delete=models.DO_NOTHING, help_text="Select desired facility")
     id_area = models.ManyToManyField(Area, help_text="Select a desired areas for this excursion")
-    name_organizator = models.CharField(max_length=200)
-    id_guide = models.ForeignKey('Guide', on_delete=models.DO_NOTHING)
-    occasion_excursion = models.CharField(max_length=200, help_text="Enter an excursion occasion (e.g. JEMS 12 etc.)")
-    date_excursion = models.DateField(null=True,help_text="Enter an excursion date")
-    time_period_excursion = models.CharField(max_length=200, help_text="Enter an excursion time period")
-    language_excursion = models.CharField(max_length=200, help_text="Enter an excursion language")
-    auditory_excursion = models.CharField(max_length=200, help_text="Enter an excursion auditory")
-    participants_excursion = models.IntegerField(help_text="Enter count of an excursion participants")
-    age_excursion = models.CharField(max_length=6, help_text="Enter an age of excursion participants")
+    name_organizator = models.CharField(max_length=200, help_text="Enter the name of the excursion organizator")
+    id_guide = models.ForeignKey('Guide', on_delete=models.DO_NOTHING, help_text="Select desired guide for this excursion")
+    occasion_excursion = models.CharField(max_length=200, help_text="Enter occasion of excursion  (e.g. JEMS 12 etc.)")
+    date_excursion = models.DateField(help_text="Enter date of excursion")
+    time_period_excursion = models.CharField(max_length=200, help_text="Enter time period of excursion")
+    language_excursion = models.CharField(max_length=200, help_text="Enter language of excursion")
+    auditory_excursion = models.CharField(max_length=200, help_text="Enter auditory of excursion ")
+    participants_excursion = models.IntegerField(help_text="Enter count of excursion participants")
+    age_excursion = models.CharField(max_length=6, help_text="Enter age of excursion participants")
 
 
     def __str__(self):
