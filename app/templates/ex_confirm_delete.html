@@ -1,0 +1,9 @@
+{% extends "base_generic.html" %}
+{% block content %}
+
+<form action="schedule/" method="post">{% csrf_token %}
+    <p>Are you sure you want to delete this excursion {{ excursion }}?</p>
+    <input class="btn btn-primary" type="submit" value="Confirm" />
+</form>
+
+{% endblock %}

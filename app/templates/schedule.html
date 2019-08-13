@@ -1,0 +1,36 @@
+{% extends "base_generic.html" %}
+{% block content %}
+
+<table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Facility</th>
+		    <th scope="col">Areas</th>
+		    <th scope="col">Organizator</th>
+		    <th scope="col">Guide</th>
+		    <th scope="col">Occasion</th>
+		    <th scope="col">Date</th>
+		    <th scope="col">Time period</th>
+		    <th scope="col">Language</th>
+		    <th scope="col">Auditory</th>
+		    <th scope="col">Participants</th>
+		    <th scope="col">Age</th>
+		</tr>
+	</thead>
+	<tbody class="table-hover">
+		
+	  	{% for key, value in excursions.items %}
+	  		<tr>
+				{% for k, v in value.items %}
+				  	<td>{{ v }}</td>
+				{% endfor %}
+				<th><a class="btn btn-outline-primary btn-lg top-menu" href="ex_confirm_delete">
+		<span class="glyphicon glyphicon-trash"></span>
+	</a></th>
+			</tr>
+		{% endfor %}
+	
+	  </tbody>
+</table>
+
+{% endblock %}
