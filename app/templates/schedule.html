@@ -19,18 +19,70 @@
 	</thead>
 	<tbody class="table-hover">
 		
-	  	{% for key, value in excursions.items %}
+	  	{% for ex in excursions %}
 	  		<tr>
-				{% for k, v in value.items %}
-				  	<td>{{ v }}</td>
-				{% endfor %}
-				<th><a class="btn btn-outline-primary btn-lg top-menu" href="ex_confirm_delete">
-		<span class="glyphicon glyphicon-trash"></span>
-	</a></th>
+				<td>{{ ex.id_facility_id }}</td>
+				<td>{{ ex.areas }}</td>
+				<td>{{ ex.name_organizator }}</td>
+				<td>{{ ex.id_guide_id }}</td>
+				<td>{{ ex.occasion_excursion }}</td>
+				<td>{{ ex.date_excursion }}</td>
+				<td>{{ ex.time_period_excursion }}</td>
+				<td>{{ ex.language_excursion }}</td>
+				<td>{{ ex.auditory_excursion }}</td>
+				<td>{{ ex.participants_excursion }}</td>
+				<td>{{ ex.age_excursion }}</td>
 			</tr>
 		{% endfor %}
 	
 	  </tbody>
 </table>
+
+
+<script type="text/javascript">
+
+	jQuery(function($){
+
+	    $('#bt_remove').click(function () {
+
+	        var id_excursion = $("#div_id_ex").text();
+
+	        alert(id_excursion);
+
+	        jQuery.ajax({
+				url: "ex_confirm_delete/",
+				type: "post",
+			    data: {
+			        csrfmiddlewaretoken: getCookie('csrftoken'),
+			        'id_excursion': id_excursion,
+			     },
+			    success: function(data) {
+			         console.log(data);
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+			        console.log(xhr.status);
+			        console.log(xhr.responseText);
+			        console.log(thrownError);
+			    },
+			})
+	    })
+	})
+
+    function getCookie(name){
+	    var cookieValue = null;
+	    if (document.cookie && document.cookie !== '') {
+	        var cookies = document.cookie.split(';');
+	        for (var i = 0; i < cookies.length; i++) {
+	            var cookie = jQuery.trim(cookies[i]);
+	            // Does this cookie string begin with the name we want?
+	            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+	                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                break;
+	            }
+	        }
+    	}
+    	return cookieValue;
+	}
+</script>
 
 {% endblock %}
