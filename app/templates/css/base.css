@@ -1,3 +1,8 @@
-h1 {
-	
+tbody tr:hover.selected td,
+tbody tr:hover td {
+  background-color: #FFEFC6;
+  cursor: pointer;
+}
+tbody tr.selected td {
+  background-color: #ffd659;
 }

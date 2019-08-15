@@ -1,7 +1,9 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.http import JsonResponse
+import json
 
 from .models import Excursion, Area, Facility, Organizator, Incharge, Guide
 from .forms import ExcursionForm
@@ -66,7 +68,7 @@ def send_excursion_form(request):
 @login_required
 def submitted(request):
     """Функция отображения успешной отправки заявки на экскурсию."""
-    return render(request, 'submitted.html', context={})
+    return render(request, 'submitted_ex_blank.html', context={})
 
 @login_required
 def view_excursions(request):
@@ -80,7 +82,7 @@ def view_excursions(request):
 		excursion = Excursion.objects.get(id_excursion=d['id_excursion'])
 		queryset = excursion.id_area.all().values('name_area')
 		areas = [val for val in queryset if val in queryset]
-#		
+
 		ar = []
 		for area in areas:
 				ar.append(area['name_area'])
@@ -91,5 +93,26 @@ def view_excursions(request):
 		d['id_facility_id'] = this_facilities[0]['name_facility']
 		d['id_guide_id'] = this_guide[0]['lastName_guide']
 
+	json_data = json.dumps(excursions, indent=4, sort_keys=False, default=str)
+	#return HttpResponse(json_data, content_type="application/json")
+	#return render(request, 'schedule.html', )
+	
 	#return JsonResponse({'excursions':excursions})
 	return render(request, 'schedule.html', context={'excursions':excursions})
+
+
+@login_required
+def update_excursion(request):
+	excursion = Excursion.objects.all()
+	if request.POST:
+		field = request.POST['field']
+		value = request.POST['value']
+
+		if field == 'id_facility':
+			edited_field = excursion.get(id_facility=field)
+			edited_node.comment = request.POST.get('comment')
+		
+		edited_node.save()
+
+	# render template with nodes
+	return render(request, 'submitted_ex_update.html', {})

@@ -1,7 +1,10 @@
 {% extends "base_generic.html" %}
 {% block content %}
 
-<table class="table">
+<h2>Schedule</h2>
+<h5>To change some field just click by the cell</h5>
+
+<table id="schedule_table" class="table table-bordered" role="grid">
 	<thead>
 		<tr>
 			<th scope="col">Facility</th>
@@ -20,69 +23,109 @@
 	<tbody class="table-hover">
 		
 	  	{% for ex in excursions %}
-	  		<tr>
-				<td>{{ ex.id_facility_id }}</td>
-				<td>{{ ex.areas }}</td>
-				<td>{{ ex.name_organizator }}</td>
-				<td>{{ ex.id_guide_id }}</td>
-				<td>{{ ex.occasion_excursion }}</td>
-				<td>{{ ex.date_excursion }}</td>
-				<td>{{ ex.time_period_excursion }}</td>
-				<td>{{ ex.language_excursion }}</td>
-				<td>{{ ex.auditory_excursion }}</td>
-				<td>{{ ex.participants_excursion }}</td>
-				<td>{{ ex.age_excursion }}</td>
+	  		<tr role="row" class="odd">
+				<th id="id_facility">{{ ex.id_facility_id }}</th>
+				<th id="id_area">
+				{% for area in ex.areas %}
+					{{ area }}
+				{% endfor %}
+				</th>
+				<td id="name_organizator">{{ ex.name_organizator }}</td>
+				<th id="id_guide">{{ ex.id_guide_id }}</th>
+				<td id="occasion_excursion">{{ ex.occasion_excursion }}</td>
+				<th id="date_excursion" scope="row">{{ ex.date_excursion }}</th>
+				<td id="time_period_excursion">{{ ex.time_period_excursion }}</td>
+				<td id="language_excursion">{{ ex.language_excursion }}</td>
+				<td id="auditory_excursion">{{ ex.auditory_excursion }}</td>
+				<td id="participants_excursion">{{ ex.participants_excursion }}</td>
+				<td id="age_excursion">{{ ex.age_excursion }}</td>
 			</tr>
 		{% endfor %}
 	
 	  </tbody>
 </table>
 
+<!-- Modal Show-->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div style="padding:20px 50px; background-color: #f0ad4e">
+          <h4><span class="glyphicon glyphicon-pencil"></span> Change field</h4>
+        </div>
+        <div class="modal-body" style="padding:20px 50px;">
+          <div class="form-group">
+              <label for="usrname"><span class="glyphicon glyphicon-comment"></span> Type new value</label>
+              <input type="text" class="form-control" id="new_value" placeholder="Enter value">
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" id="bt_cancel" class="btn btn-danger btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+          <button type="submit" id="bt_submit" class="btn btn-success btn-default pull-right"><span class="glyphicon glyphicon-ok"></span> Submit</button>
+        </div>
+      </div>
+      
+    </div>
+  </div> 
 
 <script type="text/javascript">
+ 
+$(document).ready(function() {
 
-	jQuery(function($){
+	$('#schedule_table').DataTable();
+})
 
-	    $('#bt_remove').click(function () {
+$("#schedule_table").on("click", "td", function() {
 
-	        var id_excursion = $("#div_id_ex").text();
+	$(this)
+     .toggleClass("selected")
+         .removeClass("selected");
 
-	        alert(id_excursion);
+	td = $(this);
+    $("#myModal").modal();
 
-	        jQuery.ajax({
-				url: "ex_confirm_delete/",
-				type: "post",
-			    data: {
-			        csrfmiddlewaretoken: getCookie('csrftoken'),
-			        'id_excursion': id_excursion,
-			     },
-			    success: function(data) {
-			         console.log(data);
-				},
-				error: function(xhr, ajaxOptions, thrownError) {
-			        console.log(xhr.status);
-			        console.log(xhr.responseText);
-			        console.log(thrownError);
-			    },
-			})
-	    })
+    $("#bt_submit").on("click", function(){
+		td.text($("#new_value").val());
+		$("#myModal").modal("hide");
+		td.css("background-color", "#f0ad4e");
 	})
 
-    function getCookie(name){
-	    var cookieValue = null;
-	    if (document.cookie && document.cookie !== '') {
-	        var cookies = document.cookie.split(';');
-	        for (var i = 0; i < cookies.length; i++) {
-	            var cookie = jQuery.trim(cookies[i]);
-	            // Does this cookie string begin with the name we want?
-	            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-	                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-	                break;
-	            }
+     //$.ajax ({
+        //url: "update_excursion/",
+        //type: "post",
+        //data: {
+        	//csrfmiddlewaretoken: getCookie('csrftoken'),
+            //'field': $(this).attr('id'),
+            //'value': $(this).text(),
+        //},
+        //success: function(data) {
+        	//alert('ok!');
+		//},
+		//error: function(xhr, ajaxOptions, thrownError) {
+            //console.log(xhr.status);
+            //console.log(xhr.responseText);
+            //console.log(thrownError);
+        //},
+	//});
+});
+
+
+function getCookie(name){
+	var cookieValue = null;
+	if (document.cookie && document.cookie !== '') {
+	    var cookies = document.cookie.split(';');
+	    for (var i = 0; i < cookies.length; i++) {
+	        var cookie = jQuery.trim(cookies[i]);
+	        // Does this cookie string begin with the name we want?
+	        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+	            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	            break;
 	        }
-    	}
-    	return cookieValue;
-	}
+	    }
+    }
+    return cookieValue;
+}
 </script>
 
 {% endblock %}
