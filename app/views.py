@@ -105,8 +105,13 @@ def view_excursions(request):
 def update_excursion(request):
 	excursion = Excursion.objects.all()
 	if request.POST:
-		field = request.POST['field']
-		value = request.POST['value']
+		name_organizator = request.POST['name_organizator']
+		occasion_excursion = request.POST['occasion_excursion']
+		time_period_excursion = request.POST['time_period_excursion']
+		language_excursion = request.POST['language_excursion']
+		auditory_excursion = request.POST['auditory_excursion']
+		participants_excursion = request.POST['participants_excursion']
+		age_excursion = request.POST['age_excursion']
 
 		if field == 'id_facility':
 			edited_field = excursion.get(id_facility=field)
