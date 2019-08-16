@@ -46,21 +46,42 @@ def get_excursion(request, id_excursion):
 	desired_excursion[0]['name_facility'] = facility[0]['name_facility']
 
 	excursion = Excursion.objects.get(id_excursion=desired_excursion[0]['id_excursion'])
-	queryset_areas = excursion.id_area.all().values('name_area')
-	list_areas = [val for val in queryset_areas if val in queryset_areas]
+	queryset_areas_names = excursion.id_area.all().values('name_area')
+	queryset_areas_ids = excursion.id_area.all().values('id_area')
 
-	areas = []
-	for area in list_areas:
-		areas.append(area['name_area'])
+	list_areas_names = [val for val in queryset_areas_names if val in queryset_areas_names]
+	areas_names = []
+	for area in list_areas_names:
+		areas_names.append(area['name_area'])
 
-	desired_excursion[0]['areas'] = areas
+	desired_excursion[0]['areas_names'] = areas_names
+
+
+	list_areas_ids = [val for val in queryset_areas_ids if val in queryset_areas_ids]
+	areas_ids = []
+	for area in list_areas_ids:
+		areas_ids.append(area['id_area'])
+
+	desired_excursion[0]['areas_ids'] = areas_ids
 
 	this_guide = list(Guide.objects.filter(id_guide=desired_excursion[0]['id_guide_id']).values('lastName_guide'))
 	desired_excursion[0]['lastName_guide'] = this_guide[0]['lastName_guide']
 
-	form = ExcursionForm(desired_excursion[0])
-
-	return render(request, 'excursion_info.html', {'desired_excursion':desired_excursion, 'form':form})
+	form = ExcursionForm(initial={
+		'id_facility': desired_excursion[0]['id_facility_id'],
+		'id_area': queryset_areas_ids,
+		'name_organizator': desired_excursion[0]['name_organizator'],
+		'id_guide': desired_excursion[0]['id_guide_id'],
+		'occasion_excursion': desired_excursion[0]['occasion_excursion'],
+		'date_excursion': desired_excursion[0]['date_excursion'],
+		'time_period_excursion': desired_excursion[0]['time_period_excursion'],
+		'language_excursion': desired_excursion[0]['language_excursion'],
+		'auditory_excursion': desired_excursion[0]['auditory_excursion'],
+		'participants_excursion': desired_excursion[0]['participants_excursion'],
+		'age_excursion': desired_excursion[0]['age_excursion'],
+		})
+	#return JsonResponse({'res':desired_excursion[0]})
+	return render(request, 'excursion_info.html', {'desired_excursion':desired_excursion[0], 'form':form})
 
 @login_required
 def send_excursion_form(request):

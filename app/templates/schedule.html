@@ -11,19 +11,20 @@
 			<th scope="col">Facility</th>
 		    <th scope="col">Areas</th>
 		    <th scope="col">Date</th>
+		    <th></th>
 		</tr>
 	</thead>
 	<tbody class="table-hover">
 	  	{% for ex in excursions %}
 	  		<tr role="row" class="odd">
-	  			<a class="btn-link" href="get_excursion/{{ ex.id_excursion }}/">View</a>
-				<td id="id_facility">{{ ex.id_facility_id }}</td>
+	  			<td id="id_facility">{{ ex.id_facility_id }}</td>
 				<td id="id_area">
 				{% for area in ex.areas %}
 					{{ area }}
 				{% endfor %}
 				</td>
 				<td id="date_excursion" scope="row">{{ ex.date_excursion }}</td>
+				<td><a href="get_excursion/{{ ex.id_excursion }}/" class="btn btn-warning btn-block active" role="button">View</a></td>
 			</tr>
 		{% endfor %}
 	  </tbody>
@@ -58,17 +59,6 @@ $(document).ready(function() {
 
 	$('#schedule_table').DataTable();
 })
-
-$("#schedule_table").on("click", "tr", function() {
-
-	
-
-	$("#myModal").modal();
-
-    $("#bt_submit").on("click", function(){
-    	$("#myModal").modal("hide");
-	})
-});
 
 //$("#bt_change_ex").on("click", function(){
 	//$.ajax ({
