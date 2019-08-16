@@ -1,0 +1,38 @@
+{% extends "base_generic.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<form action="/" method="post">
+	{% csrf_token %}
+
+	<table class="table">
+		<tr>
+			<th colspan="4">{{ form.id_facility|as_crispy_field }}</th>
+			<th>
+				<label for="id_id_facility" class="col-form-label  requiredField">
+				Select areas:<span class="asteriskField">*</span>
+	    		</label>
+	    		{{ form.id_area }}
+	    	</th>
+	    </tr>
+
+		<tr>		
+			<th colspan="2">{{ form.name_organizator|as_crispy_field }}</th>
+	    	<th>{{ form.id_guide|as_crispy_field }}</th>
+	    	<th>{{ form.occasion_excursion|as_crispy_field }}</th>
+	    	<th>{{ form.date_excursion|as_crispy_field }}</th>
+	    </tr>
+
+	    <tr>
+	    	<th>{{ form.time_period_excursion|as_crispy_field }}</th>	    	
+	    	<th>{{ form.language_excursion|as_crispy_field }}</th>
+	    	<th>{{ form.auditory_excursion|as_crispy_field }}</th>
+			<th>{{ form.participants_excursion|as_crispy_field }}</th>
+			<th>{{ form.age_excursion|as_crispy_field }}</th>
+	    </tr>
+	</table>
+
+	<input class="btn btn-warning" type="submit" value="SEND"/>
+</form>
+
+{% endblock %}

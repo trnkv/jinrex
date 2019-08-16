@@ -1,51 +1,33 @@
 {% extends "base_generic.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
 
 <h2>Schedule</h2>
 <h5>To change some field just click by the cell</h5>
 
-<form action="update_excursion/" method="post">
-{% csrf_token %}
 <table id="schedule_table" class="table table-bordered" role="grid">
 	<thead>
 		<tr>
 			<th scope="col">Facility</th>
 		    <th scope="col">Areas</th>
-		    <th scope="col">Organizator</th>
-		    <th scope="col">Guide</th>
-		    <th scope="col">Occasion</th>
 		    <th scope="col">Date</th>
-		    <th scope="col">Time period</th>
-		    <th scope="col">Language</th>
-		    <th scope="col">Auditory</th>
-		    <th scope="col">Participants</th>
-		    <th scope="col">Age</th>
 		</tr>
 	</thead>
 	<tbody class="table-hover">
 	  	{% for ex in excursions %}
 	  		<tr role="row" class="odd">
-				<th id="id_facility">{{ ex.id_facility_id }}</th>
-				<th id="id_area">
+	  			<a class="btn-link" href="get_excursion/{{ ex.id_excursion }}/">View</a>
+				<td id="id_facility">{{ ex.id_facility_id }}</td>
+				<td id="id_area">
 				{% for area in ex.areas %}
 					{{ area }}
 				{% endfor %}
-				</th>
-				<td id="name_organizator">{{ ex.name_organizator }}</td>
-				<th id="id_guide">{{ ex.id_guide_id }}</th>
-				<td id="occasion_excursion">{{ ex.occasion_excursion }}</td>
-				<th id="date_excursion" scope="row">{{ ex.date_excursion }}</th>
-				<td id="time_period_excursion">{{ ex.time_period_excursion }}</td>
-				<td id="language_excursion">{{ ex.language_excursion }}</td>
-				<td id="auditory_excursion">{{ ex.auditory_excursion }}</td>
-				<td id="participants_excursion">{{ ex.participants_excursion }}</td>
-				<td id="age_excursion">{{ ex.age_excursion }}</td>
+				</td>
+				<td id="date_excursion" scope="row">{{ ex.date_excursion }}</td>
 			</tr>
 		{% endfor %}
 	  </tbody>
 </table>
-<input id="bt_change_ex" class="btn btn-warning" type="submit" value="CHANGE EXCURSION" style="float: right; display: none;" />
-</form>
 
 
 <!-- Modal Show-->
@@ -55,19 +37,17 @@
       <!-- Modal content-->
       <div class="modal-content">
         <div style="padding:20px 50px; background-color: #f0ad4e">
-          <h4><span class="glyphicon glyphicon-pencil"></span> Change field</h4>
+          <h4><span class="glyphicon glyphicon-eye-open"></span> View full information about the excursion</h4>
         </div>
-        <div class="modal-body" style="padding:20px 50px;">
-          <div class="form-group">
-              <label for="usrname"><span class="glyphicon glyphicon-comment"></span> Type new value</label>
-              <input type="text" class="form-control" id="new_value" placeholder="Enter value">
-            </div>
+
+        <div id="excursion_info">
         </div>
-        <div class="modal-footer">
-          <button type="submit" id="bt_cancel" class="btn btn-danger btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
-          <button type="submit" id="bt_submit" class="btn btn-success btn-default pull-right"><span class="glyphicon glyphicon-ok"></span> Submit</button>
-        </div>
-      </div>
+        
+	    <div class="modal-footer">
+	      <button type="submit" id="bt_cancel" class="btn btn-danger btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+	      <button type="submit" id="bt_submit" class="btn btn-success btn-default pull-right"><span class="glyphicon glyphicon-ok"></span> Submit</button>
+	    </div>
+	  </div>
       
     </div>
   </div> 
@@ -79,48 +59,41 @@ $(document).ready(function() {
 	$('#schedule_table').DataTable();
 })
 
-$("#schedule_table").on("click", "td", function() {
+$("#schedule_table").on("click", "tr", function() {
 
-	$(this)
-     .toggleClass("selected")
-         .removeClass("selected");
+	
 
-	td = $(this);
-    $("#myModal").modal();
+	$("#myModal").modal();
 
     $("#bt_submit").on("click", function(){
-		td.text($("#new_value").val());
-		$("#myModal").modal("hide");
-		td.css("background-color", "#f0ad4e");
-		$("#bt_change_ex").show();
+    	$("#myModal").modal("hide");
 	})
 });
 
-$("#bt_change_ex").on("click", function(){
-	$.ajax ({
-        url: "update_excursion/",
-        type: "post",
-        data: {
-        	csrfmiddlewaretoken: getCookie('csrftoken'),
-        	'id_excursion': 
-            'name_organizator': $("#name_organizator"),
-            'occasion_excursion': $("#occasion_excursion"),
-            'time_period_excursion': $("#time_period_excursion"),
-            'language_excursion': $("#language_excursion"),
-            'auditory_excursion': $("#auditory_excursion"),
-            'participants_excursion': $("#participants_excursion"),
-            'age_excursion': $("#age_excursion"),
-        },
-        success: function(data) {
-        	alert('Excursion has been changed!');
-		},
-		error: function(xhr, ajaxOptions, thrownError) {
-            console.log(xhr.status);
-            console.log(xhr.responseText);
-            console.log(thrownError);
-        },
-	});
-})
+//$("#bt_change_ex").on("click", function(){
+	//$.ajax ({
+        //url: "update_excursion/",
+        //type: "post",
+        //data: {
+        	//csrfmiddlewaretoken: getCookie('csrftoken'),
+        	//'id_excursion': 
+            //'name_organizator': $("#name_organizator"),
+            //'occasion_excursion': $("#occasion_excursion"),
+            //'time_period_excursion': $("#time_period_excursion"),
+            //'language_excursion': $("#language_excursion"),
+            //'auditory_excursion': $("#auditory_excursion"),
+            //'participants_excursion': $("#participants_excursion"),
+            //'age_excursion': $("#age_excursion"),
+        //},
+        //success: function(data) {
+        	//alert('Excursion has been changed!');
+		//},
+		//error: function(xhr, ajaxOptions, thrownError) {
+            //console.log(xhr.status);
+            //console.log(xhr.responseText);
+            //console.log(thrownError);
+        //},
+	//});
 
 
 function getCookie(name){

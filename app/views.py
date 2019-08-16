@@ -36,6 +36,33 @@ def get_excursion_form(request):
 	return render(request, 'excursion_form.html', {'form':form})
 
 @login_required
+def get_excursion(request, id_excursion):
+	queryset_desired_excursion = Excursion.objects.filter(id_excursion=id_excursion).values()
+	desired_excursion = [val for val in queryset_desired_excursion if val in queryset_desired_excursion]
+
+	queryset_facility = Facility.objects.filter(id_facility=desired_excursion[0]['id_facility_id']).values('name_facility')
+	facility = [val for val in queryset_facility if val in queryset_facility]
+
+	desired_excursion[0]['name_facility'] = facility[0]['name_facility']
+
+	excursion = Excursion.objects.get(id_excursion=desired_excursion[0]['id_excursion'])
+	queryset_areas = excursion.id_area.all().values('name_area')
+	list_areas = [val for val in queryset_areas if val in queryset_areas]
+
+	areas = []
+	for area in list_areas:
+		areas.append(area['name_area'])
+
+	desired_excursion[0]['areas'] = areas
+
+	this_guide = list(Guide.objects.filter(id_guide=desired_excursion[0]['id_guide_id']).values('lastName_guide'))
+	desired_excursion[0]['lastName_guide'] = this_guide[0]['lastName_guide']
+
+	form = ExcursionForm(desired_excursion[0])
+
+	return render(request, 'excursion_info.html', {'desired_excursion':desired_excursion, 'form':form})
+
+@login_required
 def send_excursion_form(request):
 	if request.method == 'POST':
 		form = ExcursionForm(request.POST)
@@ -94,10 +121,7 @@ def view_excursions(request):
 		d['id_guide_id'] = this_guide[0]['lastName_guide']
 
 	json_data = json.dumps(excursions, indent=4, sort_keys=False, default=str)
-	#return HttpResponse(json_data, content_type="application/json")
-	#return render(request, 'schedule.html', )
-	
-	#return JsonResponse({'excursions':excursions})
+
 	return render(request, 'schedule.html', context={'excursions':excursions})
 
 
@@ -113,9 +137,8 @@ def update_excursion(request):
 		participants_excursion = request.POST['participants_excursion']
 		age_excursion = request.POST['age_excursion']
 
-		if field == 'id_facility':
-			edited_field = excursion.get(id_facility=field)
-			edited_node.comment = request.POST.get('comment')
+		edited_field = excursion.get(id_facility=field)
+		edited_node.comment = request.POST.get('comment')
 		
 		edited_node.save()
 
