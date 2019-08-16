@@ -24,34 +24,15 @@
 				{% endfor %}
 				</td>
 				<td id="date_excursion" scope="row">{{ ex.date_excursion }}</td>
-				<td><a href="get_excursion/{{ ex.id_excursion }}/" class="btn btn-warning btn-block active" role="button">View</a></td>
+				<td>
+					<a href="get_excursion/{{ ex.id_excursion }}/" class="btn btn-warning btn-block active" role="button">
+						View full information
+					</a>
+				</td>
 			</tr>
 		{% endfor %}
 	  </tbody>
 </table>
-
-
-<!-- Modal Show-->
-  <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div style="padding:20px 50px; background-color: #f0ad4e">
-          <h4><span class="glyphicon glyphicon-eye-open"></span> View full information about the excursion</h4>
-        </div>
-
-        <div id="excursion_info">
-        </div>
-        
-	    <div class="modal-footer">
-	      <button type="submit" id="bt_cancel" class="btn btn-danger btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
-	      <button type="submit" id="bt_submit" class="btn btn-success btn-default pull-right"><span class="glyphicon glyphicon-ok"></span> Submit</button>
-	    </div>
-	  </div>
-      
-    </div>
-  </div> 
 
 <script type="text/javascript">
  
@@ -59,31 +40,6 @@ $(document).ready(function() {
 
 	$('#schedule_table').DataTable();
 })
-
-//$("#bt_change_ex").on("click", function(){
-	//$.ajax ({
-        //url: "update_excursion/",
-        //type: "post",
-        //data: {
-        	//csrfmiddlewaretoken: getCookie('csrftoken'),
-        	//'id_excursion': 
-            //'name_organizator': $("#name_organizator"),
-            //'occasion_excursion': $("#occasion_excursion"),
-            //'time_period_excursion': $("#time_period_excursion"),
-            //'language_excursion': $("#language_excursion"),
-            //'auditory_excursion': $("#auditory_excursion"),
-            //'participants_excursion': $("#participants_excursion"),
-            //'age_excursion': $("#age_excursion"),
-        //},
-        //success: function(data) {
-        	//alert('Excursion has been changed!');
-		//},
-		//error: function(xhr, ajaxOptions, thrownError) {
-            //console.log(xhr.status);
-            //console.log(xhr.responseText);
-            //console.log(thrownError);
-        //},
-	//});
 
 
 function getCookie(name){

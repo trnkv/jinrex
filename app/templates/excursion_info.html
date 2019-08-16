@@ -13,6 +13,11 @@
 				Select areas:<span class="asteriskField">*</span>
 	    		</label>
 	    		{{ form.id_area }}
+	    		<div id="areas_ids" style="display: none;">
+	    			{% for id in desired_excursion.areas_ids %}
+	    				<div>{{ id }}</div>
+	    			{% endfor %}
+	    		</div>
 	    	</th>
 	    </tr>
 
@@ -36,3 +41,17 @@
 </form>
 
 {% endblock %}
+
+<script type="text/javascript">
+	$(document).ready(function() {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+		$('#id_id_area li label input').each(function () {
+			var chb = $(this);
+			console.log(chb);
+			$('#areas_ids div').each(function () {
+
+				if (chb.val() == $(this).text())
+					chb.prop('checked', true);
+				}
+			})
+		})
+</script>
