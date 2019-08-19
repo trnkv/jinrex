@@ -2,8 +2,7 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-<h2>Schedule</h2>
-<h5>To change some field just click by the cell</h5>
+<h3 style="margin-bottom: 40px;" class="text-primary"><span class="glyphicon glyphicon-calendar"></span>Schedule</h3>
 
 <table id="schedule_table" class="table table-bordered" role="grid">
 	<thead>
@@ -23,9 +22,9 @@
 					{{ area }}
 				{% endfor %}
 				</td>
-				<td id="date_excursion" scope="row">{{ ex.date_excursion }}</td>
+				<td id="date_excursion">{{ ex.date_excursion }}</td>
 				<td>
-					<a href="get_excursion/{{ ex.id_excursion }}/" class="btn btn-warning btn-block active" role="button">
+					<a href="get_excursion/{{ ex.id_excursion }}/" class="btn btn-warning btn-block" role="button">
 						View full information
 					</a>
 				</td>
@@ -40,23 +39,6 @@ $(document).ready(function() {
 
 	$('#schedule_table').DataTable();
 })
-
-
-function getCookie(name){
-	var cookieValue = null;
-	if (document.cookie && document.cookie !== '') {
-	    var cookies = document.cookie.split(';');
-	    for (var i = 0; i < cookies.length; i++) {
-	        var cookie = jQuery.trim(cookies[i]);
-	        // Does this cookie string begin with the name we want?
-	        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-	            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-	            break;
-	        }
-	    }
-    }
-    return cookieValue;
-}
 </script>
 
 {% endblock %}

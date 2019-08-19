@@ -12,4 +12,5 @@ urlpatterns = [
 	url(r'^blank/get_areas/$', views.get_areas),
 	url(r'^schedule/$', views.view_excursions, name='view_excursions'),
 	url(r'^schedule/get_excursion/(\d+)/$', views.get_excursion),
+	url(r'^schedule/get_excursion/(\d+)/change_excursion/(\d+)/$', views.change_excursion),
 ]

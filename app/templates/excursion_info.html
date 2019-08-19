@@ -2,17 +2,17 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-<form action="/" method="post">
-	{% csrf_token %}
+<label style="padding:5px 40px; background-color: #f0ad4e;"><span class="glyphicon glyphicon-pencil"></span> To change a field just enter a new value and click CHANGE EXCURSION</label>
 
-	<table class="table">
-		<tr>
-			<th id="th_id_facility" colspan="4">{{ form.id_facility|as_crispy_field }}</th>
+<form style="margin-top: 15px;" id="myForm" action="change_excursion/{{ desired_excursion.id_excursion }}/" method="post">{% csrf_token %}
+	<table class="table bg-info">
+		<tr id="row1">
+			<th colspan="4">{{ form.id_facility|as_crispy_field }}</th>
 			<th>
 				<label for="id_id_facility" class="col-form-label  requiredField">
 				Select areas:<span class="asteriskField">*</span>
 	    		</label>
-	    		{{ form.id_area }}
+	    		{{ form.id_area|safe }}
 	    		<div id="areas_ids" style="display: none;">
 	    			{% for id in desired_excursion.areas_ids %}
 	    				<div>{{ id }}</div>
@@ -21,14 +21,14 @@
 	    	</th>
 	    </tr>
 
-		<tr>		
+		<tr id="row2">		
 			<th colspan="2">{{ form.name_organizator|as_crispy_field }}</th>
 	    	<th>{{ form.id_guide|as_crispy_field }}</th>
 	    	<th>{{ form.occasion_excursion|as_crispy_field }}</th>
 	    	<th>{{ form.date_excursion|as_crispy_field }}</th>
 	    </tr>
 
-	    <tr>
+	    <tr id="row3">
 	    	<th>{{ form.time_period_excursion|as_crispy_field }}</th>	    	
 	    	<th>{{ form.language_excursion|as_crispy_field }}</th>
 	    	<th>{{ form.auditory_excursion|as_crispy_field }}</th>
@@ -36,22 +36,57 @@
 			<th>{{ form.age_excursion|as_crispy_field }}</th>
 	    </tr>
 	</table>
-
-	<input class="btn btn-warning" type="submit" value="CHANGE EXCURSION"/>
+	<a role="button" id="bt_back" class="btn btn-primary" onclick="history.back()" style="float: left;">GO BACK</a>
+	<button id="bt_change" class="btn btn-warning" style="float: right;" data-toggle="modal" data-target="#myModal">CHANGE EXCURSION</button>
+	<input type="submit" style="display: none;"/>
 </form>
 
-{% endblock %}
+<!-- MODAL FOR CONFIRMATION -->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header" style="padding:25px 50px; background-color: #f0ad4e;">
+          <h4>
+          	<span class="glyphicon glyphicon-bell"></span> Are you sure you want to change the details of this excursion?
+          </h4>
+        </div>
+        <div class="modal-body" style="padding:40px 50px;">
+              <label><span class="glyphicon glyphicon-edit"></span> The status of the excursion will be changed to "UNCONFIRMED".</label>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+          <button id="modal_submit" type="submit" class="btn btn-success" onclick="submit_changes()"><span class="glyphicon glyphicon-ok"></span> Yes, I'm sure</button>
+        </div>
+      </div>
+      
+    </div>
+  </div> 
+</div>
+
 
 <script type="text/javascript">
-	$(document).ready(function() {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+	$(document).ready(function() {
 		$('#id_id_area li label input').each(function () {
 			var chb = $(this);
-			console.log(chb);
 			$('#areas_ids div').each(function () {
 
 				if (chb.val() == $(this).text())
 					chb.prop('checked', true);
-				}
 			})
 		})
+
+		$('#bt_change').on('click', function(e){
+		  $('#myModal').modal('show');
+		  e.preventDefault();
+		});
+	})
+
+	function submit_changes() {
+		$('#myModal').modal('hide');
+		$("#myForm").submit();
+	};
 </script>
+
+{% endblock %}
