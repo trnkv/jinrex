@@ -4,7 +4,6 @@ from .models import Excursion, Area, Facility, Organizator, Incharge, Guide
 
 admin.site.register(Excursion)
 admin.site.register(Area)
-#admin.site.register(ExcursionArea)
 admin.site.register(Facility)
 admin.site.register(Organizator)
 admin.site.register(Incharge)

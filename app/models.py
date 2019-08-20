@@ -1,7 +1,9 @@
 from django.db import models
 import uuid # Required for unique instances
+from django.contrib.auth.models import User
 
 # Create your models here.
+
 class Facility(models.Model):
     """
     Model representing a specific copy of a book (i.e. that can be borrowed from the library).
@@ -54,20 +56,13 @@ class Organizator(models.Model):
     Model representing an excursion organizator.
     """
     id_organizator = models.AutoField(primary_key=True)
-    name_organizator = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default="")
 
     def __str__(self):
         """
         String for representing the Model object.
         """
-        return '%s, %s' % (self.name_organizator)
-
-    
-    def get_absolute_url(self):
-        """
-        Returns the url to access a particular organizator instance.
-        """
-        return reverse('organizator-detail', args=[str(self.id_organizator)])
+        return self.user.get_full_name()
 
 
 class Incharge(models.Model):
@@ -76,21 +71,13 @@ class Incharge(models.Model):
     """
     id_incharge = models.AutoField(primary_key=True)
     id_facility = models.ForeignKey('Facility', on_delete=models.DO_NOTHING)
-    firstName_incharge = models.CharField(max_length=100)
-    lastName_incharge = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default="")
 
     def __str__(self):
         """
         String for representing the Model object.
         """
-        return '%s, %s' % (self.firstName_incharge, self.lastName_incharge)
-
-    
-    def get_absolute_url(self):
-        """
-        Returns the url to access a particular author instance.
-        """
-        return reverse('organizator-detail', args=[str(self.id_incharge)])
+        return self.user.get_full_name()
 
 
 class Guide(models.Model):
@@ -98,21 +85,13 @@ class Guide(models.Model):
     Model representing a person in charge of the excursion.
     """
     id_guide = models.AutoField(primary_key=True)
-    firstName_guide = models.CharField(max_length=100)
-    lastName_guide = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default="")
 
     def __str__(self):
         """
         String for representing the Model object.
         """
-        return '%s, %s' % (self.firstName_guide, self.lastName_guide)
-
-    
-    def get_absolute_url(self):
-        """
-        Returns the url to access a particular author instance.
-        """
-        return reverse('guide-detail', args=[str(self.id_guide)])
+        return self.user.get_full_name()
 
 
 class Excursion(models.Model):
@@ -122,8 +101,11 @@ class Excursion(models.Model):
     id_excursion = models.AutoField(verbose_name='id_excursion', serialize=False, auto_created=True, primary_key=True, help_text="Unique ID for this particular excursion")
     id_facility = models.ForeignKey('Facility', on_delete=models.DO_NOTHING, help_text="Select desired facility")
     id_area = models.ManyToManyField(Area, help_text="Select a desired areas for this excursion")
-    name_organizator = models.CharField(max_length=200, help_text="Enter the name of the excursion organizator")
-    id_guide = models.ForeignKey('Guide', on_delete=models.DO_NOTHING, help_text="Select desired guide for this excursion")
+
+    organizator = models.ForeignKey(Organizator, related_name='user_organizator', default="", on_delete=models.DO_NOTHING, help_text="Enter the name of the excursion organizator")
+    guide = models.ForeignKey(Guide, related_name='user_guide', default="", on_delete=models.DO_NOTHING, help_text="Select desired guide for this excursion")
+    incharge = models.ForeignKey(Incharge, related_name='user_incharge', default="", on_delete=models.DO_NOTHING, help_text="Responsible for the excursion")
+    
     occasion_excursion = models.CharField(max_length=200, help_text="Enter occasion of excursion  (e.g. JEMS 12 etc.)")
     date_excursion = models.DateField(help_text="Enter date of excursion")
     time_period_excursion = models.CharField(max_length=200, help_text="Enter time period of excursion")
@@ -137,5 +119,5 @@ class Excursion(models.Model):
         """
         String for representing the Model object (in Admin site etc.)
         """
-        return '%s, %s' % (self.occasion_excursion, self.date_excursion)
+        return '%s, %s' % (self.id_facility, self.date_excursion)
 
