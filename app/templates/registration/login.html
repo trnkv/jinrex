@@ -1,5 +1,5 @@
 {% extends "base_generic.html" %}
-
+{% load crispy_forms_tags %}
 {% block content %}
 
 {% if form.errors %}
@@ -19,16 +19,14 @@
 {% csrf_token %}
 
 <div>
-  <td>{{ form.username.label_tag }}</td>
-  <td>{{ form.username }}</td>
+  <td>{{ form.username|as_crispy_field }}</td>
 </div>
 <div>
-  <td>{{ form.password.label_tag }}</td>
-  <td>{{ form.password }}</td>
+  <td>{{ form.password|as_crispy_field }}</td>
 </div>
 
 <div>
-  <input class="btn btn-primary" type="submit" value="login" />
+  <input class="btn btn-primary" type="submit" value="Login" />
   <input type="hidden" name="next" value="{{ next }}" />
 </div>
 </form>

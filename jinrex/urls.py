@@ -20,7 +20,7 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-	url(r'^index/', include('app.urls')),
+	url(r'^jinrex/', include('app.urls')),
     url(r'^admin/', admin.site.urls),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
@@ -28,8 +28,7 @@ urlpatterns = [
 # на URL приложения 
 from django.views.generic import RedirectView
 urlpatterns += [
-    url(r'^$', RedirectView.as_view(url='/index/', permanent=True)),
-    url(r'^index/blank/send_blank/index/$', RedirectView.as_view(url='/index/', permanent=True)),
+    url(r'^$', RedirectView.as_view(url='/jinrex/', permanent=True)),
 ]
 
 urlpatterns += [
