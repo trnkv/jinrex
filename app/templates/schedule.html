@@ -16,7 +16,7 @@
 	<tbody class="table-hover">
 	  	{% for ex in excursions %}
 	  		<tr role="row" class="odd">
-	  			<td id="id_facility">{{ ex.id_facility_id }}</td>
+	  			<td id="id_facility">{{ ex.facility_id }}</td>
 				<td id="id_area">
 				{% for area in ex.areas %}
 					{{ area }}

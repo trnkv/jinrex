@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app.apps.AppConfig',
     'crispy_forms',
-    'rest_framework_datatables_editor',
 ]
 
 REST_FRAMEWORK = {
@@ -55,7 +54,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 50,
 }
 
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 CRISPY_FAIL_SILENTLY = not DEBUG
 

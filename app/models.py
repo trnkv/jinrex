@@ -99,8 +99,8 @@ class Excursion(models.Model):
     Model representing an excursion.
     """
     id_excursion = models.AutoField(verbose_name='id_excursion', serialize=False, auto_created=True, primary_key=True, help_text="Unique ID for this particular excursion")
-    id_facility = models.ForeignKey('Facility', on_delete=models.DO_NOTHING, help_text="Select desired facility")
-    id_area = models.ManyToManyField(Area, help_text="Select a desired areas for this excursion")
+    facility = models.ForeignKey('Facility', on_delete=models.DO_NOTHING, help_text="Select desired facility")
+    areas = models.ManyToManyField(Area, help_text="Select a desired areas for this excursion")
 
     organizator = models.ForeignKey(Organizator, related_name='user_organizator', default="", on_delete=models.DO_NOTHING, help_text="Enter the name of the excursion organizator")
     guide = models.ForeignKey(Guide, related_name='user_guide', default="", on_delete=models.DO_NOTHING, help_text="Select desired guide for this excursion")
@@ -119,5 +119,5 @@ class Excursion(models.Model):
         """
         String for representing the Model object (in Admin site etc.)
         """
-        return '%s, %s' % (self.id_facility, self.date_excursion)
+        return '%s, %s' % (self.facility, self.date_excursion)
 

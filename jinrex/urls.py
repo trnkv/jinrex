@@ -30,7 +30,6 @@ from django.views.generic import RedirectView
 urlpatterns += [
     url(r'^$', RedirectView.as_view(url='/index/', permanent=True)),
     url(r'^index/blank/send_blank/index/$', RedirectView.as_view(url='/index/', permanent=True)),
-    url(r'^catalog/', RedirectView.as_view(url='/index/', permanent=True)),
 ]
 
 urlpatterns += [

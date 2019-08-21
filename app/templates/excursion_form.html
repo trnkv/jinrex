@@ -9,18 +9,19 @@
 
 	<table class="table">
 		<tr>
-			<td colspan="4">{{ form.id_facility|as_crispy_field }}</td>
+			<td colspan="4">{{ form.facility|as_crispy_field }}</td>
 			<td>
 				<label for="id_id_facility" class="col-form-label  requiredField">
 				Select areas:<span class="asteriskField">*</span>
 	    		</label>
-	    		{{ form.id_area|safe }}
+	    		{{ form.areas|safe }}
 	    	</td>
 	    </tr>
 
 		<tr>		
-			<td colspan="2">{{ form.name_organizator|as_crispy_field }}</td>
-	    	<td>{{ form.id_guide|as_crispy_field }}</td>
+			<td colspan="2">{{ form.organizator|as_crispy_field }}</td>
+	    	<td>{{ form.guide|as_crispy_field }}</td>
+	    	<td>{{ form.incharge|as_crispy_field }}</td>
 	    	<td>{{ form.occasion_excursion|as_crispy_field }}</td>
 	    	<td>{{ form.date_excursion|as_crispy_field }}</td>
 	    </tr>
@@ -41,7 +42,7 @@
 
 <script type="text/javascript">
 
-    $("#id_id_facility").change(function() {
+    $("#id_facility").change(function() {
 
           var id_facility = $(this).val();
 
@@ -55,14 +56,14 @@
 	            },
 	            success: function(data) {
 	            	// set all checkboxes.checked = false
-	            	$('#id_id_area li label input').each(function () {
+	            	$('#id_areas li label input').each(function () {
 				        $(this).prop('checked', false);
 				    });
 
 	            	// if current area doesn't belong to current facility then hide its label
 	            	// else show it
-	            	$('#id_id_area li').each(function () {
-					    var str = $(this).text().replace(/\s+/g, '');
+	            	$('#id_areas li').each(function () {
+					    var str = $.trim($(this).text());
 						if (!data['result'].includes(str)) {
 							$(this).hide();
 						}

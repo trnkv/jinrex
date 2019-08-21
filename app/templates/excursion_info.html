@@ -7,12 +7,12 @@
 <form style="margin-top: 15px;" id="myForm" action="change_excursion/{{ desired_excursion.id_excursion }}/" method="post">{% csrf_token %}
 	<table class="table bg-info">
 		<tr id="row1">
-			<th colspan="4">{{ form.id_facility|as_crispy_field }}</th>
+			<th colspan="4">{{ form.facility|as_crispy_field }}</th>
 			<th>
 				<label for="id_id_facility" class="col-form-label  requiredField">
 				Select areas:<span class="asteriskField">*</span>
 	    		</label>
-	    		{{ form.id_area|safe }}
+	    		{{ form.areas|safe }}
 	    		<div id="areas_ids" style="display: none;">
 	    			{% for id in desired_excursion.areas_ids %}
 	    				<div>{{ id }}</div>
@@ -22,8 +22,9 @@
 	    </tr>
 
 		<tr id="row2">		
-			<th colspan="2">{{ form.name_organizator|as_crispy_field }}</th>
-	    	<th>{{ form.id_guide|as_crispy_field }}</th>
+			<th colspan="2">{{ form.organizator|as_crispy_field }}</th>
+	    	<th>{{ form.guide|as_crispy_field }}</th>
+	    	<th>{{ form.incharge|as_crispy_field }}</th>
 	    	<th>{{ form.occasion_excursion|as_crispy_field }}</th>
 	    	<th>{{ form.date_excursion|as_crispy_field }}</th>
 	    </tr>
@@ -67,8 +68,54 @@
 
 
 <script type="text/javascript">
-	$(document).ready(function() {
-		$('#id_id_area li label input').each(function () {
+	$(window).load(function() {
+
+		id_facility = $("#id_facility").val();
+
+		$.ajax ({
+	            url: "../../../blank/get_areas/",
+	            type: "post",
+	            data: {
+	            	csrfmiddlewaretoken: getCookie('csrftoken'),
+	                'id_facility': id_facility,
+	            },
+	            success: function(data) {
+	            	// if current area doesn't belong to current facility then
+	            	//clear its input and hide its label
+	            	// else show it
+	            	$('#id_areas li').each(function () {
+					    var str = $.trim($(this).text());
+						if (!data['result'].includes(str)) {
+							$('#id_areas li label input').each(function () {
+								var chb = $(this);
+								$('#areas_ids div').each(function () {
+									if (chb.val() == $(this).text())
+										chb.prop('checked', true);
+									else chb.prop('checked', false);
+								})
+							})
+							$(this).hide();
+						}
+						else $(this).show();
+					});
+
+					$('#id_areas li label input').each(function () {
+						var chb = $(this);
+						$('#areas_ids div').each(function () {
+
+							if (chb.val() == $(this).text())
+								chb.prop('checked', true);
+						})
+					})
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+	                console.log(xhr.status);
+	                console.log(xhr.responseText);
+	                console.log(thrownError);
+	            },
+        	})
+
+		$('#id_areas li label input').each(function () {
 			var chb = $(this);
 			$('#areas_ids div').each(function () {
 
@@ -82,6 +129,101 @@
 		  e.preventDefault();
 		});
 	})
+
+	$("#id_facility").change(function() {
+
+          var id_facility = $(this).val();
+
+          console.log(id_facility);
+
+          if (id_facility !== ""){
+          	$.ajax ({
+	            url: "../../../blank/get_areas/",
+	            type: "post",
+	            data: {
+	            	csrfmiddlewaretoken: getCookie('csrftoken'),
+	                'id_facility': id_facility,
+	            },
+	            success: function(data) {
+	            	// set all checkboxes.checked = false
+	            	$('#id_areas li label input').each(function () {
+				        $(this).prop('checked', false);
+				    });
+
+	            	// if current area doesn't belong to current facility then hide its label
+	            	// else show it
+	            	$('#id_areas li').each(function () {
+					    var str = $.trim($(this).text()); //name of each area
+						if (!data['result'].includes(str)) {
+							$('label input').prop('checked', false);
+							$('#areas_ids div').each(function () {
+								if ($('label input').val() != $(this).text())
+									$(this).remove();
+							})
+
+							$(this).hide();
+						}
+						else $(this).show();
+					});
+
+					$('#id_areas li label input').each(function () {
+						var chb = $(this);
+						$('#areas_ids div').each(function () {
+
+							if (chb.val() == $(this).text())
+								chb.prop('checked', true);
+						})
+		})
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+	                console.log(xhr.status);
+	                console.log(xhr.responseText);
+	                console.log(thrownError);
+	            },
+        	});
+          }
+          else
+          	if (id_facility == "") {
+          	$.ajax ({
+	            url: "../../../blank/get_areas/",
+	            type: "post",
+	            data: {
+	            	csrfmiddlewaretoken: getCookie('csrftoken'),
+	                'id_facility': 0,
+	            },
+	            success: function(data) {
+	            	$('#id_areas li label input').each(function () {
+	            		$(this).prop('checked', false);
+	            	})
+
+	            	$('#id_areas li').each(function () {
+	            		$(this).show();
+	            	})
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+	                console.log(xhr.status);
+	                console.log(xhr.responseText);
+	                console.log(thrownError);
+	            },
+        	});
+          }
+    })
+
+    function getCookie(name){
+	    var cookieValue = null;
+	    if (document.cookie && document.cookie !== '') {
+	        var cookies = document.cookie.split(';');
+	        for (var i = 0; i < cookies.length; i++) {
+	            var cookie = jQuery.trim(cookies[i]);
+	            // Does this cookie string begin with the name we want?
+	            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+	                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                break;
+	            }
+	        }
+    	}
+    	return cookieValue;
+	}
 
 	function submit_changes() {
 		$('#myModal').modal('hide');
