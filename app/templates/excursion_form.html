@@ -4,7 +4,7 @@
 
 <h3 style="margin-bottom: 20px;" class="text-primary"><span class="glyphicon glyphicon-pencil"></span>Send a new request for the organization of the excursion</h3>
 
-<form action="send_blank/" method="post">
+<form id="application_form" action="send_blank/" method="post">
 	{% csrf_token %}
 
 	<table class="table">
@@ -35,10 +35,33 @@
 	    </tr>
 	</table>
 
-	<input class="btn btn-warning" type="submit" value="SEND"/>
+	<button id="bt_change" class="btn btn-warning" style="float: right;" data-toggle="modal" data-target="#myModal">SEND</button>
+	<input type="submit" style="display: none;"/>
 </form>
 
-
+<!-- MODAL FOR CONFIRMATION -->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header" style="padding:25px 50px; background-color: #f0ad4e;">
+          <h4>
+          	<span class="glyphicon glyphicon-bell"></span> Are you sure you want to send a request for this excursion?
+          </h4>
+        </div>
+        <div class="modal-body" style="padding:40px 50px;">
+              <label><span class="glyphicon glyphicon-edit"></span> The status of the excursion will be set to "UNCONFIRMED" until the responsible person and the guide approve it.</label>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
+          <button id="modal_submit" type="submit" class="btn btn-success" onclick="submit_changes()"><span class="glyphicon glyphicon-ok"></span> Yes, I'm sure</button>
+        </div>
+      </div>
+      
+    </div>
+  </div> 
+</div>
 
 <script type="text/javascript">
 
@@ -107,6 +130,11 @@
           }
     })
 
+    $('#bt_change').on('click', function(e){
+		  $('#myModal').modal('show');
+		  e.preventDefault();
+	});
+
     function getCookie(name){
 	    var cookieValue = null;
 	    if (document.cookie && document.cookie !== '') {
@@ -122,6 +150,12 @@
     	}
     	return cookieValue;
 	}
+
+	function submit_changes() {
+		$('#myModal').modal('hide');
+		$('#id_incharge').attr('disabled', false);
+		$("#application_form").submit();
+	};
 
 </script>
 
