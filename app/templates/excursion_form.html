@@ -64,11 +64,21 @@
 	            	// else show it
 	            	$('#id_areas li').each(function () {
 					    var str = $.trim($(this).text());
-						if (!data['result'].includes(str)) {
+						if (!data['areas'].includes(str)) {
 							$(this).hide();
 						}
 						else $(this).show();
 					});
+
+	            	$('#id_incharge option').each(function(){
+	            		var id_incharge = $(this).val();
+		            	if (data['id_incharge']==id_incharge){
+		            		$(this).prop('selected', true);
+		            	}
+	            	})
+
+	            	$('#id_incharge').attr('disabled', 'disabled');
+
 				},
 				error: function(xhr, ajaxOptions, thrownError) {
 	                console.log(xhr.status);

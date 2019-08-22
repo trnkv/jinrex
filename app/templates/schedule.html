@@ -4,9 +4,9 @@
 
 <h3 style="margin-bottom: 40px;" class="text-primary"><span class="glyphicon glyphicon-calendar"></span>Schedule</h3>
 
-<table id="schedule_table" class="table table-bordered" role="grid">
+<table id="schedule_table" class="table">
 	<thead>
-		<tr>
+		<tr class="info">
 			<th scope="col">Facility</th>
 		    <th scope="col">Areas</th>
 		    <th scope="col">Date</th>
@@ -25,7 +25,7 @@
 				<td id="date_excursion">{{ ex.date_excursion }}</td>
 				<td>
 					<a href="get_excursion/{{ ex.id_excursion }}/" class="btn btn-warning btn-block" role="button">
-						View full information
+						View
 					</a>
 				</td>
 			</tr>

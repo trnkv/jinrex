@@ -26,7 +26,11 @@ def get_areas(request):
 			areas = []
 			for d in list_of_dict_areas:
 				areas.append(d['name_area'])
-			return JsonResponse({'result':areas})
+
+			incharge = Incharge.objects.filter(id_facility=id_facility).values('id_incharge')
+
+			return JsonResponse({'areas':areas, 'id_incharge':incharge[0]['id_incharge']})
+
 		elif id_facility == 0:
 			return JsonResponse({'result':0})
 
@@ -42,7 +46,9 @@ def get_excursion_form(request):
 @login_required
 def send_excursion_form(request):
 	if request.method == 'POST':
+
 		form = ExcursionForm(request.POST)
+
 		if form.is_valid():
 
 			facility_id = Facility.objects.get(id_facility=request.POST.get('facility'))
@@ -50,7 +56,9 @@ def send_excursion_form(request):
 			areas_ids = request.POST.getlist('areas')
 
 			organizator = Organizator.objects.get(id_organizator=request.POST.get('organizator'))
+
 			guide = Guide.objects.get(id_guide=request.POST.get('guide'))
+
 			incharge = Incharge.objects.get(id_incharge=request.POST.get('incharge'))
 
 			new_ex = Excursion.objects.create(facility=facility_id,
@@ -158,9 +166,9 @@ def get_excursion(request, id_excursion):
 @login_required
 def change_excursion(request, id_excursion1, id_excursion2):
 
-	#return JsonResponse({'result':request.POST.dict()})
+	print(request.POST.get('incharge'))
+
 	desired_excursion = Excursion.objects.filter(id_excursion=id_excursion2).delete()
-	#return JsonResponse({'result':list(desired_excursion)})
 
 	new_ex = Excursion.objects.create(id_excursion=id_excursion2,
 		facility=Facility.objects.get(id_facility=request.POST.get('facility')),
@@ -177,6 +185,5 @@ def change_excursion(request, id_excursion1, id_excursion2):
 
 	new_ex.areas.set(request.POST.getlist('areas'))
 	new_ex.save()
-
 	
 	return render(request, 'submitted.html', context={'result':'The excursion is updated!'})

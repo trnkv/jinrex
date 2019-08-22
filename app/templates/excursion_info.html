@@ -85,7 +85,7 @@
 	            	// else show it
 	            	$('#id_areas li').each(function () {
 					    var str = $.trim($(this).text());
-						if (!data['result'].includes(str)) {
+						if (!data['areas'].includes(str)) {
 							$('#id_areas li label input').each(function () {
 								var chb = $(this);
 								$('#areas_ids div').each(function () {
@@ -107,6 +107,8 @@
 								chb.prop('checked', true);
 						})
 					})
+
+	            	$('#id_incharge').attr('disabled', 'disabled');
 				},
 				error: function(xhr, ajaxOptions, thrownError) {
 	                console.log(xhr.status);
@@ -154,7 +156,7 @@
 	            	// else show it
 	            	$('#id_areas li').each(function () {
 					    var str = $.trim($(this).text()); //name of each area
-						if (!data['result'].includes(str)) {
+						if (!data['areas'].includes(str)) {
 							$('label input').prop('checked', false);
 							$('#areas_ids div').each(function () {
 								if ($('label input').val() != $(this).text())
@@ -173,7 +175,15 @@
 							if (chb.val() == $(this).text())
 								chb.prop('checked', true);
 						})
-		})
+					})
+
+					$('#id_incharge option').each(function(){
+	            		var id_incharge = $(this).val();
+		            	if (data['id_incharge']==id_incharge){
+		            		$(this).prop('value', data['id_incharge']);
+		            		$(this).prop('selected', true);
+		            	}
+	            	})
 				},
 				error: function(xhr, ajaxOptions, thrownError) {
 	                console.log(xhr.status);
@@ -227,6 +237,7 @@
 
 	function submit_changes() {
 		$('#myModal').modal('hide');
+		$('#id_incharge').attr('disabled', false);
 		$("#myForm").submit();
 	};
 </script>
