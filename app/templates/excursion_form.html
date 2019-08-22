@@ -9,7 +9,8 @@
 
 	<table class="table">
 		<tr>
-			<td colspan="4">{{ form.facility|as_crispy_field }}</td>
+			<td style="display: none;">{{ form.confirmed|as_crispy_field }}</td>
+			<td colspan="5">{{ form.facility|as_crispy_field }}</td>
 			<td>
 				<label for="id_id_facility" class="col-form-label  requiredField">
 				Select areas:<span class="asteriskField">*</span>
@@ -27,7 +28,7 @@
 	    </tr>
 
 	    <tr>
-	    	<td>{{ form.time_period_excursion|as_crispy_field }}</td>	    	
+	    	<td colspan="2">{{ form.time_period_excursion|as_crispy_field }}</td>	    	
 	    	<td>{{ form.language_excursion|as_crispy_field }}</td>
 	    	<td>{{ form.auditory_excursion|as_crispy_field }}</td>
 			<td>{{ form.participants_excursion|as_crispy_field }}</td>
@@ -154,6 +155,7 @@
 	function submit_changes() {
 		$('#myModal').modal('hide');
 		$('#id_incharge').attr('disabled', false);
+		$('#div_id_confirmed label input').prop('checked', true);
 		$("#application_form").submit();
 	};
 

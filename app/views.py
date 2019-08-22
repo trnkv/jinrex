@@ -18,6 +18,12 @@ def index(request):
 
 
 @login_required
+def get_excursion_form(request):
+	form = ExcursionForm()
+	return render(request, 'excursion_form.html', {'form':form})
+
+
+@login_required
 def get_areas(request):
 	if request.method == 'POST':
 		id_facility = request.POST.get('id_facility')
@@ -38,12 +44,6 @@ def get_areas(request):
 
 
 @login_required
-def get_excursion_form(request):
-	form = ExcursionForm()
-	return render(request, 'excursion_form.html', {'form':form})
-
-
-@login_required
 def send_excursion_form(request):
 	if request.method == 'POST':
 
@@ -61,7 +61,8 @@ def send_excursion_form(request):
 
 			incharge = Incharge.objects.get(id_incharge=request.POST.get('incharge'))
 
-			new_ex = Excursion.objects.create(facility=facility_id,
+			new_ex = Excursion.objects.create(
+				facility=facility_id,
 				organizator=organizator,
 				guide=guide,
 				incharge=incharge,
@@ -71,7 +72,8 @@ def send_excursion_form(request):
 				language_excursion=request.POST.get('language_excursion'),
 				auditory_excursion=request.POST.get('auditory_excursion'),
 				participants_excursion=request.POST.get('participants_excursion'),
-				age_excursion=request.POST.get('age_excursion'))
+				age_excursion=request.POST.get('age_excursion'),
+				confirmed=False)
 
 			new_ex.areas.set(areas_ids)
 			new_ex.save()
@@ -146,6 +148,7 @@ def get_excursion(request, id_excursion):
 	desired_excursion[0]['incharge'] = this_incharge[0]
 
 	form = ExcursionForm(initial={
+		'confirmed': desired_excursion[0]['confirmed'],
 		'facility': desired_excursion[0]['facility_id'],
 		'areas': queryset_areas_ids,
 		'organizator': desired_excursion[0]['organizator'],

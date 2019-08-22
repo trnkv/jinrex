@@ -1,5 +1,4 @@
 {% extends "base_generic.html" %}
-{% load crispy_forms_tags %}
 {% block content %}
 
 <h3 style="margin-bottom: 40px;" class="text-primary"><span class="glyphicon glyphicon-calendar"></span>Schedule</h3>
@@ -7,15 +6,19 @@
 <table id="schedule_table" class="table">
 	<thead>
 		<tr class="info">
+			<th id="th_status" scope="col" data-orderable="false">Confirmed</th>
 			<th scope="col">Facility</th>
 		    <th scope="col">Areas</th>
 		    <th scope="col">Date</th>
-		    <th></th>
+		    <th data-orderable="false"></th>
 		</tr>
 	</thead>
 	<tbody class="table-hover">
 	  	{% for ex in excursions %}
 	  		<tr role="row" class="odd">
+	  			<td class="td_status" >
+	  				{{ ex.confirmed }}
+	  			</td>
 	  			<td id="id_facility">{{ ex.facility_id }}</td>
 				<td id="id_area">
 				{% for area in ex.areas %}
@@ -25,7 +28,7 @@
 				<td id="date_excursion">{{ ex.date_excursion }}</td>
 				<td>
 					<a href="get_excursion/{{ ex.id_excursion }}/" class="btn btn-warning btn-block" role="button">
-						View
+						VIEW
 					</a>
 				</td>
 			</tr>
@@ -37,7 +40,24 @@
  
 $(document).ready(function() {
 
-	$('#schedule_table').DataTable();
+	var table = $("#schedule_table").DataTable();
+	$('#th_status').removeClass("sorting_asc");
+
+	$('.td_status').each(function() {
+		console.log(this);
+
+		if ($.trim($(this).text())=='True') {
+			//$(this).css("background-color", "#5cb85c");
+			$(this).text("");
+			$(this).append("<span class='label label-success'><span class='glyphicon glyphicon-ok'></span></span>");
+		}
+		else {
+			//$(this).css("background-color", "#d9534f");
+			$(this).text("");
+			$(this).append("<span class='label label-danger'><span class='glyphicon glyphicon-remove'></span></span>");
+		}
+	})
+	
 })
 </script>
 

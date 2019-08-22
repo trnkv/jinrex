@@ -114,6 +114,8 @@ class Excursion(models.Model):
     participants_excursion = models.IntegerField(help_text="Enter count of excursion participants")
     age_excursion = models.CharField(max_length=6, help_text="Enter age of excursion participants")
 
+    confirmed = models.BooleanField(default=False)
+
 
     def __str__(self):
         """
