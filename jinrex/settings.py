@@ -147,3 +147,6 @@ STATICFILES_DIRS = (
 LOGIN_REDIRECT_URL = '/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#EMAIL_USE_TLS = True
+#EMAIL_HOST = 'smtp.yandex.ru'
+#EMAIL_PORT = 465

@@ -11,6 +11,8 @@ from .delete import ExcursionDelete
 
 from django.contrib.auth.decorators import login_required
 
+from django.core.mail import send_mail
+
 @login_required
 def index(request):
     """Функция отображения для домашней страницы сайта."""
@@ -78,7 +80,14 @@ def send_excursion_form(request):
 			new_ex.areas.set(areas_ids)
 			new_ex.save()
 
-			return render(request, 'submitted.html', context={'result':'Thanks, your application is submitted!'})
+			theme = 'New excursion'
+			message = 'You have received a request for a new excursion. To accept or reject it please log in to the JINRex web service.'
+			from_email = 'ttrnkv75@yandex.ru'
+			to_email = ['1@example.com', '2@example.com']
+
+			send_mail(theme, message, from_email, to_email, fail_silently=False)
+
+			return render(request, 'submitted.html', context={'result':'Thanks, your application is submitted! Notification of this application sent to the Guide, Incharge and Organizator.'})
 
 
 @login_required
