@@ -18,6 +18,11 @@ def index(request):
     """Функция отображения для домашней страницы сайта."""
     return render(request, 'index.html', context={})
 
+@login_required
+def profilepage(request):
+    """Функция отображения профиля пользователя."""
+    return render(request, 'profilepage.html', context={})
+
 
 @login_required
 def get_excursion_form(request):

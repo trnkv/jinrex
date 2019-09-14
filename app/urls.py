@@ -7,6 +7,7 @@ app_name = 'app'
 
 urlpatterns = [
 	url(r'^$', views.index, name='jinrex'),
+	url(r'^profile/$', views.profilepage, name='profile'),
 	url(r'^blank/$', views.get_excursion_form, name='get_excursion_form'),
 	url(r'^blank/send_blank/$', views.send_excursion_form, name='send_excursion_form'),
 	url(r'^blank/get_areas/$', views.get_areas),

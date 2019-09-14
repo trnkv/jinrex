@@ -50,7 +50,7 @@
             {% if user.is_authenticated %}
                 <h4>Hello, {{ user.get_full_name }}!
                 <button type="button" class="btn btn-light">
-                    <a href="/" role="button">Go to Profile Page</a>
+                    <a href="profile" role="button">Go to Profile Page</a>
                 </button></h4>
                 <button type="button" class="btn btn-light">
                     <a href="{% url 'logout'%}?next={{request.path}}" role="button">Logout</a>

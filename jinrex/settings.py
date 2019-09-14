@@ -31,6 +31,10 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # Шаблоны общего использования и теги шаблонов (должен быть в начале)
+    'django_adminlte',
+     # использовать шаблон как тему для админки django (должна быть перед django.contrib.admin)
+    'django_adminlte_theme',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
