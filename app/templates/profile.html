@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card-body box-profile">
+                <h3 class="profile-username text-center">{{ user.get_full_name }}</h3>
+
+                <p class="text-muted text-center">@{{ user.get_username }}</p>
+
+                <ul class="list-group list-group-unbordered mb-3">
+<!--                    {% for role in roles %}-->
+                  <li class="list-group-item">
+                    <b>Followers</b> <a class="float-right">1,322</a>
+                  </li>
+<!--                    {% endfor %}-->
+                </ul>
+
+                <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a>
+</div>
+{% endblock %}

@@ -20,7 +20,7 @@ from django.core.mail import send_mail
 
 @login_required
 def index(request):
-    return render(request, 'index.html', context={})
+    return render(request, 'base.html', context={})
 
 
 @login_required
