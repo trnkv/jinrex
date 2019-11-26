@@ -7,11 +7,14 @@ app_name = 'app'
 
 urlpatterns = [
 	url(r'^$', views.index, name='jinrex'),
-	url(r'^profile/$', views.profilepage, name='profile'),
+	url(r'^profile/(\d+)/$', views.profile, name='profile'),
 	url(r'^blank/$', views.get_excursion_form, name='get_excursion_form'),
 	url(r'^blank/send_blank/$', views.send_excursion_form, name='send_excursion_form'),
 	url(r'^blank/get_areas/$', views.get_areas),
 	url(r'^schedule/$', views.view_excursions, name='view_excursions'),
 	url(r'^schedule/get_excursion/(\d+)/$', views.get_excursion),
+	url(r'^schedule/get_excursion/(\d+)/change_confirmed/$', views.change_confirmed),
+	url(r'^schedule/get_excursion/(\d+)/send_message/(\d+)/$', views.send_message),
 	url(r'^schedule/get_excursion/(\d+)/change_excursion/(\d+)/$', views.change_excursion),
+	url(r'^schedule/get_excursion/(\d+)/create_chat/(\d+)/$', views.create_chat),
 ]

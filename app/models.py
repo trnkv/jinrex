@@ -1,9 +1,20 @@
 from django.db import models
 import uuid # Required for unique instances
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.conf import settings
+
+from django.utils import timezone
+from django.utils.translation import ugettext_lazy as _
+from django.views.generic import View
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.shortcuts import redirect
+from django.urls import reverse #Used to generate URLs by reversing the URL patterns
+
 
 # Create your models here.
-
 class Facility(models.Model):
     """
     Model representing a specific copy of a book (i.e. that can be borrowed from the library).
@@ -48,44 +59,12 @@ class Area(models.Model):
         return reverse('area-detail', args=[str(self.id_area)])
 
 
-from django.urls import reverse #Used to generate URLs by reversing the URL patterns
-
-
-class Organizator(models.Model):
-    """
-    Model representing an excursion organizator.
-    """
-    id_organizator = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default="")
-
-    def __str__(self):
-        """
-        String for representing the Model object.
-        """
-        return self.user.get_full_name()
-
-
 class Incharge(models.Model):
     """
-    Model representing a person in charge of the excursion.
+    Model representing a person incharge of the excursion.
     """
-    id_incharge = models.AutoField(primary_key=True)
     id_facility = models.ForeignKey('Facility', on_delete=models.DO_NOTHING)
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default="")
-
-    def __str__(self):
-        """
-        String for representing the Model object.
-        """
-        return self.user.get_full_name()
-
-
-class Guide(models.Model):
-    """
-    Model representing a person in charge of the excursion.
-    """
-    id_guide = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default="")
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=None)
 
     def __str__(self):
         """
@@ -99,22 +78,23 @@ class Excursion(models.Model):
     Model representing an excursion.
     """
     id_excursion = models.AutoField(verbose_name='id_excursion', serialize=False, auto_created=True, primary_key=True, help_text="Unique ID for this particular excursion")
-    facility = models.ForeignKey('Facility', on_delete=models.DO_NOTHING, help_text="Select desired facility")
-    areas = models.ManyToManyField(Area, help_text="Select a desired areas for this excursion")
+    facility = models.ForeignKey('Facility', on_delete=models.DO_NOTHING)
+    areas = models.ManyToManyField(Area)
 
-    organizator = models.ForeignKey(Organizator, related_name='user_organizator', default="", on_delete=models.DO_NOTHING, help_text="Enter the name of the excursion organizator")
-    guide = models.ForeignKey(Guide, related_name='user_guide', default="", on_delete=models.DO_NOTHING, help_text="Select desired guide for this excursion")
-    incharge = models.ForeignKey(Incharge, related_name='user_incharge', default="", on_delete=models.DO_NOTHING, help_text="Responsible for the excursion")
+    organizator = models.ForeignKey(User, related_name='user_organizator', default="", on_delete=models.DO_NOTHING, help_text="Organizator of this excursion")
+    guide = models.ForeignKey(User, related_name='user_guide', default="", on_delete=models.DO_NOTHING, help_text="Guide of this excursion")
+    incharge = models.ForeignKey(User, related_name='user_incharge', default="", on_delete=models.DO_NOTHING, help_text="Responsible for the excursion")
     
-    occasion_excursion = models.CharField(max_length=200, help_text="Enter occasion of excursion  (e.g. JEMS 12 etc.)")
+    occasion_excursion = models.CharField(max_length=200)
     date_excursion = models.DateField(help_text="Enter date of excursion")
-    time_period_excursion = models.CharField(max_length=200, help_text="Enter time period of excursion")
-    language_excursion = models.CharField(max_length=200, help_text="Enter language of excursion")
-    auditory_excursion = models.CharField(max_length=200, help_text="Enter auditory of excursion ")
-    participants_excursion = models.IntegerField(help_text="Enter count of excursion participants")
-    age_excursion = models.CharField(max_length=6, help_text="Enter age of excursion participants")
+    time_period_excursion = models.CharField(max_length=200)
+    language_excursion = models.CharField(max_length=200)
+    auditory_excursion = models.CharField(max_length=200)
+    participants_excursion = models.IntegerField()
+    age_excursion = models.CharField(max_length=6)
 
-    confirmed = models.BooleanField(default=False)
+    confirmed_guide = models.BooleanField(default=False)
+    confirmed_incharge = models.BooleanField(default=False)
 
 
     def __str__(self):
@@ -123,3 +103,24 @@ class Excursion(models.Model):
         """
         return '%s, %s' % (self.facility, self.date_excursion)
 
+# Модели для реализации чата
+class Chat(models.Model):
+    excursion = models.OneToOneField(Excursion, on_delete=models.DO_NOTHING)
+    members = models.ManyToManyField(User, verbose_name=_("Member"))
+    
+    def get_absolute_url(self):
+        return reverse('messages', (), {'chat_id': self.pk })
+ 
+ 
+class Message(models.Model):
+    chat = models.ForeignKey(Chat, verbose_name=_("Chat"), on_delete=models.DO_NOTHING)
+    author = models.ForeignKey(User, verbose_name=_("User"), on_delete=models.DO_NOTHING)
+    message = models.TextField(_("Message"))
+    pub_date = models.DateTimeField(_('Date'), default=timezone.now)
+    is_readed = models.BooleanField(_('Readed'), default=False)
+ 
+    class Meta:
+        ordering=['pub_date']
+ 
+    def __str__(self):
+        return self.message

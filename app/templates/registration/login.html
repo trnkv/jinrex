@@ -2,36 +2,60 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
+<div class="login-box">
+  <!-- /.login-logo -->
+  <div class="card">
+    <div class="card-body login-card-body">
+      <p class="login-box-msg">Sign in to start your session</p>
 
-{% if next %}
-    {% if user.is_authenticated %}
-    <p>Your account doesn't have access to this page. To proceed,
-    please login with an account that has access.</p>
-    {% else %}
-    <p>Please login to see this page.</p>
-    {% endif %}
-{% endif %}
+      {% if form.errors %}
+      <p>Your username and password didn't match. Please try again.</p>
+      {% endif %}
 
-<form method="post" action="{% url 'login' %}">
-{% csrf_token %}
+      {% if next %}
+          {% if user.is_authenticated %}
+          <p>Your account doesn't have access to this page. To proceed,
+          please login with an account that has access.</p>
+          {% else %}
+          <p>Please login to see this page.</p>
+          {% endif %}
+      {% endif %}
 
-<div>
-  <td>{{ form.username|as_crispy_field }}</td>
+      <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div>
+          {{ form.username|as_crispy_field }}
+        </div>
+        <div>
+          {{ form.password|as_crispy_field }}
+        </div>
+        <div class="row">
+          <div class="col-8">
+            <div class="icheck-primary">
+              <input type="checkbox" id="remember">
+              <label for="remember">
+                Remember Me
+              </label>
+            </div>
+          </div>
+          <!-- /.col -->
+          <div class="col-4">
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            <input type="hidden" name="next" value="{{ next }}" />
+          </div>
+          <!-- /.col -->
+        </div>
+      </form>
+
+      <p class="mb-1">
+        <a href="{% url 'password_reset' %}">I forgot my password</a>
+      </p>
+      <!-- <p class="mb-0">
+        <a href="register.html" class="text-center">Register a new membership</a>
+      </p> -->
+    </div>
+    <!-- /.login-card-body -->
+  </div>
 </div>
-<div>
-  <td>{{ form.password|as_crispy_field }}</td>
-</div>
-
-<div>
-  <input class="btn btn-primary" type="submit" value="Login" />
-  <input type="hidden" name="next" value="{{ next }}" />
-</div>
-</form>
-
-{# Assumes you setup the password_reset view in your URLconf #}
-<p><a href="{% url 'password_reset' %}">Lost password?</a></p>
 
 {% endblock %}
