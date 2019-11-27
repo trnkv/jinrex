@@ -1,40 +1,78 @@
-{% extends "base_generic.html" %}
+{% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
 
-<h3 style="margin-bottom: 20px;" class="text-primary"><span class="glyphicon glyphicon-pencil"></span>Send a new request for the organization of the excursion</h3>
+<section class="content-header">
+  <h4>
+    <i class="fas fa-edit"></i> <b>Send a new request for the organization of the excursion
+  </b></h4>
+</section>
 
-<form id="application_form" action="send_blank/" method="post">
+<!-- <h3 style="margin-bottom: 20px;"><span class="glyphicon glyphicon-pencil"></span>Send a new request for the organization of the excursion</h3> -->
+
+<form id="application_form" action="send_blank/" method="post" class="card card-default" style="padding: 10px;">
 	{% csrf_token %}
-
-	<table class="table">
-		<tr>
-			<td style="display: none;">{{ form.confirmed|as_crispy_field }}</td>
-			<td colspan="5">{{ form.facility|as_crispy_field }}</td>
-			<td>
-				<label for="id_id_facility" class="col-form-label  requiredField">
+	<div class="row form-group">
+		<div class="col">
+			<div class="form-group">
+				{{ form.facility|as_crispy_field }}
+			</div>
+		</div>
+		<div class="col">
+			<div class="form-group">
+                  <label for="id_id_facility" class="col-form-label  requiredField">
 				Select areas:<span class="asteriskField">*</span>
 	    		</label>
-	    		{{ form.areas|safe }}
-	    	</td>
-	    </tr>
+				{{ form.areas|safe }}
+			</div>
+		</div>
+		<div class="col">
+			<div class="form-group">
+				<label id="id_incharge"></label><br>
+			</div>
+		</div>
+	</div>
 
-		<tr>		
-			<td colspan="2">{{ form.organizator|as_crispy_field }}</td>
-	    	<td>{{ form.guide|as_crispy_field }}</td>
-	    	<td>{{ form.incharge|as_crispy_field }}</td>
-	    	<td>{{ form.occasion_excursion|as_crispy_field }}</td>
-	    	<td>{{ form.date_excursion|as_crispy_field }}</td>
-	    </tr>
-
-	    <tr>
-	    	<td colspan="2">{{ form.time_period_excursion|as_crispy_field }}</td>	    	
-	    	<td>{{ form.language_excursion|as_crispy_field }}</td>
-	    	<td>{{ form.auditory_excursion|as_crispy_field }}</td>
-			<td>{{ form.participants_excursion|as_crispy_field }}</td>
-			<td>{{ form.age_excursion|as_crispy_field }}</td>
-	    </tr>
-	</table>
+	<div class="row form-group">
+		<div class="col">
+			{{ form.guide|as_crispy_field }}
+		</div>
+	</div>
+	<div class="row form-group">
+		<div class="col">
+			{{ form.occasion_excursion|as_crispy_field }}
+		</div>
+	</div>
+	<div class="row form-group">
+		<div class="col">
+			{{ form.date_excursion|as_crispy_field }}
+		</div>
+	</div>
+	<div class="row form-group">
+		<div class="col">
+			{{ form.time_period_excursion|as_crispy_field }}
+		</div>
+	</div>
+	<div class="row form-group">
+		<div class="col">
+			{{ form.language_excursion|as_crispy_field }}
+		</div>
+	</div>
+	<div class="row form-group">
+		<div class="col">
+			{{ form.auditory_excursion|as_crispy_field }}
+		</div>
+	</div>
+	<div class="row form-group">
+		<div class="col">
+			{{ form.participants_excursion|as_crispy_field }}
+		</div>
+	</div>
+	<div class="row form-group">
+		<div class="col">
+			{{ form.age_excursion|as_crispy_field }}
+		</div>
+	</div>
 
 	<button id="bt_change" class="btn btn-warning" style="float: right;" data-toggle="modal" data-target="#myModal">SEND</button>
 	<input type="submit" style="display: none;"/>
@@ -65,12 +103,20 @@
 </div>
 
 <script type="text/javascript">
+	$(document).ready(function() {
+		$('#id_areas li').each(function () {
+			$(this).hide();
+		});
+
+		$("select").addClass("form-control select2 select2-hidden-accessible")
+		// $("#id_date_excursion").mask('yyyy-mm-dd')
+	});
 
     $("#id_facility").change(function() {
 
           var id_facility = $(this).val();
 
-          if (id_facility !== ""){
+          if (id_facility !== ''){
           	$.ajax ({
 	            url: "get_areas/",
 	            type: "post",
@@ -94,14 +140,15 @@
 						else $(this).show();
 					});
 
-	            	$('#id_incharge option').each(function(){
-	            		var id_incharge = $(this).val();
-		            	if (data['id_incharge']==id_incharge){
-		            		$(this).prop('selected', true);
-		            	}
-	            	})
-
-	            	$('#id_incharge').attr('disabled', 'disabled');
+	            	//$('#id_incharge option').each(function(){
+	            	//	var id_incharge = $(this).val();
+		            //	if (data['id_incharge']==id_incharge){
+		            //		$(this).prop('selected', true);
+		            //	}
+	            	//})
+					$('#id_incharge').text("Incharge: " + data['info_incharge']);
+					$('#id_incharge').css('background-color', '#f0ad4e');
+					$('#id_incharge').css('padding', '1%');
 
 				},
 				error: function(xhr, ajaxOptions, thrownError) {

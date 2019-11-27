@@ -31,7 +31,9 @@ class SendExcursionForm(ModelForm):
 	# self.fields['incharge'].choices = choices_incharge
 	# i = Incharge.objects.filter(id_facility=self.fields['facility'].queryset[0]).values('user_id')[0]['user_id']
 
-	date_excursion = forms.DateField(widget=forms.DateInput(format='%Y-%m-%d'), input_formats=('%Y-%m-%d',))
+	# date_excursion = forms.DateField(widget=forms.DateInput(format='%Y-%m-%d'), input_formats=('%Y-%m-%d',))
+	date_excursion = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), input_formats=('%Y-%m-%d',))
+	# time_period_excursion = forms.DateField(widget=forms.DateInput(attrs={'class':'timepicker'}))
 	areas = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Area.objects.all())
 
 	class Meta():
@@ -65,7 +67,7 @@ class ViewExcursionForm(ModelForm):
 		self.fields['incharge'].choices = choices_incharge
 		# i = Incharge.objects.filter(id_facility=self.fields['facility'].queryset[0]).values('user_id')[0]['user_id']
 
-	date_excursion = forms.DateField(widget=forms.DateInput(format='%Y-%m-%d'), input_formats=('%Y-%m-%d',))
+	date_excursion = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), input_formats=('%m-%d-%Y',))
 	areas = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Area.objects.all())
 
 	class Meta():

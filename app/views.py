@@ -31,26 +31,25 @@ def profile(request, user_id):
     username = request.user.username
     print(username)
 
-    for g in request.user.groups.all():
+    for g in request.user.groups.all().values():
+        # g - ЭТО dict
+        if g['name'] == 'Guide':
+            excursions = Excursion.objects.filter(guide=user_id).values('facility', 'occasion_excursion', 'date_excursion')
+            excursions = [val for val in excursions if val in excursions]
+            for ex in excursions:
+                ex['facility'] = Facility.objects.filter(id_facility=ex['facility']).values('name_facility')[0]['name_facility']
+            g['excursion'] = excursions
+        if g['name'] == 'Organizator':
+            excursions = Excursion.objects.filter(organizator=user_id).values('facility', 'occasion_excursion', 'date_excursion')
+            excursions = [val for val in excursions if val in excursions]
+            for ex in excursions:
+                ex['facility'] = Facility.objects.filter(id_facility=ex['facility']).values('name_facility')[0]['name_facility']
+            g['excursion'] = excursions
         user_groups.append(g)
 
-    # group_organizator = Group.objects.get(name='Organizator')
-    # group_guide = Group.objects.get(name='Guide')
-    # group_incharge = Group.objects.get(name='Incharge')
+    # return JsonResponse({'user_groups': user_groups})
 
-    # users_o = group_organizator.user_set.filter(username=username)
-    # users_g = group_guide.user_set.filter(username=username)
-    # users_i = group_incharge.user_set.filter(username=username)
-
-    # users = [users_o, users_g, users_i]
-    # for u in users:
-    #   if len(u) != 0:
-    #       if users.index(u) == 0:
-    #           user_groups.append('Organizator')
-    #       if users.index(u) == 1:
-    #           user_groups.append('Guide')
-    #       if users.index(u) == 2:
-    #           user_groups.append('Incharge')
+    # return HttpResponseRedirect('/jinrex/profile/'+user_id, context={'user_groups': user_groups})
 
     return render(request, 'profile.html', context={'user_groups': user_groups})
 

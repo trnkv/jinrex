@@ -82,7 +82,7 @@ class Excursion(models.Model):
     areas = models.ManyToManyField(Area)
 
     organizator = models.ForeignKey(User, related_name='user_organizator', default="", on_delete=models.DO_NOTHING, help_text="Organizator of this excursion")
-    guide = models.ForeignKey(User, related_name='user_guide', default="", on_delete=models.DO_NOTHING, help_text="Guide of this excursion")
+    guide = models.ForeignKey(User, related_name='user_guide', default="", on_delete=models.DO_NOTHING)
     incharge = models.ForeignKey(User, related_name='user_incharge', default="", on_delete=models.DO_NOTHING, help_text="Responsible for the excursion")
     
     occasion_excursion = models.CharField(max_length=200)

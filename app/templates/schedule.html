@@ -1,4 +1,4 @@
-{% extends "base_generic.html" %}
+{% extends "base.html" %}
 {% block content %}
 
 <h3 style="margin-bottom: 40px;" class="text-primary"><span class="glyphicon glyphicon-calendar"></span>Schedule</h3>
@@ -16,8 +16,9 @@
 	<tbody class="table-hover">
 	  	{% for ex in excursions %}
 	  		<tr role="row" class="odd">
-	  			<td class="td_status" >
-	  				{{ ex.confirmed }}
+	  			<td class="td_status">
+	  				<div id="confirmed_guide" style="display: none;">{{ ex.confirmed_guide }}</div>
+	  				<div id="confirmed_incharge" style="display: none;">{{ ex.confirmed_incharge }}</div>
 	  			</td>
 	  			<td id="id_facility">{{ ex.facility_id }}</td>
 				<td id="id_area">
@@ -44,9 +45,7 @@ $(document).ready(function() {
 	$('#th_status').removeClass("sorting_asc");
 
 	$('.td_status').each(function() {
-		console.log(this);
-
-		if ($.trim($(this).text())=='True') {
+		if ($('#confirmed_guide').text()=='True' && $('#confirmed_incharge').text()=='True') {
 			//$(this).css("background-color", "#5cb85c");
 			$(this).text("");
 			$(this).append("<span class='label label-success'><span class='glyphicon glyphicon-ok'></span></span>");

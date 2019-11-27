@@ -1,16 +1,16 @@
-{% extends "base_generic.html" %}
+{% extends "base.html" %}
 {% load crispy_forms_tags %}
+
 {% block content %}
 
-<label style="padding:5px 40px; background-color: #f0ad4e;"><span class="glyphicon glyphicon-pencil"></span> To change a field just enter a new value and click CHANGE EXCURSION</label>
+<label id="changefield_info" style="padding:5px 40px; background-color: #f0ad4e;"><span class="glyphicon glyphicon-pencil"></span> To change some field just enter a new value and click CHANGE EXCURSION</label>
 
 <form style="margin-top: 15px;" id="myForm" action="change_excursion/{{ desired_excursion.id_excursion }}/" method="post">{% csrf_token %}
 	<table class="table bg-info">
 		<tr id="row1">
-			<th id="th_status">
-				<label id="label_status"></label>
-				<span id="span_status"></span>
-				{{ form.confirmed|as_crispy_field }}
+			<th id="th_user_can_edit_form">
+				<!-- {{ desired_excursion.is_confirmed }} -->
+				{{ user_can_edit_form }}
 			</th>
 			<th colspan="3">{{ form.facility|as_crispy_field }}</th>
 			<th>
@@ -35,7 +35,7 @@
 	    </tr>
 
 	    <tr id="row3">
-	    	<th>{{ form.time_period_excursion|as_crispy_field }}</th>	    	
+	    	<th colspan="2">{{ form.time_period_excursion|as_crispy_field }}</th>
 	    	<th>{{ form.language_excursion|as_crispy_field }}</th>
 	    	<th>{{ form.auditory_excursion|as_crispy_field }}</th>
 			<th>{{ form.participants_excursion|as_crispy_field }}</th>
@@ -43,12 +43,12 @@
 	    </tr>
 	</table>
 	<a role="button" id="bt_back" class="btn btn-primary" onclick="history.back()" style="float: left;">GO BACK</a>
-	<button id="bt_change" class="btn btn-warning" style="float: right;" data-toggle="modal" data-target="#myModal">CHANGE EXCURSION</button>
+	
 	<input type="submit" style="display: none;"/>
 </form>
 
-<!-- MODAL FOR CONFIRMATION -->
-<div class="modal fade" id="myModal" role="dialog">
+<!-- MODAL FOR CHANGING EXCURSION DATA -->
+<div class="modal fade" id="myModal_change" role="dialog">
     <div class="modal-dialog">
     
       <!-- Modal content-->
@@ -63,7 +63,7 @@
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-danger btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
-          <button id="modal_submit" type="submit" class="btn btn-success" onclick="submit_changes()"><span class="glyphicon glyphicon-ok"></span> Yes, I'm sure</button>
+          <button id="modal_submit_changes" type="submit" class="btn btn-success" onclick="submit_changes()"><span class="glyphicon glyphicon-ok"></span> Yes, I'm sure</button>
         </div>
       </div>
       
@@ -71,21 +71,82 @@
   </div> 
 </div>
 
+<!-- Блок для отображения чата -->
+<div class="panel">
+	{% if chat.error %}
+		<h5>{{ chat.error }}</h5>
+	{% else %}
+	<!-- Time Zone -->
+	{% load tz %}
+		<h3 class="lbl_chat panel panel-body">Chat</h3>
+			{% if messages != 'none' %}
+				{% for message in messages %}
+					<div class="list-group-item {% if not message.is_readed %}unreaded{% endif %}">
+					    <div class="reply-body">
+					        <ul class="list-inline">
+					            <li class="drop-left-padding">
+					                <strong class="list-group-item-heading">
+					                	<a href=""><span class="glyphicon glyphicon-user"></span>{{ message.author }}</a>
+					                </strong>
+					            </li>
+					            <li class="pull-right text-muted"><small>{{ message.pub_date|utc }}</small></li>
+					        </ul>
+					        <div>{{ message.message|safe }}</div>
+					    </div>
+					</div>
+			    {% endfor %}
+			{% endif %}
+
+			{% for val in chat %}
+		    <!-- Блок для отображения поля для отправки сообщения в чат -->
+			<div id="message_form">
+				<label>Enter your message</label>
+				<form id="message-form" method="post" action="send_message/{{ val.id }}/">
+					{% csrf_token %}
+					{{ form_message }}
+					<button type="submit" class="btn btn-success">
+						<span class="glyphicon glyphicon-comment"></span> Send
+					</button>
+				</form>
+			</div>
+			{% endfor %}
+	{% endif %}
+</div>
+
 
 <script type="text/javascript">
 	$(window).load(function() {
 
-		if ($('#th_status div label input').prop('checked') == true) {
-			$('#div_id_confirmed').text("");
-			$('#label_status').text("Confirmed");
-			$('#th_status').removeClass("sorting_1 btn btn-danger").addClass("btn btn-success");
-			$('#span_status').removeClass("glyphicon glyphicon-remove").addClass("glyphicon glyphicon-ok");
+		if ($.trim($('#th_user_can_edit_form').text()) == 'False') {
+
+			$('#th_user_can_edit_form').text('{{ desired_excursion.is_confirmed }}');
+			if ($.trim($('#th_user_can_edit_form').text()) == 'False') {
+				$('#myForm').append(
+				'<a id="bt_confirm" class="btn btn-warning" style="float: right;" href="change_confirmed/" onclick="this.style.display=\'none\'; return true;">CONFIRM EXCURSION</a>'
+				)
+			}
+
+			$('#th_user_can_edit_form').hide();
+			$('#changefield_info').hide();
+			$("#myForm :input").prop('readonly', true);
+			$('#id_guide').attr('disabled', true);
+			$('#id_facility').attr('disabled', true);
 		}
 		else {
-			$('#div_id_confirmed').text("");
-			$('#label_status').text("Unconfirmed");
-			$('#th_status').removeClass("sorting_1 btn-success").addClass("btn btn-danger");
-			$('#span_status').removeClass("sorting_1 btn-success glyphicon glyphicon-remove").addClass("btn-danger glyphicon glyphicon-remove");
+			$('#myForm').append(
+				'<button id="bt_change" class="btn btn-warning" style="float: right;" data-toggle="modal" data-target="#myModal_change">CHANGE EXCURSION</button>'
+			)
+
+			$('#th_user_can_edit_form').text('{{ desired_excursion.is_confirmed }}');
+
+			if ($.trim($('#th_user_can_edit_form').text()) == 'False') {
+				$('#th_user_can_edit_form').text("This excursion is not confirmed by guide or/and incharge");
+				$('#th_user_can_edit_form').addClass("bg-danger text-danger");
+			}
+			else {
+				$('#th_user_can_edit_form').text("This excursion confirmed by guide and incharge");
+				$('#th_user_can_edit_form').addClass("bg-success text-success");
+			}
 		}
 
 		id_facility = $("#id_facility").val();
@@ -126,7 +187,9 @@
 						})
 					})
 
+					// $('#id_incharge').append('<option value='+data['id_incharge']+' selected>'+data['id_incharge']+'</option>');
 	            	$('#id_incharge').attr('disabled', 'disabled');
+	            	$('#id_organizator').attr('disabled', 'disabled');
 				},
 				error: function(xhr, ajaxOptions, thrownError) {
 	                console.log(xhr.status);
@@ -154,8 +217,6 @@
 
           var id_facility = $(this).val();
 
-          console.log(id_facility);
-
           if (id_facility !== ""){
           	$.ajax ({
 	            url: "../../../blank/get_areas/",
@@ -170,23 +231,7 @@
 				        $(this).prop('checked', false);
 				    });
 
-	            	// if current area doesn't belong to current facility then hide its label
-	            	// else show it
-	            	$('#id_areas li').each(function () {
-					    var str = $.trim($(this).text()); //name of each area
-						if (!data['areas'].includes(str)) {
-							$('label input').prop('checked', false);
-							$('#areas_ids div').each(function () {
-								if ($('label input').val() != $(this).text())
-									$(this).remove();
-							})
-
-							$(this).hide();
-						}
-						else $(this).show();
-					});
-
-					$('#id_areas li label input').each(function () {
+				    $('#id_areas li label input').each(function () {
 						var chb = $(this);
 						$('#areas_ids div').each(function () {
 
@@ -195,13 +240,29 @@
 						})
 					})
 
-					$('#id_incharge option').each(function(){
-	            		var id_incharge = $(this).val();
-		            	if (data['id_incharge']==id_incharge){
-		            		$(this).prop('value', data['id_incharge']);
-		            		$(this).prop('selected', true);
-		            	}
-	            	})
+	            	// if current area doesn't belong to current facility then hide its label
+	            	// else show it
+	            	$('#id_areas li').each(function () {
+					    var str = $.trim($(this).text()); //name of each area
+						if (!(data['areas'].includes(str))) {
+							$('label input').prop('checked', false)
+								//console.log($(this)[0].prop('checked'))
+								//$(this)[0].checked = false;
+								// $('#areas_ids div').each(function () {
+								// 	if ($('label input').val() != $(this).text())
+								// 		$(this).remove();
+								// })
+
+							$(this).hide();
+						}
+						else {
+							$(this).show();
+						}
+					});
+
+					$('#id_incharge').append('<option value='+data['id_incharge']+' selected>'+data['info_incharge']+'</option>');
+	            	$('#id_incharge').attr('disabled', 'disabled');
+	            	$('#id_organizator').attr('disabled', 'disabled');
 				},
 				error: function(xhr, ajaxOptions, thrownError) {
 	                console.log(xhr.status);
@@ -237,7 +298,31 @@
           }
     })
 
-    function getCookie(name){
+	function submit_changes() {
+		$('#myModal_change').modal('hide');
+		$('#id_organizator').attr('disabled', false);
+		$('#id_incharge').attr('disabled', false);
+		$("#myForm").submit();
+	};
+
+	function submit_confirm() {
+		// $('#myModal_confirm').modal('hide');
+		// $('#id_incharge').attr('disabled', false);
+		$.ajax ({
+	        url: "change_confirmed/",
+	        type: "get",
+	        success: function(data) {
+	        	document.location.reload(true);
+	        },
+	        error: function(xhr, ajaxOptions, thrownError) {
+	            console.log(xhr.status);
+	            console.log(xhr.responseText);
+	            console.log(thrownError);
+	        }
+		});
+	};
+
+	function getCookie(name){
 	    var cookieValue = null;
 	    if (document.cookie && document.cookie !== '') {
 	        var cookies = document.cookie.split(';');
@@ -253,11 +338,9 @@
     	return cookieValue;
 	}
 
-	function submit_changes() {
-		$('#myModal').modal('hide');
-		$('#id_incharge').attr('disabled', false);
-		$("#myForm").submit();
-	};
 </script>
+
+<style type="text/css">
+</style>
 
 {% endblock %}
