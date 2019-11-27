@@ -108,8 +108,14 @@
 			$(this).hide();
 		});
 
-		$("select").addClass("form-control select2 select2-hidden-accessible")
-		// $("#id_date_excursion").mask('yyyy-mm-dd')
+		$("select").addClass("form-control select2 select2-hidden-accessible");
+		$('#id_date_excursion').datepicker({
+			locale: {
+	        format: 'DD/MM/YYYY'
+	      }
+		});
+	    //Date range picker with time picker
+	    // $('#id_time_period_excursion').timepicker();
 	});
 
     $("#id_facility").change(function() {
