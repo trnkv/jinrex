@@ -1,6 +1,7 @@
 from django.db import models
 import uuid # Required for unique instances
-from django.contrib.auth.models import User, Group, Permission
+from django.contrib.auth.models import  User, Group, Permission
+from django.core.validators import RegexValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
@@ -15,6 +16,17 @@ from django.urls import reverse #Used to generate URLs by reversing the URL patt
 
 
 # Create your models here.
+class Phone(models.Model):
+    user = models.OneToOneField(User, on_delete=models.DO_NOTHING )
+    phone_regex = RegexValidator(regex=r'^\+?1?\d{9,17}$', message="Phone number must be entered in the format: '+71234567890'. Up to 17 digits allowed.")
+    phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True,  unique=True) # validators should be a list
+    
+    def __str__(self):
+        """
+        String for representing the Model object.
+        """
+        return self.user.get_full_name() + " (@" + self.user.get_username() + ') : ' + self.phone_number
+    
 class Facility(models.Model):
     """
     Model representing a specific copy of a book (i.e. that can be borrowed from the library).
@@ -71,6 +83,17 @@ class Incharge(models.Model):
         String for representing the Model object.
         """
         return self.user.get_full_name()
+    
+    
+class Guide(models.Model):
+    id_facility = models.ManyToManyField(Facility)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=None)
+
+    def __str__(self):
+        """
+        String for representing the Model object.
+        """
+        return self.user.get_full_name()
 
 
 class Excursion(models.Model):
@@ -82,8 +105,8 @@ class Excursion(models.Model):
     areas = models.ManyToManyField(Area)
 
     organizator = models.ForeignKey(User, related_name='user_organizator', default="", on_delete=models.DO_NOTHING, help_text="Organizator of this excursion")
-    guide = models.ForeignKey(User, related_name='user_guide', default="", on_delete=models.DO_NOTHING)
-    incharge = models.ForeignKey(User, related_name='user_incharge', default="", on_delete=models.DO_NOTHING, help_text="Responsible for the excursion")
+    guide = models.ForeignKey(Guide, related_name='user_guide', default="", on_delete=models.DO_NOTHING)
+    incharge = models.ForeignKey(Incharge, related_name='user_incharge', default="", on_delete=models.DO_NOTHING, help_text="Responsible for the excursion")
     
     occasion_excursion = models.CharField(max_length=200)
     date_excursion = models.DateField(help_text="Enter date of excursion")
@@ -91,7 +114,6 @@ class Excursion(models.Model):
     language_excursion = models.CharField(max_length=200)
     auditory_excursion = models.CharField(max_length=200)
     participants_excursion = models.IntegerField()
-    age_excursion = models.CharField(max_length=6)
 
     confirmed_guide = models.BooleanField(default=False)
     confirmed_incharge = models.BooleanField(default=False)

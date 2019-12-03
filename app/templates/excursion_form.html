@@ -3,76 +3,60 @@
 {% block content %}
 
 <section class="content-header">
-  <h4>
-    <i class="fas fa-edit"></i> <b>Send a new request for the organization of the excursion
-  </b></h4>
+  <h4><i class="fas fa-edit"></i> <b>Send a new request for the organization of the excursion</b></h4>
 </section>
 
 <!-- <h3 style="margin-bottom: 20px;"><span class="glyphicon glyphicon-pencil"></span>Send a new request for the organization of the excursion</h3> -->
 
-<form id="application_form" action="send_blank/" method="post" class="card card-default" style="padding: 10px;">
+<form id="application_form" action="send_blank/" method="post" class="card " >
 	{% csrf_token %}
-	<div class="row form-group">
+	<div class="row">
 		<div class="col">
-			<div class="form-group">
 				{{ form.facility|as_crispy_field }}
-			</div>
 		</div>
 		<div class="col">
-			<div class="form-group">
                   <label for="id_id_facility" class="col-form-label  requiredField">
 				Select areas:<span class="asteriskField">*</span>
 	    		</label>
 				{{ form.areas|safe }}
-			</div>
 		</div>
 		<div class="col">
-			<div class="form-group">
 				<label id="id_incharge"></label><br>
-			</div>
 		</div>
-	</div>
-
-	<div class="row form-group">
-		<div class="col">
+        <div class="col">
 			{{ form.guide|as_crispy_field }}
 		</div>
 	</div>
-	<div class="row form-group">
-		<div class="col">
+	<div class="row">
+        <div class="col">
 			{{ form.occasion_excursion|as_crispy_field }}
 		</div>
-	</div>
-	<div class="row form-group">
-		<div class="col">
+    </div>
+	<div class="row">
+        <div class="col">
 			{{ form.date_excursion|as_crispy_field }}
 		</div>
-	</div>
-	<div class="row form-group">
-		<div class="col">
+    </div>
+	<div class="row">
+        <div class="col">
 			{{ form.time_period_excursion|as_crispy_field }}
 		</div>
-	</div>
-	<div class="row form-group">
-		<div class="col">
+    </div>
+	<div class="row">
+        <div class="col">
 			{{ form.language_excursion|as_crispy_field }}
 		</div>
-	</div>
-	<div class="row form-group">
-		<div class="col">
+    </div>
+	<div class="row">
+        <div class="col">
 			{{ form.auditory_excursion|as_crispy_field }}
 		</div>
-	</div>
-	<div class="row form-group">
-		<div class="col">
+    </div>
+	<div class="row">
+        <div class="col">
 			{{ form.participants_excursion|as_crispy_field }}
 		</div>
-	</div>
-	<div class="row form-group">
-		<div class="col">
-			{{ form.age_excursion|as_crispy_field }}
-		</div>
-	</div>
+    </div>
 
 	<button id="bt_change" class="btn btn-warning" style="float: right;" data-toggle="modal" data-target="#myModal">SEND</button>
 	<input type="submit" style="display: none;"/>

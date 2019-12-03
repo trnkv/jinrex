@@ -154,7 +154,7 @@
     <!-- ./wrapper -->
     
     <!-- Left side column. contains the logo and sidebar -->
-      <aside class="main-sidebar">
+      <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
         <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
@@ -171,25 +171,27 @@
             {% endif %}
 
           <!-- Sidebar Menu -->
-          <ul class="sidebar-menu tree" data-widget="tree">
-              <li class="header">NAVIGATION</li>
-              <!-- Optionally, you can add icons to the links -->
-              <li><a href="blank"><i class="fa fa-edit"></i> <span>Apply an application</span></a></li>
-              <li><a href="schedule"><i class="fa fa-calendar-alt"></i> <span>View all applications</span></a></li>
-            <li class="treeview">
-              <a href="#"><i class="fa fa-chart-pie"></i><span>Charts</span>
-                <span class="pull-right-container">
-                    <i class="fa fa-angle-left pull-right"></i>
-                  </span>
-              </a>
-              <ul class="treeview-menu">
-                <li><a href="#">Link in level 2</a></li>
-                <li><a href="#">Link in level 2</a></li>
-              </ul>
-            </li>
-              <li class="header">ACTIONS</li>
-              <li><a href="{% url 'logout'%}?next={{request.path}}"><i class="fa fa-sign-out-alt"></i> <span>Logout</span></a></li>
-          </ul>
+            <nav class="mt-2">
+                  <ul class="sidebar-menu tree" data-widget="tree">
+                      <li class="header">NAVIGATION</li>
+                      <!-- Optionally, you can add icons to the links -->
+                      <li><a href="blank"><i class="fa fa-edit"></i> <span>Apply an application</span></a></li>
+                      <li><a href="schedule"><i class="fa fa-calendar-alt"></i> <span>View all applications</span></a></li>
+                    <li class="treeview">
+                      <a href="#"><i class="fa fa-chart-pie"></i><span>Charts</span>
+                        <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i>
+                          </span>
+                      </a>
+                      <ul class="treeview-menu">
+                        <li><a href="#">Link in level 2</a></li>
+                        <li><a href="#">Link in level 2</a></li>
+                      </ul>
+                    </li>
+                      <li class="header">ACTIONS</li>
+                      <li><a href="{% url 'logout'%}?next={{request.path}}"><i class="fa fa-sign-out-alt"></i> <span>Logout</span></a></li>
+                  </ul>
+                </nav>
           <!-- /.sidebar-menu -->
         </section>
         <!-- /.sidebar -->

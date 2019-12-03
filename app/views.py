@@ -120,7 +120,7 @@ def send_excursion_form(request):
                 language_excursion=request.POST.get('language_excursion'),
                 auditory_excursion=request.POST.get('auditory_excursion'),
                 participants_excursion=request.POST.get('participants_excursion'),
-                age_excursion=request.POST.get('age_excursion'))
+            )
 
             new_ex.areas.set(areas_ids)
             new_ex.save()
@@ -230,7 +230,6 @@ def get_excursion(request, id_excursion):
         'language_excursion': desired_excursion[0]['language_excursion'],
         'auditory_excursion': desired_excursion[0]['auditory_excursion'],
         'participants_excursion': desired_excursion[0]['participants_excursion'],
-        'age_excursion': desired_excursion[0]['age_excursion'],
     })
 
     chat = Chat.objects.filter(members__in=[request.user.id], excursion=id_excursion).values()
@@ -330,7 +329,6 @@ def change_excursion(request, id_excursion1, id_excursion2):
         language_excursion=request.POST.get('language_excursion'),
         auditory_excursion=request.POST.get('auditory_excursion'),
         participants_excursion=request.POST.get('participants_excursion'),
-        age_excursion=request.POST.get('age_excursion'),
         confirmed_guide=False,
         confirmed_incharge=False)
 
