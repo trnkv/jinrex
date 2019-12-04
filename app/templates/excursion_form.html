@@ -3,10 +3,8 @@
 {% block content %}
 
 <section class="content-header">
-  <h4><i class="fas fa-edit"></i> <b>Send a new request for the organization of the excursion</b></h4>
+  <h4><i class="fas fa-edit"></i> <b>Send a new request for the organization of excursion</b></h4>
 </section>
-
-<!-- <h3 style="margin-bottom: 20px;"><span class="glyphicon glyphicon-pencil"></span>Send a new request for the organization of the excursion</h3> -->
 
 <form id="application_form" action="send_blank/" method="post" class="card " >
 	{% csrf_token %}
@@ -29,32 +27,37 @@
 	</div>
 	<div class="row">
         <div class="col">
-			{{ form.occasion_excursion|as_crispy_field }}
+			{{ form.occasion|as_crispy_field }}
+		</div>
+    </div>
+	<div class="row">
+      <div class="col">
+			   {{ form.date|as_crispy_field }}
+      </div>
+      <div class="col">
+        <div class="input-group clockpicker" data-placement="bottom" data-align="top" data-autoclose="true">
+  			     {{ form.start_time|as_crispy_field }}
+        </div>
+  		</div>
+      <div class="col">
+        <div class="input-group clockpicker" data-placement="bottom" data-align="top" data-autoclose="true">
+            {{ form.stop_time|as_crispy_field }}
+        </div>
+  		</div>
+  </div>
+	<div class="row">
+        <div class="col">
+			{{ form.language|as_crispy_field }}
 		</div>
     </div>
 	<div class="row">
         <div class="col">
-			{{ form.date_excursion|as_crispy_field }}
+			{{ form.auditory|as_crispy_field }}
 		</div>
     </div>
 	<div class="row">
         <div class="col">
-			{{ form.time_period_excursion|as_crispy_field }}
-		</div>
-    </div>
-	<div class="row">
-        <div class="col">
-			{{ form.language_excursion|as_crispy_field }}
-		</div>
-    </div>
-	<div class="row">
-        <div class="col">
-			{{ form.auditory_excursion|as_crispy_field }}
-		</div>
-    </div>
-	<div class="row">
-        <div class="col">
-			{{ form.participants_excursion|as_crispy_field }}
+			{{ form.participants|as_crispy_field }}
 		</div>
     </div>
 
@@ -65,7 +68,7 @@
 <!-- MODAL FOR CONFIRMATION -->
 <div class="modal fade" id="myModal" role="dialog">
     <div class="modal-dialog">
-    
+
       <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header" style="padding:25px 50px; background-color: #f0ad4e;">
@@ -81,9 +84,9 @@
           <button id="modal_submit" type="submit" class="btn btn-success" onclick="submit_changes()"><span class="glyphicon glyphicon-ok"></span> Yes, I'm sure</button>
         </div>
       </div>
-      
+
     </div>
-  </div> 
+  </div>
 </div>
 
 <script type="text/javascript">
@@ -93,13 +96,10 @@
 		});
 
 		$("select").addClass("form-control select2 select2-hidden-accessible");
-		$('#id_date_excursion').datepicker({
-			locale: {
-	        format: 'DD/MM/YYYY'
-	      }
+		$('#id_date').datepicker({
+      format: 'yyyy-mm-dd',
 		});
-	    //Date range picker with time picker
-	    // $('#id_time_period_excursion').timepicker();
+    $('.clockpicker').clockpicker();
 	});
 
     $("#id_facility").change(function() {

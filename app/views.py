@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 import json
 
-from .models import Excursion, Area, Facility, Incharge, Chat, Message
+from .models import Excursion, Area, Facility, Guide, Incharge, Chat, Message
 from django.contrib.auth.models import User, Group, Permission
 from .forms import SendExcursionForm, ViewExcursionForm, MessageForm
 
@@ -97,45 +97,47 @@ def send_excursion_form(request):
 
         form = SendExcursionForm(request.POST)
 
-        if form.is_valid():
-            facility_id = Facility.objects.get(id_facility=request.POST.get('facility'))
+        # if form.is_valid():
+        facility_id = Facility.objects.get(id_facility=request.POST.get('facility'))
 
-            areas_ids = request.POST.getlist('areas')
+        areas_ids = request.POST.getlist('areas')
 
-            organizator = request.user
+        organizator = request.user
 
-            guide = User.objects.get(id=request.POST.get('guide'))
+        guide_user = User.objects.get(id=request.POST.get('guide'))
+        guide = Guide.objects.get(user=guide_user)
 
-            incharge = Incharge.objects.filter(id_facility=request.POST.get('facility')).values('user')[0]['user']
-            incharge_user = User.objects.get(id=incharge)
+        incharge = Incharge.objects.get(id_facility=request.POST.get('facility'))
+        incharge_user = User.objects.get(id=incharge)
 
-            new_ex = Excursion.objects.create(
-                facility=facility_id,
-                organizator=organizator,
-                guide=guide,
-                incharge=incharge_user,
-                occasion_excursion=request.POST.get('occasion_excursion'),
-                date_excursion=request.POST.get('date_excursion'),
-                time_period_excursion=request.POST.get('time_period_excursion'),
-                language_excursion=request.POST.get('language_excursion'),
-                auditory_excursion=request.POST.get('auditory_excursion'),
-                participants_excursion=request.POST.get('participants_excursion'),
-            )
+        new_ex = Excursion.objects.create(
+            facility=facility_id,
+            organizator=organizator,
+            guide=guide,
+            incharge=incharge,
+            occasion_excursion=request.POST.get('occasion_excursion'),
+            date_excursion=request.POST.get('date_excursion'),
+            time_start=request.POST.get('time_start'),
+            time_stop=request.POST.get('time_stop'),
+            language_excursion=request.POST.get('language_excursion'),
+            auditory_excursion=request.POST.get('auditory_excursion'),
+            participants_excursion=request.POST.get('participants_excursion'),
+        )
 
-            new_ex.areas.set(areas_ids)
-            new_ex.save()
+        new_ex.areas.set(areas_ids)
+        new_ex.save()
 
-            request.user.groups.add(Group.objects.filter(name='Organizator').values('id')[0]['id'])
+        request.user.groups.add(Group.objects.filter(name='Organizator').values('id')[0]['id'])
 
-            theme = 'New excursion'
-            message = 'You have received a request for a new excursion. To accept or reject it please log in to the JINRex web service.'
-            from_email = 'ttrnkv75@yandex.ru'
-            to_email = ['nura1ina@yandex.ru', 'trnkv13@rambler.ru']
+        theme = 'New excursion'
+        message = 'You have received a request for a new excursion. To accept or reject it please log in to the JINRex web service.'
+        from_email = 'ttrnkv75@yandex.ru'
+        to_email = ['nura1ina@yandex.ru', 'trnkv13@rambler.ru']
 
-            send_mail(theme, message, from_email, to_email, fail_silently=False)
+        send_mail(theme, message, from_email, to_email, fail_silently=False)
 
-            return render(request, 'submitted.html', context={
-                'result': 'Thanks, your application is submitted! Notification of this application sent to the Guide, Incharge and Organizator.'})
+        return render(request, 'submitted.html', context={
+            'result': 'Thanks, your application is submitted! Notification of this application sent to the Guide, Incharge and Organizator.'})
 
 
 @login_required
@@ -292,13 +294,13 @@ def change_confirmed(request, id_excursion1):
     user_guide = list(User.objects.filter(id=excursion[0]['guide_id']))[0]
     this_incharge = list(Incharge.objects.filter(id_facility=excursion[0]['facility_id']).values('user'))
     user_incharge = User.objects.get(id=this_incharge[0]['user'])
-    
+
     if request.user == user_incharge:
         Excursion.objects.filter(id_excursion=id_excursion1).update(confirmed_incharge=True)
 
     if request.user == user_guide:
         Excursion.objects.filter(id_excursion=id_excursion1).update(confirmed_guide=True)
-    
+
     return HttpResponse(status=204)
 
 

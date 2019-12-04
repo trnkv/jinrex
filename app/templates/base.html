@@ -17,64 +17,6 @@
         tbody tr.selected td {
           background-color: #ffd659;
         }
-        .timerangepicker-container {
-  display:flex;
-  position: absolute;
-}
-.timerangepicker-label {
-  display: block;
-  line-height: 2em;
-  background-color: #c8c8c880;
-  padding-left: 1em;
-  border-bottom: 1px solid grey;
-  margin-bottom: 0.75em;
-}
-
-.timerangepicker-from,
-.timerangepicker-to {
-  border: 1px solid grey;
-  padding-bottom: 0.75em;
-}
-.timerangepicker-from {
-  border-right: none;
-}
-.timerangepicker-display {
-  box-sizing: border-box;
-  display: inline-block;
-  width: 2.5em;
-  height: 2.5em;
-  border: 1px solid grey;
-  line-height: 2.5em;
-  text-align: center;
-  position: relative;
-  margin: 1em 0.175em;
-}
-.timerangepicker-display .increment,
-.timerangepicker-display .decrement {
-  cursor: pointer;
-  position: absolute;
-  font-size: 1.5em;
-  width: 1.5em;
-  text-align: center;
-  left: 0;
-}
-
-.timerangepicker-display .increment {
-  margin-top: -0.25em;
-  top: -1em;
-}
-
-.timerangepicker-display .decrement {
-  margin-bottom: -0.25em;
-  bottom: -1em;
-}
-
-.timerangepicker-display.hour {
-  margin-left: 1em;
-}
-.timerangepicker-display.period {
-  margin-right: 1em;
-}
     </style>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -102,6 +44,8 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.css">
     <!-- Добавление дополнительного статического CSS файла -->
     <link   href="{%  static 'css/skins/skin-blue.min.css' %}" rel="stylesheet">
+    <link   href="{%  static 'css/clockpicker.css' %}" rel="stylesheet">
+    <link   href="{%  static 'css/standalone.css' %}" rel="stylesheet">
     <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
@@ -129,10 +73,10 @@
           <!-- Sidebar toggle button-->
             <a data-toggle="push-menu" role="button"><i class="fas fa-bars"></i></a>
           <!-- Navbar Right Menu -->
-          
+
         </nav>
       </header>
-      
+
       <!-- /.content-wrapper -->
 
       <!-- Main Footer -->
@@ -145,14 +89,14 @@
 <!--        <strong>JINRex <a href="#">Company</a>.</strong> All rights reserved.-->
 <!--      </footer>-->
 
-      
+
       <!-- Add the sidebar's background. This div must be placed
       immediately after the control sidebar -->
       <div class="control-sidebar-bg"></div>
-        
+
     </div>
     <!-- ./wrapper -->
-    
+
     <!-- Left side column. contains the logo and sidebar -->
       <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
@@ -208,7 +152,7 @@
         </section>
         <div>
           {% block content %}
-            {% endblock %}        
+            {% endblock %}
         </div>
         <!-- /.content -->
       </div>
@@ -242,8 +186,8 @@
               //Bootstrap.js tooltip
               enableBSToppltip: true
             };
-          </script>
-        
-          <script src="{% static 'js/app.js' %}" type="text/javascript"></script>
+    </script>
+    <script src="{% static 'js/app.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/clockpicker.js' %}" type="text/javascript"></script>
     </body>
 </html>
