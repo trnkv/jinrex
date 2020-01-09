@@ -85,7 +85,7 @@ class ViewExcursionForm(ModelForm):
 #		choices_guide += ([(s['id'], '%s %s (@%s)' % (s['first_name'], s['last_name'], s['username'])) for s in guides])
 #		self.fields['guide'].choices = choices_guide
 
-		incharges = Incharge.objects.filter(id_facility=self.fields['facility'].queryset[0]).values()
+		incharges = Incharge.objects.filter(facility=self.fields['facility'].queryset[0]).values()
 		incharges = Group.objects.get(name='Incharge').user_set.all().values()
 
 		choices_incharge = [('0', '---------')]

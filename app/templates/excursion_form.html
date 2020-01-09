@@ -6,19 +6,19 @@
   <h4><i class="fas fa-edit"></i> <b>Send a new request for the organization of excursion</b></h4>
 </section>
 
-<form id="application_form" action="send_blank/" method="post" class="card " >
+<form id="application_form" action="send_blank/" method="post" class="card">
 	{% csrf_token %}
 	<div class="row">
 		<div class="col">
 				{{ form.facility|as_crispy_field }}
 		</div>
 		<div class="col">
-                  <label for="id_id_facility" class="col-form-label  requiredField">
-				Select areas:<span class="asteriskField">*</span>
-	    		</label>
+      <label for="id_id_facility" class="col-form-label  requiredField">
+		      Select areas:<span class="asteriskField">*</span>
+  		</label>
 				{{ form.areas|safe }}
 		</div>
-		<div class="col">
+		<div class="col align-self-center">
 				<label id="id_incharge"></label><br>
 		</div>
         <div class="col">
@@ -60,10 +60,9 @@
 			{{ form.participants|as_crispy_field }}
 		</div>
     </div>
-
-	<button id="bt_change" class="btn btn-warning" style="float: right;" data-toggle="modal" data-target="#myModal">SEND</button>
 	<input type="submit" style="display: none;"/>
 </form>
+<button id="bt_change" class="btn btn-block btn-warning" data-toggle="modal" data-target="#myModal">SEND</button>
 
 <!-- MODAL FOR CONFIRMATION -->
 <div class="modal fade" id="myModal" role="dialog">
@@ -112,7 +111,7 @@
 	            type: "post",
 	            data: {
 	            	csrfmiddlewaretoken: getCookie('csrftoken'),
-	                'id_facility': id_facility,
+	                'facility': id_facility,
 	            },
 	            success: function(data) {
 	            	// set all checkboxes.checked = false
@@ -123,12 +122,12 @@
 	            	// if current area doesn't belong to current facility then hide its label
 	            	// else show it
 	            	$('#id_areas li').each(function () {
-					    var str = $.trim($(this).text());
-						if (!data['areas'].includes(str)) {
-							$(this).hide();
-						}
-						else $(this).show();
-					});
+    					    var str = $.trim($(this).text());
+      						if (!data['areas'].includes(str)) {
+      							$(this).hide();
+      						}
+      						else $(this).show();
+      					});
 
 	            	//$('#id_incharge option').each(function(){
 	            	//	var id_incharge = $(this).val();
@@ -154,7 +153,7 @@
 	            type: "post",
 	            data: {
 	            	csrfmiddlewaretoken: getCookie('csrftoken'),
-	                'id_facility': 0,
+	                'facility': 0,
 	            },
 	            success: function(data) {
 	            	document.location.reload(true);

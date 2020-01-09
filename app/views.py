@@ -34,16 +34,16 @@ def profile(request, user_id):
     for g in request.user.groups.all().values():
         # g - ЭТО dict
         if g['name'] == 'Guide':
-            excursions = Excursion.objects.filter(guide=user_id).values('facility', 'occasion_excursion', 'date_excursion')
+            excursions = Excursion.objects.filter(guide=user_id).values('facility', 'occasion', 'date')
             excursions = [val for val in excursions if val in excursions]
             for ex in excursions:
-                ex['facility'] = Facility.objects.filter(id_facility=ex['facility']).values('name_facility')[0]['name_facility']
+                ex['facility'] = Facility.objects.filter(id=ex['facility']).values('name')[0]['name']
             g['excursion'] = excursions
         if g['name'] == 'Organizator':
-            excursions = Excursion.objects.filter(organizator=user_id).values('facility', 'occasion_excursion', 'date_excursion')
+            excursions = Excursion.objects.filter(organizator=user_id).values('facility', 'occasion', 'date')
             excursions = [val for val in excursions if val in excursions]
             for ex in excursions:
-                ex['facility'] = Facility.objects.filter(id_facility=ex['facility']).values('name_facility')[0]['name_facility']
+                ex['facility'] = Facility.objects.filter(id=ex['facility']).values('name')[0]['name']
             g['excursion'] = excursions
         user_groups.append(g)
 
@@ -66,15 +66,16 @@ def get_excursion_form(request):
 @login_required
 def get_areas(request):
     if request.method == 'POST':
-        id_facility = request.POST.get('id_facility')
+        id_facility = request.POST.get('facility')
+        print(id_facility)
         if id_facility != '0':
             print('true')
-            list_of_dict_areas = list(Area.objects.filter(id_facility=id_facility).values('name_area'))
+            list_of_dict_areas = list(Area.objects.filter(facility=id_facility).values('name'))
             areas = []
             for d in list_of_dict_areas:
-                areas.append(d['name_area'])
+                areas.append(d['name'])
 
-            incharge = Incharge.objects.filter(id_facility=id_facility).values('user_id')
+            incharge = Incharge.objects.filter(facility=id_facility).values('user_id')
             incharge_id = User.objects.filter(pk=incharge[0]['user_id']).values('id')[0]['id']
             incharge_first_name = User.objects.filter(pk=incharge[0]['user_id']).values('first_name')[0]['first_name']
             incharge_last_name = User.objects.filter(pk=incharge[0]['user_id']).values('last_name')[0]['last_name']
@@ -88,7 +89,7 @@ def get_areas(request):
             print('false')
             return JsonResponse({'result': 0})
 
-    # return render_to_response('excursion_form.html', {'areas': areas})
+    return render_to_response('excursion_form.html', {'areas': areas})
 
 
 @login_required
@@ -98,7 +99,7 @@ def send_excursion_form(request):
         form = SendExcursionForm(request.POST)
 
         # if form.is_valid():
-        facility_id = Facility.objects.get(id_facility=request.POST.get('facility'))
+        facility_id = Facility.objects.get(id=request.POST.get('facility'))
 
         areas_ids = request.POST.getlist('areas')
 
@@ -107,21 +108,22 @@ def send_excursion_form(request):
         guide_user = User.objects.get(id=request.POST.get('guide'))
         guide = Guide.objects.get(user=guide_user)
 
-        incharge = Incharge.objects.get(id_facility=request.POST.get('facility'))
-        incharge_user = User.objects.get(id=incharge)
+        incharge = Incharge.objects.get(facility=request.POST.get('facility'))
+        incharge_id = Incharge.objects.filter(facility=request.POST.get('facility')).values('id')[0]['id']
+        incharge_user = User.objects.get(id=incharge_id)
 
         new_ex = Excursion.objects.create(
             facility=facility_id,
             organizator=organizator,
             guide=guide,
             incharge=incharge,
-            occasion_excursion=request.POST.get('occasion_excursion'),
-            date_excursion=request.POST.get('date_excursion'),
-            time_start=request.POST.get('time_start'),
-            time_stop=request.POST.get('time_stop'),
-            language_excursion=request.POST.get('language_excursion'),
-            auditory_excursion=request.POST.get('auditory_excursion'),
-            participants_excursion=request.POST.get('participants_excursion'),
+            occasion=request.POST.get('occasion'),
+            date=request.POST.get('date'),
+            start_time=request.POST.get('start_time'),
+            stop_time=request.POST.get('stop_time'),
+            language=request.POST.get('language'),
+            auditory=request.POST.get('auditory'),
+            participants=request.POST.get('participants'),
         )
 
         new_ex.areas.set(areas_ids)
@@ -147,47 +149,47 @@ def view_excursions(request):
 
     for d in excursions:
 
-        this_facilities = list(Facility.objects.filter(id_facility=d['facility_id']).values('name_facility'))
+        this_facilities = list(Facility.objects.filter(id=d['facility_id']).values('name'))
 
-        excursion = Excursion.objects.get(id_excursion=d['id_excursion'])
-        queryset = excursion.areas.all().values('name_area')
+        excursion = Excursion.objects.get(id=d['id'])
+        queryset = excursion.areas.all().values('name')
         areas = [val for val in queryset if val in queryset]
 
         ar = []
         for area in areas:
-            ar.append(area['name_area'])
+            ar.append(area['name'])
 
         d['areas'] = ar
-        d['facility_id'] = this_facilities[0]['name_facility']
+        d['facility'] = this_facilities[0]['name']
 
     return render(request, 'schedule.html', context={'excursions': excursions})
 
 
 @login_required
 def get_excursion(request, id_excursion):
-    queryset_desired_excursion = Excursion.objects.filter(id_excursion=id_excursion).values()
+    queryset_desired_excursion = Excursion.objects.filter(id=id_excursion).values()
     desired_excursion = [val for val in queryset_desired_excursion if val in queryset_desired_excursion]
 
-    queryset_facility = Facility.objects.filter(id_facility=desired_excursion[0]['facility_id']).values('name_facility')
+    queryset_facility = Facility.objects.filter(id=desired_excursion[0]['facility_id']).values('name')
     facility = [val for val in queryset_facility if val in queryset_facility]
 
-    desired_excursion[0]['name_facility'] = facility[0]['name_facility']
+    desired_excursion[0]['facility'] = facility[0]['name']
 
-    excursion = Excursion.objects.get(id_excursion=desired_excursion[0]['id_excursion'])
-    queryset_areas_names = excursion.areas.all().values('name_area')
-    queryset_areas_ids = excursion.areas.all().values('id_area')
+    excursion = Excursion.objects.get(id=desired_excursion[0]['id'])
+    queryset_areas_names = excursion.areas.all().values('name')
+    queryset_areas_ids = excursion.areas.all().values('id')
 
     list_areas_names = [val for val in queryset_areas_names if val in queryset_areas_names]
     areas_names = []
     for area in list_areas_names:
-        areas_names.append(area['name_area'])
+        areas_names.append(area['name'])
 
     desired_excursion[0]['areas_names'] = areas_names
 
     list_areas_ids = [val for val in queryset_areas_ids if val in queryset_areas_ids]
     areas_ids = []
     for area in list_areas_ids:
-        areas_ids.append(area['id_area'])
+        areas_ids.append(area['id'])
 
     desired_excursion[0]['areas_ids'] = areas_ids
 
@@ -197,7 +199,7 @@ def get_excursion(request, id_excursion):
     this_guide = list(User.objects.filter(id=desired_excursion[0]['guide_id']))
     desired_excursion[0]['guide'] = this_guide[0]
 
-    this_incharge = list(Incharge.objects.filter(id_facility=desired_excursion[0]['facility_id']).values('user'))
+    this_incharge = list(Incharge.objects.filter(facility=desired_excursion[0]['facility_id']).values('user'))
     user_incharge = User.objects.get(id=this_incharge[0]['user'])
     desired_excursion[0]['incharge'] = user_incharge
 
@@ -226,12 +228,13 @@ def get_excursion(request, id_excursion):
         'organizator': desired_excursion[0]['organizator'],
         'guide': desired_excursion[0]['guide'],
         'incharge': desired_excursion[0]['incharge'],
-        'occasion_excursion': desired_excursion[0]['occasion_excursion'],
-        'date_excursion': desired_excursion[0]['date_excursion'],
-        'time_period_excursion': desired_excursion[0]['time_period_excursion'],
-        'language_excursion': desired_excursion[0]['language_excursion'],
-        'auditory_excursion': desired_excursion[0]['auditory_excursion'],
-        'participants_excursion': desired_excursion[0]['participants_excursion'],
+        'occasion': desired_excursion[0]['occasion'],
+        'date': desired_excursion[0]['date'],
+        'start_time': desired_excursion[0]['start_time'],
+        'stop_time': desired_excursion[0]['stop_time'],
+        'language': desired_excursion[0]['language'],
+        'auditory': desired_excursion[0]['auditory'],
+        'participants': desired_excursion[0]['participants'],
     })
 
     chat = Chat.objects.filter(members__in=[request.user.id], excursion=id_excursion).values()

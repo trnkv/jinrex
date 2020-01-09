@@ -1,63 +1,82 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h3 style="margin-bottom: 40px;" class="text-primary"><span class="glyphicon glyphicon-calendar"></span>Schedule</h3>
+<section class="content-header">
+  <h4><i class="fas fa-calendar-alt"></i> <b>Schedule</b></h4>
+</section>
 
-<table id="schedule_table" class="table">
-	<thead>
-		<tr class="info">
-			<th id="th_status" scope="col" data-orderable="false">Confirmed</th>
-			<th scope="col">Facility</th>
-		    <th scope="col">Areas</th>
-		    <th scope="col">Date</th>
-		    <th data-orderable="false"></th>
-		</tr>
-	</thead>
-	<tbody class="table-hover">
-	  	{% for ex in excursions %}
-	  		<tr role="row" class="odd">
-	  			<td class="td_status">
-	  				<div id="confirmed_guide" style="display: none;">{{ ex.confirmed_guide }}</div>
-	  				<div id="confirmed_incharge" style="display: none;">{{ ex.confirmed_incharge }}</div>
-	  			</td>
-	  			<td id="id_facility">{{ ex.facility_id }}</td>
-				<td id="id_area">
-				{% for area in ex.areas %}
-					{{ area }}
+<div class="card">
+	<!-- <div class="dataTables_wrapper dt-bootstrap4"> -->
+		<table id="schedule_table" class="table table-bordered table-hover dataTable" role="grid">
+			<thead>
+				<tr class="info">
+					<th style="display: none;"></th>
+					<th id="th_status" scope="col" data-orderable="false">Confirmed</th>
+					<th scope="col" class="sorting" tabindex="0" rowspan="1" colspan="1">Facility</th>
+			    <th scope="col" class="sorting" tabindex="0" rowspan="1" colspan="1">Areas</th>
+			    <th scope="col" class="sorting" tabindex="0" rowspan="1" colspan="1">Date</th>
+				</tr>
+			</thead>
+			<tbody class="table-hover">
+			  	{% for ex in excursions %}
+			  		<tr role="row" class="odd" onclick="clickLink(this)" data-toggle="tooltip" data-placement="top" title="Click to view full information">
+							<td class="ex_id" style="display: none;">{{ ex.id }}/</td>
+			  			<td class="td_status sorting_1">
+			  				<div id="confirmed_guide" >{{ ex.confirmed_guide }}</div>
+			  				<div id="confirmed_incharge" >{{ ex.confirmed_incharge }}</div>
+			  			</td>
+			  			<td id="facility">{{ ex.facility }}</td>
+						<td id="area">
+						{% for area in ex.areas %}
+							{{ area }}
+						{% endfor %}
+						</td>
+						<td id="date_excursion">{{ ex.date }}</td>
+					</tr>
 				{% endfor %}
-				</td>
-				<td id="date_excursion">{{ ex.date_excursion }}</td>
-				<td>
-					<a href="get_excursion/{{ ex.id_excursion }}/" class="btn btn-warning btn-block" role="button">
-						VIEW
-					</a>
-				</td>
-			</tr>
-		{% endfor %}
-	  </tbody>
-</table>
+			  </tbody>
+		</table>
+	<!-- </div> -->
+</div>
 
 <script type="text/javascript">
- 
+
 $(document).ready(function() {
 
-	var table = $("#schedule_table").DataTable();
+	var table = $("#schedule_table").DataTable({
+		"paging": true,
+		"lengthChange": false,
+		"searching": true,
+		"ordering": true,
+		"info": true,
+		"autoWidth": false,
+	});
+
 	$('#th_status').removeClass("sorting_asc");
 
 	$('.td_status').each(function() {
 		if ($('#confirmed_guide').text()=='True' && $('#confirmed_incharge').text()=='True') {
 			//$(this).css("background-color", "#5cb85c");
 			$(this).text("");
-			$(this).append("<span class='label label-success'><span class='glyphicon glyphicon-ok'></span></span>");
+			$(this).append("<h5><span class='badge badge-success'><i class='fas fa-check'></i></span></h5>");
 		}
 		else {
 			//$(this).css("background-color", "#d9534f");
 			$(this).text("");
-			$(this).append("<span class='label label-danger'><span class='glyphicon glyphicon-remove'></span></span>");
+			$(this).append("<h5><span class='badge badge-danger'><i class='fas fa-times'></i></span></h5>");
 		}
 	})
-	
+
 })
+
+function clickLink(elem){
+    location = 'get_excursion/' + elem.getElementsByClassName("ex_id")[0].innerText;
+}
+
+// function clickLink(elem){
+//         location=elem.getElementsByTagName("a")[0].getAttribute("href");
+// }
+
 </script>
 
 {% endblock %}
