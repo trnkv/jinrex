@@ -82,7 +82,7 @@ class Incharge(models.Model):
         """
         String for representing the Model object.
         """
-        return self.user.get_full_name()
+        return self.user.get_full_name() + ' (@' + self.user.get_username() + ')'
 
 
 class Guide(models.Model):
@@ -134,6 +134,9 @@ class Chat(models.Model):
     def get_absolute_url(self):
         return reverse('messages', (), {'chat_id': self.pk })
 
+    def __str__(self):
+        return str(self.excursion)
+
 
 class Message(models.Model):
     chat = models.ForeignKey(Chat, verbose_name=_("Chat"), on_delete=models.DO_NOTHING)
@@ -146,4 +149,4 @@ class Message(models.Model):
         ordering=['pub_date']
 
     def __str__(self):
-        return self.message
+        return self.pub_date.strftime('%d/%m/%Y, %H:%M:%S') + ", \"" + str(self.chat) + "\": " + str(self.author)

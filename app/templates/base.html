@@ -108,7 +108,7 @@
             {% if user.is_authenticated %}
           <div class="user-panel">
             <div>
-                <a href="profile/{{ request.user.id }}">{{ user.get_full_name }}</a>
+                <a href="{% url 'app:profile' request.user.id %}">{{ user.get_full_name }}</a>
               <!-- Status -->
               <br><small><a href="#"><i class="fa fa-circle text-success"></i> Online</a></small>
             </div>
@@ -120,8 +120,8 @@
                   <ul class="sidebar-menu tree" data-widget="tree">
                       <li class="header">NAVIGATION</li>
                       <!-- Optionally, you can add icons to the links -->
-                      <li><a href="blank"><i class="fa fa-edit"></i> <span>Apply an application</span></a></li>
-                      <li><a href="schedule"><i class="fa fa-calendar-alt"></i> <span>View all applications</span></a></li>
+                      <li><a href="{% url 'app:get_excursion_form' %}"><i class="fa fa-edit"></i> <span>Apply an application</span></a></li>
+                      <li><a href="{% url 'app:view_excursions' %}"><i class="fa fa-calendar-alt"></i> <span>View all applications</span></a></li>
                     <li class="treeview">
                       <a href="#"><i class="fa fa-chart-pie"></i><span>Charts</span>
                         <span class="pull-right-container">
