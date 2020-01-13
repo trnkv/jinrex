@@ -120,37 +120,43 @@
 <script type="text/javascript">
 	$(window).on('load', function(){
 
-		if ($.trim($('#th_user_can_edit_form').text()) == 'False') {
-
-			$('#th_user_can_edit_form').text('{{ desired_excursion.is_confirmed }}');
+		// if ($.trim($('#th_user_can_edit_form').text()) == 'False') {
+    {% if user_can_edit_form == False %}
+    {
+			$('#th_user_can_edit_form').text('{{ desired_excursion.is_confirmed }} + {{ desired_excursion.held }}');
 			if ($.trim($('#th_user_can_edit_form').text()) == 'False') {
 				$('#formDiv').append(
 				'<a id="bt_confirm" class="btn btn-warning" style="display: block; margin-left: auto;" href="change_confirmed/" onclick="this.style.display=\'none\'; return true;">CONFIRM EXCURSION</a>'
 				)
 			}
-
-			$('#th_user_can_edit_form').hide();
+      $('#th_user_can_edit_form').hide();
 			$('#changefield_info').hide();
 			$("#myForm :input").prop('readonly', true);
 			$('#id_guide').attr('disabled', true);
 			$('#id_facility').attr('disabled', true);
-		}
-		else {
+    }
+
+		{% else %}
+    {
 			$('#formDiv').append(
 				'<button id="bt_change" class="btn btn-warning" style="display: block; margin-left: auto;" data-toggle="modal" data-target="#myModal_change">CHANGE EXCURSION</button>'
 			)
 
-			$('#th_user_can_edit_form').text('{{ desired_excursion.is_confirmed }}');
-
-			if ($.trim($('#th_user_can_edit_form').text()) == 'False') {
+			{% if desired_excursion.is_confirmed == False %}
 				$('#th_user_can_edit_form').text("This excursion is not confirmed by guide or/and incharge");
 				$('#th_user_can_edit_form').addClass("text-danger");
-			}
-			else {
-				$('#th_user_can_edit_form').text("This excursion is confirmed by guide and incharge");
-				$('#th_user_can_edit_form').addClass("text-success");
-			}
-		}
+			{% else %}
+        $('#th_user_can_edit_form').text("This excursion is confirmed by guide and incharge.");
+        $('#th_user_can_edit_form').addClass("text-success");
+        {% if desired_excursion.held == False %}
+          $('#th_user_can_edit_form').append("<br><br><span style=\"color: red;\">This excursion has not been held yet.</span>");
+        {% else %}
+          $('#th_user_can_edit_form').append("<br><br><span>This excursion has been held.</span>");
+        {% endif %}
+      {% endif %}
+    }
+
+    {% endif %}
 
 		id_facility = $("#id_facility").val();
 		console.log(id_facility)

@@ -119,6 +119,8 @@ class Excursion(models.Model):
     confirmed_guide = models.BooleanField(default=False)
     confirmed_incharge = models.BooleanField(default=False)
 
+    held = models.BooleanField(default=False)
+
 
     def __str__(self):
         """

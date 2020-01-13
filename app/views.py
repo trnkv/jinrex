@@ -171,9 +171,6 @@ def get_excursion(request, id_excursion):
     queryset_desired_excursion = Excursion.objects.filter(id=id_excursion).values()
     desired_excursion = [val for val in queryset_desired_excursion if val in queryset_desired_excursion]
 
-    # return JsonResponse({'users': [User.objects.filter(id=desired_excursion[0]['organizator_id']),
-    #         desired_excursion[0]['incharge_id'],
-    #         desired_excursion[0]['guide_id']]})
 
 
     queryset_facility = Facility.objects.filter(id=desired_excursion[0]['facility_id']).values('name')
@@ -343,7 +340,8 @@ def change_excursion(request, id_excursion):
         auditory=request.POST.get('auditory'),
         participants=request.POST.get('participants'),
         confirmed_guide=False,
-        confirmed_incharge=False)
+        confirmed_incharge=False,
+        held=False)
 
     new_ex = Excursion.objects.get(id=id_excursion)
 
