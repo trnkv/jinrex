@@ -110,8 +110,8 @@ class Excursion(models.Model):
 
     occasion = models.CharField(max_length=200)
     date = models.DateField()
-    start_time = models.TimeField(default=timezone.now)
-    stop_time = models.TimeField(default=timezone.now)
+    start_time = models.TimeField(default=timezone.localtime)
+    stop_time = models.TimeField(default=timezone.localtime)
     language = models.CharField(max_length=200)
     auditory = models.CharField(max_length=200)
     participants = models.IntegerField()
@@ -119,7 +119,7 @@ class Excursion(models.Model):
     confirmed_guide = models.BooleanField(default=False)
     confirmed_incharge = models.BooleanField(default=False)
 
-    held = models.BooleanField(default=False)
+    not_held = models.BooleanField(default=False)
 
 
     def __str__(self):

@@ -10,6 +10,8 @@ from django.contrib.auth.decorators import login_required
 
 from django.core.mail import send_mail
 
+from django.utils import timezone
+
 
 # Функция отображения для домашней страницы сайта.
 # user_id = request.user.id
@@ -60,6 +62,7 @@ def profile(request, user_id):
 @login_required
 def get_excursion_form(request):
     form = SendExcursionForm()
+    print(timezone.localtime(timezone.now()))
     return render(request, 'excursion_form.html', {'form': form})
 
 
@@ -168,14 +171,13 @@ def view_excursions(request):
 @login_required
 def get_excursion(request, id_excursion):
 
+    # return JsonResponse({'request': request.POST.dict})
+
     queryset_desired_excursion = Excursion.objects.filter(id=id_excursion).values()
     desired_excursion = [val for val in queryset_desired_excursion if val in queryset_desired_excursion]
 
-
-
     queryset_facility = Facility.objects.filter(id=desired_excursion[0]['facility_id']).values('name')
     facility = [val for val in queryset_facility if val in queryset_facility]
-
     desired_excursion[0]['facility'] = facility[0]['name']
 
     excursion = Excursion.objects.get(id=desired_excursion[0]['id'])
@@ -186,7 +188,6 @@ def get_excursion(request, id_excursion):
     areas_names = []
     for area in list_areas_names:
         areas_names.append(area['name'])
-
     desired_excursion[0]['areas_names'] = areas_names
 
     list_areas_ids = [val for val in queryset_areas_ids if val in queryset_areas_ids]
@@ -207,10 +208,12 @@ def get_excursion(request, id_excursion):
     user_incharge = User.objects.get(id=this_incharge[0]['user'])
     desired_excursion[0]['incharge'] = user_incharge
 
+    # return  JsonResponse({'desired_excursion': desired_excursion})
+
     confirmed = False
     can_edit_form = False
 
-    if request.user == this_guide[0] and desired_excursion[0]['confirmed_guide']:
+    if request.user == user_guide and desired_excursion[0]['confirmed_guide']:
         confirmed = True
     if request.user == user_incharge and desired_excursion[0]['confirmed_incharge']:
         confirmed = True
@@ -223,7 +226,7 @@ def get_excursion(request, id_excursion):
 
     desired_excursion[0]['is_confirmed'] = confirmed
 
-    #return JsonResponse({'ex':desired_excursion[0]})
+    # return JsonResponse({'ex':desired_excursion[0]})
     #return JsonResponse({'incharge': desired_excursion[0]['incharge']})
 
     form = ViewExcursionForm(initial={
@@ -240,6 +243,8 @@ def get_excursion(request, id_excursion):
         'auditory': desired_excursion[0]['auditory'],
         'participants': desired_excursion[0]['participants'],
     })
+
+    # return JsonResponse({'desired_excursion':desired_excursion})
 
     chat = Chat.objects.filter(members__in=[request.user.id], excursion=id_excursion).values()
     if len(chat) != 0:
@@ -298,22 +303,34 @@ def change_confirmed(request, id_excursion):
     queryset_excursion = Excursion.objects.filter(id=id_excursion).values()
     excursion = [val for val in queryset_excursion]
 
-    user_guide = list(User.objects.filter(id=excursion[0]['guide_id']))[0]
+    print(excursion)
+
+    this_guide = list(Guide.objects.filter(id=excursion[0]['guide_id']).values('user'))
+    user_guide = User.objects.get(id=this_guide[0]['user'])
+
     this_incharge = list(Incharge.objects.filter(facility=excursion[0]['facility_id']).values('user'))
     user_incharge = User.objects.get(id=this_incharge[0]['user'])
 
+    print(request.user)
+    print(user_guide)
+
     if request.user == user_incharge:
         Excursion.objects.filter(id=id_excursion).update(confirmed_incharge=True)
+        return HttpResponse(status=204)
 
     if request.user == user_guide:
         Excursion.objects.filter(id=id_excursion).update(confirmed_guide=True)
+        return HttpResponse(status=204)
 
-    return HttpResponse(status=204)
+    return HttpResponse(status=500)
 
 
 
 @login_required
 def change_excursion(request, id_excursion):
+
+    # g = Guide.objects.all().values('id')
+    # return JsonResponse({'guides':[v for v in g]})
 
     # return JsonResponse({'request':request.POST.dict()})
 
@@ -323,15 +340,19 @@ def change_excursion(request, id_excursion):
     queryset_desired_excursion = Excursion.objects.filter(id=id_excursion).values()
     desired_excursion = [val for val in queryset_desired_excursion if val in queryset_desired_excursion]
 
-    user_incharge = list(User.objects.filter(id=request.POST.get('incharge')))[0]
-    user_guide = User.objects.get(id=request.POST.get('guide'))
-    #user_incharge = list(User.objects.filter(id=desired_excursion[0]['incharge_id']))[0]
+    # return JsonResponse({'desired_excursion': desired_excursion})
+
+    this_guide = list(Guide.objects.filter(facility=desired_excursion[0]['facility_id']).values('user'))
+    user_guide = User.objects.get(id=this_guide[0]['user'])
+
+    new_guide_user = User.objects.get(id=request.POST.get('guide'))
+    new_guide = Guide.objects.get(user=new_guide_user)
+
 
     new_ex = Excursion.objects.filter(id=id_excursion).update(
         id=id_excursion,
         facility=Facility.objects.get(id=request.POST.get('facility')),
-        guide=user_guide,
-        incharge=user_incharge,
+        guide=new_guide,
         occasion=request.POST.get('occasion'),
         date=request.POST.get('date'),
         start_time=request.POST.get('start_time'),
@@ -341,7 +362,8 @@ def change_excursion(request, id_excursion):
         participants=request.POST.get('participants'),
         confirmed_guide=False,
         confirmed_incharge=False,
-        held=False)
+        not_held=False)
+
 
     new_ex = Excursion.objects.get(id=id_excursion)
 
@@ -349,17 +371,17 @@ def change_excursion(request, id_excursion):
     new_ex.areas.set(request.POST.getlist('areas'))
     new_ex.save()
 
-    incharge = [v for v in User.objects.filter(id=request.POST.get('incharge')).values('id')][0]['id']
-    guide = [v for v in User.objects.filter(id=request.POST.get('guide')).values('id')][0]['id']
+    # incharge = [v for v in User.objects.filter(id=request.POST.get('incharge')).values('id')][0]['id']
+    # guide = [v for v in User.objects.filter(id=request.POST.get('guide')).values('id')][0]['id']
 
-    if (desired_excursion[0]['incharge_id'] != user_incharge or desired_excursion[0]['guide_id'] != user_guide):
+    # new_guide_queryset = Guide.objects.filter(id=request.POST.get('guide')).values('user')
+    # new_guide = [val for val in new_guide_queryset]
+    # user_new_guide = User.objects.get(id=new_guide[0]['user'])
+
+    if (user_guide != new_guide_user):
         chat = Chat.objects.get(excursion=id_excursion)
-        if desired_excursion[0]['incharge_id'] != user_incharge:
-            chat.members.remove(desired_excursion[0]['incharge_id'])
-            chat.members.add(incharge)
-        elif desired_excursion[0]['guide_id'] != user_guide:
-            chat.members.remove(desired_excursion[0]['guide_id'])
-            chat.members.add(guide)
+        chat.members.remove(user_guide)
+        chat.members.add(new_guide_user)
 
     return render(request, 'submitted.html', context={'result': 'The excursion is updated!'})
     # else: return render(request, 'submitted.html', context={'result': 'Mistakes were made in filling out the form. Please correct the errors and resend again.'})
