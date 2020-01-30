@@ -108,16 +108,16 @@ class Excursion(models.Model):
     guide = models.ForeignKey(Guide, related_name='user_guide', default="", on_delete=models.DO_NOTHING)
     incharge = models.ForeignKey(Incharge, related_name='user_incharge', default="", on_delete=models.DO_NOTHING)
 
-    occasion = models.CharField(max_length=200)
+    event = models.CharField(max_length=200)
     date = models.DateField()
     start_time = models.TimeField(default=timezone.localtime)
     stop_time = models.TimeField(default=timezone.localtime)
     language = models.CharField(max_length=200)
-    auditory = models.CharField(max_length=200)
+    target_audience = models.CharField(max_length=200)
     participants = models.IntegerField()
 
-    confirmed_guide = models.BooleanField(default=False)
-    confirmed_incharge = models.BooleanField(default=False)
+    confirmed_by_guide = models.BooleanField(default=False)
+    confirmed_by_incharge = models.BooleanField(default=False)
 
     not_held = models.BooleanField(default=False)
 

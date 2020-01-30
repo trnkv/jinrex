@@ -20,11 +20,14 @@
 			<tbody class="table-hover">
 			  	{% for ex in excursions %}
 			  		<tr role="row" class="odd" onclick="clickLink(this)" data-toggle="tooltip" data-placement="top" title="Click to view full information">
-							<td class="ex_id" style="display: none;">{{ ex.id }}/</td>
-			  			<td class="td_status sorting_1">
-			  				<div id="confirmed_guide" >{{ ex.confirmed_guide }}</div>
-			  				<div id="confirmed_incharge" >{{ ex.confirmed_incharge }}</div>
-			  			</td>
+						<td class="ex_id" style="display: none;">{{ ex.id }}/</td>
+						<td class="td_status sorting_1">
+							{% if ex.confirmed_by_guide == True and ex.confirmed_by_incharge == True %}
+								<h5><span class='badge badge-success'><i class='fas fa-check'></i></span></h5>
+							{% else %}
+								<h5><span class='badge badge-danger'><i class='fas fa-times'></i></span></h5>
+							{% endif %}
+						</td>
 			  			<td id="facility">{{ ex.facility }}</td>
 						<td id="area">
 						{% for area in ex.areas %}
@@ -51,31 +54,11 @@ $(document).ready(function() {
 		"info": true,
 		"autoWidth": false,
 	});
-
-	$('#th_status').removeClass("sorting_asc");
-
-	$('.td_status').each(function() {
-		if ($('#confirmed_guide').text()=='True' && $('#confirmed_incharge').text()=='True') {
-			//$(this).css("background-color", "#5cb85c");
-			$(this).text("");
-			$(this).append("<h5><span class='badge badge-success'><i class='fas fa-check'></i></span></h5>");
-		}
-		else {
-			//$(this).css("background-color", "#d9534f");
-			$(this).text("");
-			$(this).append("<h5><span class='badge badge-danger'><i class='fas fa-times'></i></span></h5>");
-		}
-	})
-
 })
 
 function clickLink(elem){
     location = 'get_excursion/' + elem.getElementsByClassName("ex_id")[0].innerText;
 }
-
-// function clickLink(elem){
-//         location=elem.getElementsByTagName("a")[0].getAttribute("href");
-// }
 
 </script>
 

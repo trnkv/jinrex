@@ -73,8 +73,8 @@ class SendExcursionForm(ModelForm):
 	class Meta():
 		model = Excursion
 		fields = ['id', 'facility', 'areas', 'guide',
-				  'occasion', 'date', 'start_time', 'stop_time',
-				  'language', 'auditory', 'participants']
+				  'event', 'date', 'start_time', 'stop_time',
+				  'language', 'target_audience', 'participants']
 
 
 class ViewExcursionForm(ModelForm):
@@ -102,5 +102,5 @@ class ViewExcursionForm(ModelForm):
 	class Meta():
 		model = Excursion
 		fields = ['id', 'facility', 'areas', 'organizator', 'incharge', 'guide',
-				  'occasion', 'date', 'start_time', 'stop_time',
-				  'language', 'auditory', 'participants']
+				  'event', 'date', 'start_time', 'stop_time',
+				  'language', 'target_audience', 'participants']
