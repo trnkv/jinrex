@@ -18,5 +18,6 @@ urlpatterns = [
 	url(r'^schedule/get_excursion/(\d+)/send_message/(\d+)/$', views.send_message),
 	url(r'^change_excursion/(\d+)/$', views.change_excursion, name='change_excursion'),
 	url(r'^schedule/get_excursion/(\d+)/create_chat/(\d+)/$', views.create_chat),
-	url(r'^facilities/', views.view_facilities_attendace, name='view_facilities_attendace')
+	url(r'^facilities/', views.view_facilities_attendace, name='view_facilities_attendace'),
+	url(r'^areas/', views.view_areas_attendace, name='view_areas_attendace')
 ]

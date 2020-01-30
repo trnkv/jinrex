@@ -8,7 +8,7 @@
 
 
 <section class="content-header">
-  <h4><i class="fas fa-chart-pie"></i> <b>Facilities attendance</b></h4>
+  <h4><i class="fas fa-chart-pie"></i> <b>Areas attendance</b></h4>
 </section>
 
 <div class="card card-danger">
@@ -26,32 +26,32 @@
   $(function () {
     var donutChartCanvas = $('#donutChart').get(0).getContext('2d')
 
-    var facility_names = []
+    var areas_names = []
 
     {% for ex in excursions %}
         {% if ex.date == current_year %}
-            facility_names.push('{{ ex.facility }}');
+            areas_names.push('{{ ex.areas }}');
         {% endif %}
     {% endfor %}
 
     var dict = {};
-    facility_names.forEach(function(i){
+    areas_names.forEach(function(i){
         if (dict[i] != undefined)
             ++dict[i];
         else
             dict[i] = 1;
     });
 
-    var facilities = [];
+    var areas = [];
     var excursions_count = [];
 
     for (var key in dict){
-        facilities.push(key);
+        areas.push(key);
         excursions_count.push(dict[key]);
     }
 
     var donutData = {
-      labels: facilities,
+      labels: areas,
       datasets: [
         {
           data: excursions_count,

@@ -19,6 +19,11 @@ from django.utils import timezone
 # groups = Group.objects.all().values()
 # permissions = Permission.objects.all().values()
 
+def get_facility_name(facility_id):
+    queryset_facility = Facility.objects.filter(id=facility_id).values('name')
+    facility = [val for val in queryset_facility if val in queryset_facility]
+    return facility[0]['name']
+
 
 @login_required
 def index(request):
@@ -91,8 +96,6 @@ def get_areas(request):
         else:
             print('false')
             return JsonResponse({'result': 0})
-
-    return render_to_response('excursion_form.html', {'areas': areas})
 
 
 @login_required
@@ -178,9 +181,7 @@ def get_excursion(request, id_excursion):
     queryset_desired_excursion = Excursion.objects.filter(id=id_excursion).values()
     desired_excursion = [val for val in queryset_desired_excursion if val in queryset_desired_excursion]
 
-    queryset_facility = Facility.objects.filter(id=desired_excursion[0]['facility_id']).values('name')
-    facility = [val for val in queryset_facility if val in queryset_facility]
-    desired_excursion[0]['facility'] = facility[0]['name']
+    desired_excursion[0]['facility'] = get_facility_name(desired_excursion[0]['facility_id'])
 
     excursion = Excursion.objects.get(id=desired_excursion[0]['id'])
     queryset_areas_names = excursion.areas.all().values('name')
@@ -417,4 +418,19 @@ def mark_as_not_held(request, id_excursion):
 
 
 def view_facilities_attendace(request):
-    return render(request, 'facilities_attendance.html', context={})
+    all_excursions = Excursion.objects.filter(not_held = False).values('facility', 'date')
+    all_excursions = [val for val in all_excursions if val in all_excursions]
+    for ex in all_excursions:
+        ex['date'] = str(ex['date'])[:4]
+        ex['facility'] = get_facility_name(ex['facility'])
+    # return JsonResponse({'excursions':all_excursions})
+    return render(request, 'facilities_attendance.html', context={'excursions':all_excursions})
+
+def view_areas_attendace(request):
+    all_excursions = Excursion.objects.filter(not_held = False).values('areas', 'date')
+    all_excursions = [val for val in all_excursions if val in all_excursions]
+    for ex in all_excursions:
+        ex['areas'] = [val for val in Area.objects.filter(id=ex['areas']).values('name')][0]['name']
+        ex['date'] = str(ex['date'])[:4]
+    # return JsonResponse({'excursions':all_excursions})
+    return render(request, 'areas_attendance.html', context={'excursions':all_excursions})

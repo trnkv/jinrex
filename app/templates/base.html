@@ -129,8 +129,8 @@
                           </span>
                       </a>
                       <ul class="treeview-menu">
-                        <li><a href="{% url 'app:view_facilities_attendace' %}">Facilities</a></li>
-                        <li><a href="#">Link in level 2</a></li>
+                        <li><a href="{% url 'app:view_facilities_attendace' %}">Facilities attendance</a></li>
+                        <li><a href="{% url 'app:view_areas_attendace' %}">Areas attendance</a></li>
                       </ul>
                     </li>
                       <li class="header">ACTIONS</li>
@@ -192,5 +192,6 @@
     <script src="{% static 'js/clockpicker.js' %}" type="text/javascript"></script>
     <script src="{% static 'js/jquery.dataTables.js' %}" type="text/javascript"></script>
     <script src="{% static 'js/dataTables.bootstrap4.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/Chart.min.js' %}" type="text/javascript"></script>
     </body>
 </html>
