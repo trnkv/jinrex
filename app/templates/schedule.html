@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
+{% load tz %}
+{% now "Y-m-d" as current_date %}
+{% now "H:i" as current_time %}
+
+{{ current_date }}
+{{ current_time }}
 
 <section class="content-header">
   <h4><i class="fas fa-calendar-alt"></i> <b>Schedule</b></h4>
@@ -11,18 +17,28 @@
 			<thead>
 				<tr class="info">
 					<th style="display: none;"></th>
-					<th id="th_status" scope="col" data-orderable="false">Confirmed</th>
+					<th id="th_confirmed_by_guide" scope="col" data-orderable="false">Confirmed by Guide</th>
+					<th id="th_confirmed_by_incharge" scope="col" data-orderable="false">Confirmed by Incharge</th>
 					<th scope="col" class="sorting" tabindex="0" rowspan="1" colspan="1">Facility</th>
-			    <th scope="col" class="sorting" tabindex="0" rowspan="1" colspan="1">Areas</th>
-			    <th scope="col" class="sorting" tabindex="0" rowspan="1" colspan="1">Date</th>
+					<th scope="col" class="sorting" tabindex="0" rowspan="1" colspan="1">Areas</th>
+					<th scope="col" class="sorting" tabindex="0" rowspan="1" colspan="1">Date</th>
+					<th scope="col" class="sorting" tabindex="0" rowspan="1" colspan="1">Start Time</th>
+					<th scope="col" class="sorting" tabindex="0" rowspan="1" colspan="1">Stop Time</th>
 				</tr>
 			</thead>
 			<tbody class="table-hover">
 			  	{% for ex in excursions %}
-			  		<tr role="row" class="odd" onclick="clickLink(this)" data-toggle="tooltip" data-placement="top" title="Click to view full information">
+			  		<tr id="row_excursion_data" role="row" class="odd" onclick="clickLink(this)" data-toggle="tooltip" data-placement="top" title="Click to view full information">
 						<td class="ex_id" style="display: none;">{{ ex.id }}/</td>
-						<td class="td_status sorting_1">
-							{% if ex.confirmed_by_guide == True and ex.confirmed_by_incharge == True %}
+						<td class="td_confirmed_by_guide sorting_1">
+							{% if ex.confirmed_by_guide == True %}
+								<h5><span class='badge badge-success'><i class='fas fa-check'></i></span></h5>
+							{% else %}
+								<h5><span class='badge badge-danger'><i class='fas fa-times'></i></span></h5>
+							{% endif %}
+						</td>
+						<td class="td_confirmed_by_incharge sorting_1">
+							{% if ex.confirmed_by_incharge == True %}
 								<h5><span class='badge badge-success'><i class='fas fa-check'></i></span></h5>
 							{% else %}
 								<h5><span class='badge badge-danger'><i class='fas fa-times'></i></span></h5>
@@ -35,7 +51,24 @@
 						{% endfor %}
 						</td>
 						<td id="date_excursion">{{ ex.date }}</td>
+						<td id="start_time_excursion">{{ ex.start_time|time:'H:i' }}</td>
+						<td id="stop_time_excursion">{{ ex.stop_time|time:'H:i' }}</td>
 					</tr>
+					{% if current_date > ex.date|date:"Y-m-d" %}
+						<script type="text/javascript">
+							$("#row_excursion_data").css('background-color', 'Grey');
+						</script>
+					{% else %}
+						<script type="text/javascript">
+							alert('{{ current_date }}');
+							alert('{{ ex.date|date:"Y-m-d" }}');
+						</script>
+						{% if current_date == ex.date|date:"Y-m-d" and current_time >= ex.start_time|date:"H:i" %}
+							<script type="text/javascript">
+								$("#row_excursion_data").css('background-color', 'Grey');
+							</script>
+						{% endif %}
+					{% endif %}
 				{% endfor %}
 			  </tbody>
 		</table>
@@ -53,6 +86,9 @@ $(document).ready(function() {
 		"ordering": true,
 		"info": true,
 		"autoWidth": false,
+		//"render": function ( data, type, row, meta ) {
+		//  return '<a href="'+data+'">Download</a>';
+		//}
 	});
 })
 
