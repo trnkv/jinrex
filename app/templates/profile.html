@@ -17,17 +17,26 @@
 				                    		{% for value in dict.excursion %}
 				                    			<p>
 				                    			{{ value.facility }},
-				                    			{{ value.occasion }},
+				                    			{{ value.event }},
 				                    			{{ value.date }}</p>
 				                    		{% endfor %}
-			                    	</a>
+			                    		</a>
+			                    	{% endif %}
+									{% if value == 'Incharge' %}
+			                    		<a class="float-right">
+				                    		{% for value in dict.excursion %}
+				                    			<p>
+				                    				{{ value.facility }}
+												</p>
+				                    		{% endfor %}
+			                    		</a>
 			                    	{% endif %}
 			                    	{% if value == 'Organizator' %}
 			                    		<a class="float-right">
 				                    		{% for value in dict.excursion %}
 				                    			<p>
 				                    			{{ value.facility }},
-				                    			{{ value.occasion }},
+				                    			{{ value.event }},
 				                    			{{ value.date }}</p>
 				                    		{% endfor %}
 			                    	</a>

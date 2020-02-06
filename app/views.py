@@ -36,18 +36,29 @@ def profile(request, user_id):
     user_groups = []
 
     username = request.user.username
-    print(username)
+
+    
 
     for g in request.user.groups.all().values():
         # g - ЭТО dict
         if g['name'] == 'Guide':
-            excursions = Excursion.objects.filter(guide=user_id).values('facility', 'event', 'date')
+            guide_user = User.objects.get(id=request.user.id)
+            guide = Guide.objects.get(user=guide_user)
+            excursions = Excursion.objects.filter(guide=guide).values('facility', 'event', 'date')
             excursions = [val for val in excursions if val in excursions]
             for ex in excursions:
                 ex['facility'] = Facility.objects.filter(id=ex['facility']).values('name')[0]['name']
             g['excursion'] = excursions
+        if g['name'] == 'Incharge':
+            incharge_user = User.objects.get(id=request.user.id)
+            facilities = Incharge.objects.filter(user=incharge_user).values('facility')
+            facilities = [val for val in facilities if val in facilities]
+            for f in facilities:
+                f['facility'] = list(Facility.objects.filter(id=f['facility']).values('name'))[0]['name']
+            print(facilities)
+            g['excursion'] = facilities
         if g['name'] == 'Organizator':
-            excursions = Excursion.objects.filter(organizator=user_id).values('facility', 'event', 'date')
+            excursions = Excursion.objects.filter(organizator=request.user).values('facility', 'event', 'date')
             excursions = [val for val in excursions if val in excursions]
             for ex in excursions:
                 ex['facility'] = Facility.objects.filter(id=ex['facility']).values('name')[0]['name']
@@ -75,9 +86,7 @@ def get_excursion_form(request):
 def get_areas(request):
     if request.method == 'POST':
         id_facility = request.POST.get('facility')
-        print(id_facility)
         if id_facility != '0':
-            print('true')
             list_of_dict_areas = list(Area.objects.filter(facility=id_facility).values('name'))
             areas = []
             for d in list_of_dict_areas:
@@ -94,7 +103,6 @@ def get_areas(request):
                                  'info_incharge': incharge_first_name + " " + incharge_last_name + " (@" + incharge_username + ")"})
 
         else:
-            print('false')
             return JsonResponse({'result': 0})
 
 
@@ -150,13 +158,70 @@ def send_excursion_form(request):
 
 @login_required
 def view_excursions(request):
-    excursions = Excursion.objects.all().values()
-    excursions = [val for val in excursions if val in excursions]
+    current_user = request.user
+    current_user_id = request.user.id
 
-    for d in excursions:
+    user_excursions = []
 
+    for g in request.user.groups.all().values():
+        # g - ЭТО dict
+        if g['name'] == 'Guide':
+            guide_user = User.objects.get(id=current_user_id)
+            guide = Guide.objects.get(user=guide_user)
+            excursions_where_user_is_guide = Excursion.objects.filter(guide=guide).values('id', 'confirmed_by_guide', 'confirmed_by_incharge', 'facility', 'date', 'start_time', 'stop_time', 'not_held')
+            excursions_where_user_is_guide = [val for val in excursions_where_user_is_guide if val in excursions_where_user_is_guide]
+            for ex in excursions_where_user_is_guide:
+                excursion = Excursion.objects.get(id=ex['id'])
+                queryset = excursion.areas.all().values('name')
+                ex['facility'] = Facility.objects.filter(id=ex['facility']).values('name')[0]['name']
+                areas = [val for val in queryset if val in queryset]
+
+                ar = []
+                for area in areas:
+                    ar.append(area['name'])
+                ex['areas'] = ar
+                user_excursions.append(ex)
+
+        if g['name'] == 'Incharge':
+            incharge_user = User.objects.get(id=current_user_id)
+            incharge = Incharge.objects.get(user=incharge_user)
+            excursions_where_user_is_incharge = Excursion.objects.filter(incharge=incharge).values('id', 'confirmed_by_guide', 'confirmed_by_incharge', 'facility', 'date', 'start_time', 'stop_time', 'not_held')
+            excursions_where_user_is_incharge = [val for val in excursions_where_user_is_incharge if val in excursions_where_user_is_incharge]
+            for ex in excursions_where_user_is_incharge:
+                excursion = Excursion.objects.get(id=ex['id'])
+                queryset = excursion.areas.all().values('name')
+                ex['facility'] = Facility.objects.filter(id=ex['facility']).values('name')[0]['name']
+                areas = [val for val in queryset if val in queryset]
+
+                ar = []
+                for area in areas:
+                    ar.append(area['name'])
+                ex['areas'] = ar
+                user_excursions.append(ex)
+
+        if g['name'] == 'Organizator':
+            excursions_where_user_is_organizator = Excursion.objects.filter(organizator=current_user).values('id', 'confirmed_by_guide', 'confirmed_by_incharge', 'facility', 'date', 'start_time', 'stop_time', 'not_held')
+            excursions_where_user_is_organizator = [val for val in excursions_where_user_is_organizator if val in excursions_where_user_is_organizator]
+            for ex in excursions_where_user_is_organizator:
+                excursion = Excursion.objects.get(id=ex['id'])
+                queryset = excursion.areas.all().values('name')
+                ex['facility'] = Facility.objects.filter(id=ex['facility']).values('name')[0]['name']
+                areas = [val for val in queryset if val in queryset]
+
+                ar = []
+                for area in areas:
+                    ar.append(area['name'])
+                ex['areas'] = ar
+                user_excursions.append(ex)
+
+    # return JsonResponse({'user_excursions': user_excursions})
+    #return user_excursions
+
+    all_excursions = Excursion.objects.all().values()
+    all_excursions = [val for val in all_excursions if val in all_excursions]
+
+    for d in all_excursions:
         this_facilities = list(Facility.objects.filter(id=d['facility_id']).values('name'))
-
         excursion = Excursion.objects.get(id=d['id'])
         queryset = excursion.areas.all().values('name')
         areas = [val for val in queryset if val in queryset]
@@ -168,9 +233,7 @@ def view_excursions(request):
         d['areas'] = ar
         d['facility'] = this_facilities[0]['name']
 
-    # return JsonResponse({'excursions': excursions})
-
-    return render(request, 'schedule.html', context={'excursions': excursions})
+    return render(request, 'schedule.html', context={'my_excursions': user_excursions, 'all_excursions': all_excursions})
 
 
 @login_required

@@ -1,18 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
 {% load tz %}
-{% now "Y-m-d" as current_date %}
+{% now 'm.d.Y' as current_date %}
 {% now "H:i" as current_time %}
 
-{{ current_date }}
-{{ current_time }}
+
 
 <section class="content-header">
   <h4><i class="fas fa-calendar-alt"></i> <b>Schedule</b></h4>
 </section>
 
 <div class="card">
-	<!-- <div class="dataTables_wrapper dt-bootstrap4"> -->
+	<div class="table-responsive">
 		<table id="schedule_table" class="table table-bordered table-hover dataTable" role="grid">
 			<thead>
 				<tr class="info">
@@ -27,8 +26,8 @@
 				</tr>
 			</thead>
 			<tbody class="table-hover">
-			  	{% for ex in excursions %}
-			  		<tr id="row_excursion_data" role="row" class="odd" onclick="clickLink(this)" data-toggle="tooltip" data-placement="top" title="Click to view full information">
+			  	{% for ex in my_excursions %}
+			  		<tr id="row_excursion_data_{{ ex.id }}" role="row" class="odd" onclick="clickLink(this)" data-toggle="tooltip" data-placement="top" title="Click to view full information" not-held="{{ ex.not_held }}">
 						<td class="ex_id" style="display: none;">{{ ex.id }}/</td>
 						<td class="td_confirmed_by_guide sorting_1">
 							{% if ex.confirmed_by_guide == True %}
@@ -46,33 +45,18 @@
 						</td>
 			  			<td id="facility">{{ ex.facility }}</td>
 						<td id="area">
-						{% for area in ex.areas %}
-							{{ area }}
-						{% endfor %}
+							{% for area in ex.areas %}
+								{{ area }}
+							{% endfor %}
 						</td>
-						<td id="date_excursion">{{ ex.date }}</td>
-						<td id="start_time_excursion">{{ ex.start_time|time:'H:i' }}</td>
-						<td id="stop_time_excursion">{{ ex.stop_time|time:'H:i' }}</td>
+						<td id="date" date-mdy="{{ ex.date|date:'m.d.Y' }}" ex-id="{{ ex.id }}">{{ ex.date }}</td>
+						<td id="start_time">{{ ex.start_time|time:'H:i' }}</td>
+						<td id="stop_time">{{ ex.stop_time|time:'H:i' }}</td>
 					</tr>
-					{% if current_date > ex.date|date:"Y-m-d" %}
-						<script type="text/javascript">
-							$("#row_excursion_data").css('background-color', 'Grey');
-						</script>
-					{% else %}
-						<script type="text/javascript">
-							alert('{{ current_date }}');
-							alert('{{ ex.date|date:"Y-m-d" }}');
-						</script>
-						{% if current_date == ex.date|date:"Y-m-d" and current_time >= ex.start_time|date:"H:i" %}
-							<script type="text/javascript">
-								$("#row_excursion_data").css('background-color', 'Grey');
-							</script>
-						{% endif %}
-					{% endif %}
 				{% endfor %}
 			  </tbody>
 		</table>
-	<!-- </div> -->
+	</div>
 </div>
 
 <script type="text/javascript">
@@ -85,16 +69,111 @@ $(document).ready(function() {
 		"searching": true,
 		"ordering": true,
 		"info": true,
-		"autoWidth": false,
-		//"render": function ( data, type, row, meta ) {
-		//  return '<a href="'+data+'">Download</a>';
-		//}
+		"autoWidth": true,
+		"dom": '<"toolbar">frtip',
 	});
-})
+
+	$(".page-item.active .page-link").css('background-color', '#3c8dbc');
+	$(".page-item.active .page-link").css('border-color', '#3c8dbc');
+
+	$("div.toolbar").html(
+		'<div class="btn-group dropright">'+
+		'<button type="button" id="selectButton" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 122px;">My excursions</button>'+
+		'<ul class="dropdown-menu scrollable-menu" id="ex_categories">'+
+		'<li><a class="dropdown-item" href="#">My excursions</a></li>'+
+		'<div class="dropdown-divider"></div>'+
+		'<li><a class="dropdown-item" href="#">All excursions</a></li>'+
+		'</ul></div>'
+	);
+	$("div.toolbar").css('margin-bottom', '0.5%');
+
+	// Change text on the Select button
+	// and call Ajax to show All excursions
+	$("#ex_categories li a").on("click", function () {
+		var text = $(this).text();
+		$("#selectButton").html(text);
+		if (text == 'All excursions'){
+			$("tbody").html('{% for ex in all_excursions %}'+
+			  		'<tr id="row_excursion_data_{{ ex.id }}" role="row" class="odd" onclick="clickLink(this)" data-toggle="tooltip" data-placement="top" title="Click to view full information" not-held="{{ ex.not_held }}">'+
+						'<td class="ex_id" style="display: none;">{{ ex.id }}/</td>'+
+						'<td class="td_confirmed_by_guide sorting_1">'+
+							'{% if ex.confirmed_by_guide == True %}'+
+								'<h5><span class=\'badge badge-success\'><i class=\'fas fa-check\'></i></span></h5>'+
+							'{% else %}'+
+								'<h5><span class=\'badge badge-danger\'><i class=\'fas fa-times\'></i></span></h5>'+
+							'{% endif %}'+
+						'</td>'+
+						'<td class="td_confirmed_by_incharge sorting_1">'+
+							'{% if ex.confirmed_by_incharge == True %}'+
+								'<h5><span class=\'badge badge-success\'><i class=\'fas fa-check\'></i></span></h5>'+
+							'{% else %}'+
+								'<h5><span class=\'badge badge-danger\'><i class=\'fas fa-times\'></i></span></h5>'+
+							'{% endif %}'+
+						'</td>'+
+			  			'<td id="facility">{{ ex.facility }}</td>'+
+						'<td id="area">'+
+							'{% for area in ex.areas %}'+
+								'{{ area }}'+
+							'{% endfor %}'+
+						'</td>'+
+						'<td id="date" date-mdy="{{ ex.date|date:'m.d.Y' }}" ex-id="{{ ex.id }}">{{ ex.date }}</td>'+
+						'<td id="start_time">{{ ex.start_time|time:'H:i' }}</td>'+
+						'<td id="stop_time">{{ ex.stop_time|time:'H:i' }}</td>'+
+					'</tr>'+
+				'{% endfor %}');
+				change_rows_color();
+		}
+		else
+			document.location.reload(true);
+
+	});
+
+	$("div.dataTables_filter").append('<h5 style="float: left;"><span class="badge badge-pill badge-secondary"><b>Held</b></span></h5>');
+	$("div.dataTables_filter").append('<h5 style="float: left;"><span class="badge badge-pill" style="background-color: #ef9a9a;"><b>Not held</b></span></h5>');
+
+	change_rows_color();
+});
+
+function change_rows_color(){
+	$('table').each(function() {
+		$(this).find('tr').each(function () {
+			// change color to grey if start_date < current_date
+			$(this).find('#date').each(function (i) {
+				const date = new Date($(this).attr("date-mdy"));
+				const ex_id = $(this).attr("ex-id");
+				const cur_date = new Date('{{ current_date }}');
+				if (date < cur_date){
+					$('#row_excursion_data_'+ex_id).css('background-color', '#cccccc');
+				}
+			});
+
+			// change color to red if excursion is not held
+			const not_held = $(this).attr("not-held");
+			if (not_held == 'True')
+				$(this).css('background-color','#ef9a9a');
+		});
+	});
+};
 
 function clickLink(elem){
     location = 'get_excursion/' + elem.getElementsByClassName("ex_id")[0].innerText;
 }
+
+function getCookie(name){
+	    var cookieValue = null;
+	    if (document.cookie && document.cookie !== '') {
+	        var cookies = document.cookie.split(';');
+	        for (var i = 0; i < cookies.length; i++) {
+	            var cookie = jQuery.trim(cookies[i]);
+	            // Does this cookie string begin with the name we want?
+	            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+	                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                break;
+	            }
+	        }
+    	}
+    	return cookieValue;
+	}
 
 </script>
 

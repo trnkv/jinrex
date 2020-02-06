@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
-{% load tz %}
+
 {% block content %}
+
+{% load tz %}
+{% now "Y-m-d" as current_date %}
+{% now "H:i" as current_time %}
 
 <section class="content-header">
   <h4><i class="fas fa-eye"></i> <b>View application</b></h4>
@@ -52,7 +56,7 @@
 
   <div class="row justify-content-between">
 	<div class="col-2">
-	  <a role="button" id="bt_back" class="btn btn-primary" href="{% url 'app:view_excursions' %}" style="float: left;">GO BACK</a>
+	  <a role="button" id="bt_back" class="btn btn-primary" href="{% url 'app:view_my_excursions' %}" style="float: left;">GO BACK</a>
 	</div>
 	<div id="additional_buttons" class="col-2">
 	</div>
@@ -126,15 +130,16 @@
 
 <script type="text/javascript">
 	$(window).on('load', function(){
+		// alert("{{ current_time }}");
 	$('#id_message').addClass('form-control');
 
-    {% if is_user_guide == True or is_user_incharge == True%}
+    {% if is_user_guide == True or is_user_incharge == True %}
     {
     	{% if is_user_guide == True %}
 			{% if desired_excursion.confirmed_by_guide == False %}
 				$('#additional_buttons').append(
 					'<a id="bt_confirm" class="btn btn-warning" style="margin-left: auto;" href="change_confirmed/" onclick="this.style.display=\'none\'; location.reload(); return true;">CONFIRM EXCURSION</a>'
-					)
+					);
 			{% else %}
 				$('#myForm').append("<h4><span class=\"badge badge-warning\">You have already confirmed this excursion</span></h4>");
 			{% endif %}
@@ -194,23 +199,19 @@
 	{% endif %}
 
 	{% if desired_excursion.not_held == False %}
-		{% load tz %}
-		  {% now "Y-m-d" as current_date %}
-		  {% now "H:i:s" as current_time %}
-
-		  {% if current_date <= desired_excursion.date|date:"Y-m-d" and current_time < desired_excursion.start_time|date:"H-i-s" %}
+		{% if current_date < desired_excursion.date|date:"Y-m-d" %}
 			$('#confirm_held_info').append("<br><br><span style=\"color: gray;\">This excursion will be held.</span>");
-		  {% else %}
-			{% if current_date >= desired_excursion.date|date:"Y-m-d" and current_time >= desired_excursion.start_time|date:"H-i-s" %}
-			  $('#confirm_held_info').append("<br><br><span>This excursion has been held.</span><a id=\"bt_not_held\" class=\"btn btn-danger\" style=\"margin-left: auto;\" href=\"mark_as_not_held\" onclick=\"this.style.display=\'none\'; location.reload(); return true;\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Click to mark the excursion as untried\">NOT HELD</a>");
-			  $('#bt_change').attr('disabled', true);
-			  $("#myForm :input").prop('readonly', true);
-			  $('#id_guide').attr('disabled', true);
-			  $('#id_facility').attr('disabled', true);
-			{% endif %}
-		  {% endif %}
+		{% else %}
+		{% if current_date >= desired_excursion.date|date:"Y-m-d" and current_time >= desired_excursion.start_time|time:"H:i" %}
+			$('#confirm_held_info').append("<br><br><span>This excursion has been held.</span><a id=\"bt_not_held\" class=\"btn btn-danger\" style=\"margin-left: auto;\" href=\"mark_as_not_held\" onclick=\"this.style.display=\'none\'; location.reload(); return true;\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Click to mark the excursion as untried\">NOT HELD</a>");
+			$('#bt_change').attr('disabled', true);
+			$("#myForm :input").prop('readonly', true);
+			$('#id_guide').attr('disabled', true);
+			$('#id_facility').attr('disabled', true);
+		{% endif %}
+		{% endif %}
 	{% else %}
-		$('#confirm_held_info').append("<br><br><span style=\"color: red;\">This excursion has not been held.</span>");
+		$('#confirm_held_info').append("<br><br><span style=\"color: #d9534f;\">This excursion has not been held.</span>");
 	{% endif %}
 
 	id_facility = $("#id_facility").val();
