@@ -68,11 +68,12 @@
 
         <!-- Logo -->
           <a href="/" class="logo">
-      <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"></span>
-      <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>JINR</b>ex</span>
-    </a>
+            {% comment %} <img src="{% static "img/jinr.png" %}" class="brand-image img-circle elevation-3" style="opacity: .8"> {% endcomment %}
+              <!-- mini logo for sidebar mini 50x50 pixels -->
+              <span class="logo-mini"><img src="{% static "img/jinr.png" %}" class="brand-image"></span>
+              <!-- logo for regular state and mobile devices -->
+              <span class="logo-lg"><img src="{% static "img/jinr.png" %}" class="brand-image"><b>JINR</b>ex</span>
+          </a>
 <!--
         <div class="login-logo">
             <a href="/">System of organization and accounting of excursions in <b>JINR</b></a>
@@ -104,50 +105,47 @@
       <!-- Add the sidebar's background. This div must be placed
       immediately after the control sidebar -->
       <div class="control-sidebar-bg"></div>
-
     </div>
-    <!-- ./wrapper -->
 
     <!-- Left side column. contains the logo and sidebar -->
-      <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <aside class="main-sidebar sidebar-dark-primary">
 
         <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
 
-          <!-- Sidebar user panel (optional) -->
-            {% if user.is_authenticated %}
-          <div class="user-panel">
-            <div>
-                <a href="{% url 'app:profile' request.user.id %}">{{ user.get_full_name }}</a>
-              <!-- Status -->
-              <br><small><a href="#"><i class="fa fa-circle text-success"></i> Online</a></small>
+        <!-- Sidebar user panel (optional) -->
+          {% if user.is_authenticated %}
+            <div class="user-panel">
+              <div>
+                  <a href="{% url 'app:profile' request.user.id %}">{{ user.get_full_name }}</a>
+                <!-- Status -->
+                <br><small><a href="#"><i class="fa fa-circle text-success"></i> Online</a></small>
+              </div>
             </div>
-          </div>
-            {% endif %}
+          {% endif %}
 
           <!-- Sidebar Menu -->
-            <nav class="mt-2">
-                  <ul class="sidebar-menu tree" data-widget="tree">
-                      <li class="header">NAVIGATION</li>
-                      <!-- Optionally, you can add icons to the links -->
-                      <li><a href="{% url 'app:get_excursion_form' %}"><i class="fa fa-edit"></i> <span>Apply an application</span></a></li>
-                      <li><a href="{% url 'app:view_excursions' %}"><i class="fa fa-calendar-alt"></i> <span>View all applications</span></a></li>
-                    <li class="treeview">
-                      <a href="#"><i class="fa fa-chart-pie"></i><span>Charts</span>
-                        <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i>
-                          </span>
-                      </a>
-                      <ul class="treeview-menu">
-                        <li><a href="{% url 'app:view_facilities_attendace' %}">Facilities attendance</a></li>
-                        <li><a href="{% url 'app:view_areas_attendace' %}">Areas attendance</a></li>
-                      </ul>
-                    </li>
-                      <li class="header">ACTIONS</li>
-                      <li><a href="{% url 'logout'%}?next={{request.path}}"><i class="fa fa-sign-out-alt"></i> <span>Logout</span></a></li>
-                  </ul>
-                </nav>
-          <!-- /.sidebar-menu -->
+          <nav class="mt-2">
+            <ul class="sidebar-menu tree" data-widget="tree">
+                <li class="header">NAVIGATION</li>
+                <!-- Optionally, you can add icons to the links -->
+                <li><a href="{% url 'app:get_excursion_form' %}"><i class="fa fa-edit"></i> <span>Apply an application</span></a></li>
+                <li><a href="{% url 'app:view_excursions' %}"><i class="fa fa-calendar-alt"></i> <span>View all applications</span></a></li>
+              <li class="treeview">
+                <a href="#"><i class="fa fa-chart-pie"></i><span>Charts</span>
+                  <span class="pull-right-container">
+                      <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                  <li><a href="{% url 'app:view_facilities_attendace' %}">Facilities attendance</a></li>
+                  <li><a href="{% url 'app:view_areas_attendace' %}">Areas attendance</a></li>
+                </ul>
+              </li>
+                <li class="header">ACTIONS</li>
+                <li><a href="{% url 'logout'%}?next={{request.path}}"><i class="fa fa-sign-out-alt"></i> <span>Logout</span></a></li>
+            </ul>
+          </nav>
         </section>
         <!-- /.sidebar -->
       </aside>
