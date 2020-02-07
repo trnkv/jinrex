@@ -56,7 +56,7 @@
 
   <div class="row justify-content-between">
 	<div class="col-2">
-	  <a role="button" id="bt_back" class="btn btn-primary" href="{% url 'app:view_my_excursions' %}" style="float: left;">GO BACK</a>
+	  <a role="button" id="bt_back" class="btn btn-primary" href="{% url 'app:view_excursions' %}" style="float: left;">GO BACK</a>
 	</div>
 	<div id="additional_buttons" class="col-2">
 	</div>
@@ -199,16 +199,18 @@
 	{% endif %}
 
 	{% if desired_excursion.not_held == False %}
-		{% if current_date < desired_excursion.date|date:"Y-m-d" %}
+	console.log('{{ current_date }}')
+	console.log('{{ desired_excursion.date|date:"Y-m-d" }}')
+		{% if current_date <= desired_excursion.date|date:"Y-m-d" %}
 			$('#confirm_held_info').append("<br><br><span style=\"color: gray;\">This excursion will be held.</span>");
 		{% else %}
-		{% if current_date >= desired_excursion.date|date:"Y-m-d" and current_time >= desired_excursion.start_time|time:"H:i" %}
-			$('#confirm_held_info').append("<br><br><span>This excursion has been held.</span><a id=\"bt_not_held\" class=\"btn btn-danger\" style=\"margin-left: auto;\" href=\"mark_as_not_held\" onclick=\"this.style.display=\'none\'; location.reload(); return true;\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Click to mark the excursion as untried\">NOT HELD</a>");
-			$('#bt_change').attr('disabled', true);
-			$("#myForm :input").prop('readonly', true);
-			$('#id_guide').attr('disabled', true);
-			$('#id_facility').attr('disabled', true);
-		{% endif %}
+			{% if current_date >= desired_excursion.date|date:"Y-m-d" and current_time >= desired_excursion.start_time|time:"H:i" %}
+				$('#confirm_held_info').append("<br><br><span>This excursion has been held.</span><a id=\"bt_not_held\" class=\"btn btn-danger\" style=\"margin-left: auto;\" href=\"mark_as_not_held\" onclick=\"this.style.display=\'none\'; location.reload(); return true;\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Click to mark the excursion as untried\">NOT HELD</a>");
+				$('#bt_change').attr('disabled', true);
+				$("#myForm :input").prop('readonly', true);
+				$('#id_guide').attr('disabled', true);
+				$('#id_facility').attr('disabled', true);
+			{% endif %}
 		{% endif %}
 	{% else %}
 		$('#confirm_held_info').append("<br><br><span style=\"color: #d9534f;\">This excursion has not been held.</span>");

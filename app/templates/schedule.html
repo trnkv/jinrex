@@ -76,8 +76,11 @@ $(document).ready(function() {
 	$(".page-item.active .page-link").css('background-color', '#3c8dbc');
 	$(".page-item.active .page-link").css('border-color', '#3c8dbc');
 
-	$("div.toolbar").html(
-		'<div class="btn-group dropright">'+
+	$("div.dataTables_filter").append('<h5 style="float: left;"><span class="badge badge-pill badge-secondary"><b>Held</b></span></h5>');
+	$("div.dataTables_filter").append('<h5 style="float: left;"><span class="badge badge-pill" style="background-color: #ef9a9a;"><b>Not held</b></span></h5>');
+
+	$("div.toolbar").append(
+		'<div class="btn-group dropright" >'+
 		'<button type="button" id="selectButton" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 122px;">My excursions</button>'+
 		'<ul class="dropdown-menu scrollable-menu" id="ex_categories">'+
 		'<li><a class="dropdown-item" href="#">My excursions</a></li>'+
@@ -85,7 +88,7 @@ $(document).ready(function() {
 		'<li><a class="dropdown-item" href="#">All excursions</a></li>'+
 		'</ul></div>'
 	);
-	$("div.toolbar").css('margin-bottom', '0.5%');
+	//$("div.toolbar").css('margin-bottom', '0.5%');
 
 	// Change text on the Select button
 	// and call Ajax to show All excursions
@@ -127,9 +130,6 @@ $(document).ready(function() {
 			document.location.reload(true);
 
 	});
-
-	$("div.dataTables_filter").append('<h5 style="float: left;"><span class="badge badge-pill badge-secondary"><b>Held</b></span></h5>');
-	$("div.dataTables_filter").append('<h5 style="float: left;"><span class="badge badge-pill" style="background-color: #ef9a9a;"><b>Not held</b></span></h5>');
 
 	change_rows_color();
 });

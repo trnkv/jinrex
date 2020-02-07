@@ -33,11 +33,7 @@ def index(request):
 @login_required
 def profile(request, user_id):
     """Функция отображения профиля пользователя."""
-    user_groups = []
-
-    username = request.user.username
-
-    
+    user_groups = []   
 
     for g in request.user.groups.all().values():
         # g - ЭТО dict
