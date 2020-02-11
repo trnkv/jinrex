@@ -493,3 +493,40 @@ def view_areas_attendace(request):
         ex['date'] = str(ex['date'])[:4]
     # return JsonResponse({'excursions':all_excursions})
     return render(request, 'areas_attendance.html', context={'excursions':all_excursions})
+
+
+def view_guide_statistics(request):
+    all_excursions = Excursion.objects.filter(not_held = False)
+    #all_excursions = [val for val in all_excursions if val in all_excursions]
+
+    guides = []
+    result_info = []
+    all_facilities = []
+    
+    for ex in all_excursions:
+        # info_current_guide = {}
+        guide = ex.guide
+        all_facilities.append(ex.facility.name)
+        # info_current_guide['name_username']=guide.user.get_full_name() + " (@" + guide.user.get_username() + ")"
+        guides.append(guide)
+
+    for g in guides:
+        info_current_guide = {}
+        his_facilities = []
+        his_areas = []
+        for ex in all_excursions:
+            if ex.guide == g:
+                his_facilities.append(ex.facility.name)
+                areas_querysets = ex.areas.all()
+                for a in areas_querysets:
+                    his_areas.append(a.name)
+                info_current_guide['event']=ex.event
+        info_current_guide['id_guide']=g.user.id
+        info_current_guide['name_username']=g.user.get_full_name() + " (@" + g.user.get_username() + ")"
+        info_current_guide['facilities']=his_facilities
+        info_current_guide['areas']=his_areas
+        all_facilities=list(set(all_facilities))
+        result_info.append(info_current_guide)     
+
+    # return JsonResponse({'guides': result_info})
+    return render(request, 'guides_statistics.html', context={'all_facilities':all_facilities,'guides': result_info})

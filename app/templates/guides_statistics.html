@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block content %}
+{% load tz %}
+    {% now "Y" as current_year %}
+
+<style type="text/css">/* Chart.js */
+@keyframes chartjs-render-animation{from{opacity:.99}to{opacity:1}}.chartjs-render-monitor{animation:chartjs-render-animation 1ms}.chartjs-size-monitor,.chartjs-size-monitor-expand,.chartjs-size-monitor-shrink{position:absolute;direction:ltr;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1}.chartjs-size-monitor-expand>div{position:absolute;width:1000000px;height:1000000px;left:0;top:0}.chartjs-size-monitor-shrink>div{position:absolute;width:200%;height:200%;left:0;top:0}</style>
+
+
+<section class="content-header">
+  <h4><i class="fas fa-chart-pie"></i> <b>Guides statistics</b></h4>
+</section>
+
+<div class="card card-danger">
+    <div class="card-header">
+      <h3 class="card-title">For current year ({{ current_year }})</h3>
+    </div>
+    <div class="card-body"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+        <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 611px;" width="611" height="250" class="chartjs-render-monitor"></canvas>
+    </div>
+    <!-- /.card-body -->
+</div>
+
+<script>
+    $(function () {
+    //-------------
+    //- BAR CHART -
+    //-------------
+    var all_facilities = ['{{ all_facilities }}'];
+    all_facilities = all_facilities[0].split(',');
+    
+    for (var i = 0; i < all_facilities.length; i++)
+    {
+        all_facilities[i] = all_facilities[i].replace('[', "");
+        all_facilities[i] = all_facilities[i].replace(']', "");
+        all_facilities[i] = all_facilities[i].replace('&#39;', "");
+        all_facilities[i] = all_facilities[i].replace('&#39;', "");
+        all_facilities[i] = all_facilities[i].replace(/\s/g, '');
+
+        if (result[all_facilities[i]] != undefined)
+            ++result[all_facilities[i]];
+        else
+            result[all_facilities[i]] = 1;
+    }
+
+    {% for g in guides %}
+        var facility_names = ['{{ g.facilities }}'];
+        var result = {};
+        for (var i = 0; i < facility_names.length; i++)
+        {
+            var names = facility_names[i].split(',');
+            
+            names.forEach(function(name){
+                name = name.replace('[', "");
+                name = name.replace(']', "");
+                name = name.replace('&#39;', "");
+                name = name.replace('&#39;', "");
+                name = name.replace(/\s/g, '');
+                
+                if (result[name] != undefined)
+                ++result[name];
+            else
+                result[name] = 1;
+            });
+        }
+        var facilities = [];
+        var excursions_count = [];
+
+        for (var key in result){
+            facilities.push(key);
+            excursions_count.push(result[key]);
+        }
+    {% endfor %}
+
+    var excursions_count = [];
+    for (var key in result){
+        excursions_count.push(result[key]);
+    }
+
+    var chart_colors = ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'];
+
+    var areaChartData = {
+      labels  : all_facilities,
+      
+      datasets: [
+      {% for g in guides %}
+        {
+          label               : '{{g.name_username}}',
+          backgroundColor     : chart_colors['{{ g.id_guide }}'],
+          borderColor         : 'rgba(60,141,188,0.8)',
+          pointRadius          : false,
+          pointColor          : '#3b8bba',
+          pointStrokeColor    : 'rgba(60,141,188,1)',
+          pointHighlightFill  : '#fff',
+          pointHighlightStroke: 'rgba(60,141,188,1)',
+          data                : excursions_count
+        },
+        {% endfor %}
+      ]
+      
+    }
+
+    var barChartCanvas = $('#barChart').get(0).getContext('2d')
+    var barChartData = jQuery.extend(true, {}, areaChartData)
+    var temp0 = areaChartData.datasets[0]
+    var temp1 = areaChartData.datasets[1]
+    barChartData.datasets[0] = temp1
+    barChartData.datasets[1] = temp0
+
+    var barChartOptions = {
+      responsive              : true,
+      maintainAspectRatio     : false,
+      datasetFill             : false
+    }
+
+    var barChart = new Chart(barChartCanvas, {
+      type: 'bar', 
+      data: barChartData,
+      options: barChartOptions
+    })
+});
+
+        // {% for g in guides %}
+        // var guide = ['{{g.name_username}}']
+        // $(function () {
+        //     var donutChartCanvas = $('#chart_{{ g.event }}').get(0).getContext('2d')
+        //     var facility_names = ['{{ g.facilities }}']
+        //     var result = {};
+        //     for (var i = 0; i < facility_names.length; i++)
+        //     {
+        //         var names = facility_names[i].split(',');
+                
+        //         names.forEach(function(name){
+        //             name = name.replace('[', "");
+        //             name = name.replace(']', "");
+        //             name = name.replace('&#39;', "");
+        //             name = name.replace('&#39;', "");
+        //             name = name.replace(/\s/g, '');
+                    
+        //             if (result[name] != undefined)
+        //             ++result[name];
+        //         else
+        //             result[name] = 1;
+        //         });
+        //     }
+        //     var facilities = [];
+        //     var excursions_count = [];
+
+        //     for (var key in result){
+        //         facilities.push(key);
+        //         excursions_count.push(result[key]);
+        //     }
+    
+        //     var donutData = {
+        //         labels: facilities,
+        //         datasets: [
+        //             {
+        //                 data: excursions_count,
+        //                 backgroundColor : ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'],
+        //             }
+        //         ]
+        //     }
+        //     var donutOptions     = {
+        //         maintainAspectRatio : false,
+        //         responsive : true,
+        //     }
+        //     //Create pie or douhnut chart
+        //     // You can switch between pie and douhnut using the method below.
+        //     var donutChart = new Chart(donutChartCanvas, {
+        //         type: 'pie',
+        //         data: donutData,
+        //         options: donutOptions
+        //     })
+        // });
+        // {% endfor %}
+  </script>
+{% endblock %}

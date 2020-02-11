@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-# author = 'lawrencealan+github@gmail.com'
-
 """
 Generates random excursion and its data.
 """
