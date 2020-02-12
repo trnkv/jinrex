@@ -36,12 +36,10 @@
         all_facilities[i] = all_facilities[i].replace('&#39;', "");
         all_facilities[i] = all_facilities[i].replace('&#39;', "");
         all_facilities[i] = all_facilities[i].replace(/\s/g, '');
-
-        if (result[all_facilities[i]] != undefined)
-            ++result[all_facilities[i]];
-        else
-            result[all_facilities[i]] = 1;
     }
+
+    var facilities = [];
+    var excursions_count = {};
 
     {% for g in guides %}
         var facility_names = ['{{ g.facilities }}'];
@@ -63,19 +61,16 @@
                 result[name] = 1;
             });
         }
-        var facilities = [];
-        var excursions_count = [];
+
+        console.log(result);
 
         for (var key in result){
             facilities.push(key);
-            excursions_count.push(result[key]);
+            excursions_count['{{ g.id_guide }}'] = result[key];
         }
     {% endfor %}
 
-    var excursions_count = [];
-    for (var key in result){
-        excursions_count.push(result[key]);
-    }
+    console.log(excursions_count);
 
     var chart_colors = ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'];
 
@@ -93,7 +88,7 @@
           pointStrokeColor    : 'rgba(60,141,188,1)',
           pointHighlightFill  : '#fff',
           pointHighlightStroke: 'rgba(60,141,188,1)',
-          data                : excursions_count
+          data                : excursions_count['{{ g.id_guide }}']
         },
         {% endfor %}
       ]

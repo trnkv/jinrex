@@ -512,15 +512,23 @@ def view_guide_statistics(request):
 
     for g in guides:
         info_current_guide = {}
-        his_facilities = []
-        his_areas = []
+        his_facilities = {}
+        his_areas = {}
+
         for ex in all_excursions:
             if ex.guide == g:
-                his_facilities.append(ex.facility.name)
+                if ex.facility.name in his_facilities:
+                    his_facilities[ex.facility.name] += 1
+                else:
+                    his_facilities[ex.facility.name] = 1
                 areas_querysets = ex.areas.all()
                 for a in areas_querysets:
-                    his_areas.append(a.name)
+                    if a.name in his_areas:
+                        his_areas[a.name] += 1
+                    else:
+                        his_areas[a.name] = 1
                 info_current_guide['event']=ex.event
+
         info_current_guide['id_guide']=g.user.id
         info_current_guide['name_username']=g.user.get_full_name() + " (@" + g.user.get_username() + ")"
         info_current_guide['facilities']=his_facilities
