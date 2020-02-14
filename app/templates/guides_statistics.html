@@ -6,7 +6,6 @@
 <style type="text/css">/* Chart.js */
 @keyframes chartjs-render-animation{from{opacity:.99}to{opacity:1}}.chartjs-render-monitor{animation:chartjs-render-animation 1ms}.chartjs-size-monitor,.chartjs-size-monitor-expand,.chartjs-size-monitor-shrink{position:absolute;direction:ltr;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1}.chartjs-size-monitor-expand>div{position:absolute;width:1000000px;height:1000000px;left:0;top:0}.chartjs-size-monitor-shrink>div{position:absolute;width:200%;height:200%;left:0;top:0}</style>
 
-
 <section class="content-header">
   <h4><i class="fas fa-chart-pie"></i> <b>Guides statistics</b></h4>
 </section>
@@ -41,57 +40,66 @@
     var facilities = [];
     var excursions_count = {};
 
-    {% for g in guides %}
-        var facility_names = ['{{ g.facilities }}'];
-        var result = {};
-        for (var i = 0; i < facility_names.length; i++)
-        {
-            var names = facility_names[i].split(',');
+    // {% for g in guides %}
+    //     var facility_names_from_server = ['{{ g.facilities }}'];
+    //     for (var i = 0; i < facility_names_from_server.length; i++)
+    //     {
+    //         var names = facility_names_from_server[i].split(',');
             
-            names.forEach(function(name){
-                name = name.replace('[', "");
-                name = name.replace(']', "");
-                name = name.replace('&#39;', "");
-                name = name.replace('&#39;', "");
-                name = name.replace(/\s/g, '');
-                
-                if (result[name] != undefined)
-                ++result[name];
-            else
-                result[name] = 1;
-            });
-        }
+    //         names.forEach(function(name){
+    //             name = name.replace('{', "");
+    //             name = name.replace('}', "");
+    //             name = name.replace('&#39;', "");
+    //             name = name.replace('&#39;', "");
+    //             name = name.replace(/\s/g, '');
+    //             facility_count = name.split(':');
+    //             facilities.push(facility_count[0]);
+    //             excursions_count['{{ g.id_guide }}']=facility_count[1];
+    //             console.log(name);
+    //             console.log(excursions_count);
+    //         });
+    //     }
+    // {% endfor %}
 
-        console.log(result);
-
-        for (var key in result){
-            facilities.push(key);
-            excursions_count['{{ g.id_guide }}'] = result[key];
-        }
-    {% endfor %}
-
-    console.log(excursions_count);
+    // console.log(excursions_count);
 
     var chart_colors = ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'];
 
-    var areaChartData = {
-      labels  : all_facilities,
-      
-      datasets: [
-      {% for g in guides %}
+    guides = []
+    excursions_count = []
+
+    {% for g in guides %}
+      guides.push('{{ g.name }}');
+      {% for f, value in g.facilities.items %}
+        excursions_count.push('{{ value }}');
+      {% endfor %}
+    {% endfor %}
+
+    console.log(guides)
+    console.log(excursions_count)
+
+    data = []
+    for (var i = 0; i < guides.length; i++)
+    {
+      data.push(
         {
-          label               : '{{g.name_username}}',
-          backgroundColor     : chart_colors['{{ g.id_guide }}'],
+          label               : guides[i],
+          backgroundColor     : chart_colors[excursions_count[i]],
           borderColor         : 'rgba(60,141,188,0.8)',
           pointRadius          : false,
           pointColor          : '#3b8bba',
           pointStrokeColor    : 'rgba(60,141,188,1)',
           pointHighlightFill  : '#fff',
           pointHighlightStroke: 'rgba(60,141,188,1)',
-          data                : excursions_count['{{ g.id_guide }}']
-        },
-        {% endfor %}
-      ]
+          data                : [excursions_count[i], excursions_count[i+1], excursions_count[i+2], excursions_count[i+3]]
+        }
+      )
+    }
+
+    var areaChartData = {
+      labels  : all_facilities,
+      
+      datasets: data,
       
     }
 
