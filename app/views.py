@@ -14,6 +14,8 @@ from django.core.mail import send_mail
 
 from django.utils import timezone
 
+import pdb
+
 
 # Функция отображения для домашней страницы сайта.
 # user_id = request.user.id
@@ -502,94 +504,35 @@ def view_guide_statistics(request):
     #all_excursions = [val for val in all_excursions if val in all_excursions]
 
     guides = {}
-    result_info = [dict(name='', facilities={})]
+    result_info = []
     all_facilities = []
     all_guides = []
     facilities = []
     
     for ex in all_excursions:
-        all_facilities.append(ex.facility)
+        all_facilities.append(ex.facility.name)
         all_guides.append(ex.guide)
     all_facilities = list(set(all_facilities))
     all_guides = list(set(all_guides))
 
-    # by guides
+    for guide in all_guides:
+        result_info.append(dict(name=guide.user.get_username(), facilities={}))
+
     for ex in all_excursions:
-        for res in result_info:
-            if ex.guide.user.get_username() == res['name']:
-                if ex.facility.name in res['facilities']:
-                    res['facilities'][ex.facility.name] += 1
+        for d in result_info:
+            if d['name'] == ex.guide.user.get_username():
+                if ex.facility.name in d['facilities']:
+                    d['facilities'][ex.facility.name] += 1
                 else:
-                    res['facilities'][ex.facility.name] = 1
-            else:
-                result_info.append(dict(name=ex.guide.user.get_username(), facilities={
-                    ex.facility.name: 1
-                }))
-            # if ex.guide.user.get_username() != res['name']:
-            #     result_info.append(dict(name=ex.guide.user.get_username(), facilities={
-            #         ex.facility.name: 1
-            #     }))
-            # elif ex.facility.name == res['facilities']:
-            #     res['facilities'][ex.facility.name] += 1
-        # result_info.append(d)
+                    d['facilities'][ex.facility.name] = 1
+                    for other in all_facilities:
+                        if ex.facility.name != other:
+                            d['facilities'][other] = 0
+                break
+    return render(request, 'guides_statistics.html', context={'all_facilities':json.dumps(all_facilities),'guides': json.dumps(result_info)})
 
 
-
-
-            # if ex.facility.name in res['facilities']:
-            #     res['facilities'][ex.facility.name] += 1
-            # else:
-            #     if ex.guide.user.get_username() in res['name']:
-            #         if ex.facility.name in res['facilities']:
-            #             res['facilities'][ex.facility.name] += 1
-            #     else:
-            #         res['name'] = ex.guide.user.get_username()
-            #         res['facilities'][ex.facility.name] = 1
-            #         for other in all_facilities:
-            #             if other.name != ex.facility.name:
-            #                 res['facilities'][other.name] = 0
-        # if ex.facility == f:
-        #     guide = ex.guide.user.get_full_name() + " (@" + ex.guide.user.get_username() + ")"
-        #     if guide in guides:
-        #         guides[guide] += 1
-        #     else:
-        #         guides[guide] = 1
-        #     facilities.append(
-        #         {
-        #             'name':f.name,
-        #             'guides':guides,
-        #         }
-        #     )
-                
-        
-
-    # for g in guides:
-    #     info_current_guide = {}
-    #     his_facilities = {}
-    #     his_areas = {}
-
-    #     for ex in all_excursions:
-    #         if ex.guide == g:
-    #             if ex.facility.name in his_facilities:
-    #                 his_facilities[ex.facility.name] += 1
-    #             else:
-    #                 his_facilities[ex.facility.name] = 1
-    #             areas_querysets = ex.areas.all()
-    #             for a in areas_querysets:
-    #                 if a.name in his_areas:
-    #                     his_areas[a.name] += 1
-    #                 else:
-    #                     his_areas[a.name] = 1
-    #             info_current_guide['event']=ex.event
-
-    #     info_current_guide['id_guide']=g.user.id
-    #     info_current_guide['name_username']=g.user.get_full_name() + " (@" + g.user.get_username() + ")"
-    #     info_current_guide['facilities']=his_facilities
-    #     info_current_guide['areas']=his_areas
-    #     all_facilities=list(set(all_facilities))
-    #     result_info.append(info_current_guide)     
-
-    # result_info = render_to_string("guides_statistics.html", {'result_info': result_info})
-    # return HttpResponse(json.dumps(result_info), content_type="application/json")
-    return JsonResponse({'all_facilities':all_facilities,'guides': result_info})
-    return render(request, 'guides_statistics.html', context={'all_facilities':all_facilities,'guides': result_info})
+def view_calendar(request):
+    # return JsonResponse({'all_guides':list(Guide.objects.values())})
+    # return json.dumps(list(Guide.objects.all()))
+    return render(request, 'calendar.html', {'all_guides':json.dumps(list(Guide.objects.values()))})

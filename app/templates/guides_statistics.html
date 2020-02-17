@@ -21,6 +21,15 @@
 </div>
 
 <script>
+    function myFunction()
+    {
+        var all_facilities = JSON.parse('{{ all_facilities | escapejs }}');
+        var guides = JSON.parse('{{ guides | escapejs }}');
+        console.log(all_facilities);
+        console.log(guides);
+    }
+    var articles = myFunction();
+
     $(function () {
     //-------------
     //- BAR CHART -
@@ -65,42 +74,56 @@
 
     var chart_colors = ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'];
 
-    guides = []
-    excursions_count = []
+    // guides = []
+    // excursions_count = []
 
-    {% for g in guides %}
-      guides.push('{{ g.name }}');
-      {% for f, value in g.facilities.items %}
-        excursions_count.push('{{ value }}');
-      {% endfor %}
-    {% endfor %}
+    // {% for g in guides %}
+    //   guides.push('{{ g.name }}');
+    //   {% for f, value in g.facilities.items %}
+    //     excursions_count.push('{{ value }}');
+    //   {% endfor %}
+    // {% endfor %}
 
-    console.log(guides)
-    console.log(excursions_count)
+    // console.log(guides)
+    // console.log(excursions_count)
 
     data = []
-    for (var i = 0; i < guides.length; i++)
-    {
-      data.push(
-        {
-          label               : guides[i],
-          backgroundColor     : chart_colors[excursions_count[i]],
+    {% for g in guides %}
+    {% for f, value in g.facilities.items %}
+    data.push(
+      {
+        label               : '{{ g.name }}',
+        backgroundColor     : chart_colors[Math.floor(Math.random() * chart_colors.length)],
+        borderColor         : 'rgba(60,141,188,0.8)',
+        pointRadius          : false,
+        pointColor          : '#3b8bba',
+        pointStrokeColor    : 'rgba(60,141,188,1)',
+        pointHighlightFill  : '#fff',
+        pointHighlightStroke: 'rgba(60,141,188,1)',
+        data                : '{{ value }}'
+      },
+    )
+    {% endfor %}
+    {% endfor %}
+
+    var areaChartData = {
+      labels  : all_facilities,
+      
+      datasets: [
+      {% for g in guides %}
+      {
+          label               : '{{ g.name }}',
+          backgroundColor     : chart_colors[Math.floor(Math.random() * chart_colors.length)],
           borderColor         : 'rgba(60,141,188,0.8)',
           pointRadius          : false,
           pointColor          : '#3b8bba',
           pointStrokeColor    : 'rgba(60,141,188,1)',
           pointHighlightFill  : '#fff',
           pointHighlightStroke: 'rgba(60,141,188,1)',
-          data                : [excursions_count[i], excursions_count[i+1], excursions_count[i+2], excursions_count[i+3]]
-        }
-      )
-    }
-
-    var areaChartData = {
-      labels  : all_facilities,
-      
-      datasets: data,
-      
+          data                : [{% for f, value in g.facilities.items %}'{{ value }}',{% endfor %}]
+        },
+      {% endfor %}
+      ]
     }
 
     var barChartCanvas = $('#barChart').get(0).getContext('2d')
