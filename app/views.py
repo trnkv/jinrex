@@ -34,6 +34,10 @@ def index(request):
 
 
 @login_required
+def show_profile_page(request):
+    return render(request, 'profile.html', context={})
+
+@login_required
 def profile(request):
     """Функция отображения профиля пользователя."""
     user_groups = []

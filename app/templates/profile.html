@@ -3,51 +3,63 @@
 {% load staticfiles %}
 
 <div class="card-body box-profile">
-                <h3 class="profile-username text-center">{{ user.get_full_name }}</h3>
-
-                <p class="text-muted text-center">@{{ user.get_username }}</p>
-
-                <ul class="list-group list-group-unbordered mb-3">
-                    {% for dict in user_groups %}
-                    	{% for key, value in dict.items %}
-                    		{% if key == 'name' %}
-			                  <li class="list-group-item">
-			                    	<b>{{ value }}</b>
-			                    	{% if value == 'Guide' %}
-			                    		<a class="float-right">
-				                    		{% for value in dict.excursion %}
-				                    			<p>
-				                    			{{ value.facility }},
-				                    			{{ value.event }},
-				                    			{{ value.date }}</p>
-				                    		{% endfor %}
-			                    		</a>
-			                    	{% endif %}
-									{% if value == 'Incharge' %}
-			                    		<a class="float-right">
-				                    		{% for value in dict.excursion %}
-				                    			<p>
-				                    				{{ value.facility }}
-												</p>
-				                    		{% endfor %}
-			                    		</a>
-			                    	{% endif %}
-			                    	{% if value == 'Organizator' %}
-			                    		<a class="float-right">
-				                    		{% for value in dict.excursion %}
-				                    			<p>
-				                    			{{ value.facility }},
-				                    			{{ value.event }},
-				                    			{{ value.date }}</p>
-				                    		{% endfor %}
-			                    	</a>
-			                    	{% endif %}
-			                  </li>
-		                  	{% endif %}
-		                {% endfor %}
-                    {% endfor %}
-                </ul>
-
-                <!-- <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a> -->
+  <h3 class="profile-username text-center">{{ user.get_full_name }}</h3>
+  <p class="text-muted text-center">@{{ user.get_username }}</p>
+  <ul class="list-group list-group-unbordered mb-3">
+    <li id="li_role" class="list-group-item">
+    		<a id="a_ex_info" class="float-right">
+    		</a>
+    </li>
+  </ul>
 </div>
+
+<script>
+$(window).on('load', function(){
+  $.ajax({
+    url: 'get_profile/',
+    success: function(rest_data){
+      console.log(rest_data);
+      for (let key in rest_data)
+        for (let group in rest_data[key])
+          for (item in rest_data[key][group])
+            {
+              $('#li_role').append('<b>'+rest_data[key][group][item]+'</b>');
+              for (let i in rest_data[key][group][item])
+              console.log(rest_data[key][group][item][i]);
+            }
+         // for (let role in rest_data[key])
+         //  {
+         //    $('#li_role').append('<b>'+rest_data[key][role]['group']+'</b>');
+         //    for (let ex in rest_data[key][role])
+         //      for (let ev in rest_data[key][role][ex])
+         //        $('#a_ex_info').append(
+         //          '<a class="float-right"><p>'+
+         //            rest_data[key][role][ex][ev]['date'] +
+         //          '</p></a>');
+         //  }
+
+      // });
+
+      // for (let key in rest_data)
+      //   for (let role in rest_data[key]) {
+      //     $('#li_role').append('<b>'+rest_data[key][role]['group']+'</b>');
+      //     for (let ex in rest_data[key][role])
+      //     {
+      //       console.log(rest_data[key][role][ex]['event'])
+      //     }
+      //       // $('#a_ex_info').append(
+      //       //   '<p>'+
+      //       //   rest_data[key][role][ex]['facility'] + ', ' + ex.date + ', ' + ex.event +
+      //       // '</p>')
+      //
+      // }
+    },
+    error: function(xhr, ajaxOptions, thrownError){
+      console.log(xhr.status);
+      console.log(xhr.responseText);
+      console.log(thrownError);
+    },
+  })
+})
+</script>
 {% endblock %}
