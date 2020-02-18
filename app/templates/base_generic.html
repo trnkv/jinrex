@@ -1,17 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
 {% load staticfiles %}
 <html lang="en" style="height: auto; min-height: 100%;">
 
 <head>
     {% block title %}
     <title>
-        System of organization and accounting of excursions in JINR
+        system of organization and accounting of excursions in jinr
     </title>
     {% endblock %}
     <style type="text/css">
         tbody tr:hover.selected td,
         tbody tr:hover td {
-          background-color: #FFEFC6;
+          background-color: #ffefc6;
           cursor: pointer;
         }
         tbody tr.selected td {
@@ -19,110 +19,75 @@
         }
     </style>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- Tell the browser to be responsive to screen width -->
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <!-- tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <!-- Font Awesome -->
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggoyr0ixcbmqv3xipma34md+dh/1fq784/j6cy/ijtquohcwr7x9jvorxt2mzw1t" crossorigin="anonymous">
+    <!-- font awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
-    <!-- Ionicons -->
+    <!-- ionicons -->
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.18/css/AdminLTE.min.css">
-    <!-- SweetAlert2 -->
+    <!-- theme style -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.18/css/adminlte.min.css">
+    <!-- sweetalert2 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/8.11.8/sweetalert2.min.css">
-    <!-- Toastr -->
+    <!-- toastr -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
-    <!-- Google Font: Source Sans Pro -->
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-    <!-- DataTables -->
+    <!-- google font: source sans pro -->
+    <link href="https://fonts.googleapis.com/css?family=source+sans+pro:300,400,400i,700" rel="stylesheet">
+    <!-- datatables -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.10.18/af-2.3.3/b-1.5.6/b-colvis-1.5.6/b-flash-1.5.6/b-html5-1.5.6/b-print-1.5.6/cr-1.5.0/fc-3.2.5/fh-3.1.4/kt-2.5.0/r-2.2.2/rg-1.1.0/rr-1.2.4/sc-2.0.0/sl-1.3.0/datatables.min.css"/>
-    <!-- Добавление дополнительного статического CSS файла -->
-    
+    <!-- добавление дополнительного статического css файла -->
+
     <link   href="{%  static 'css/skins/skin-blue.min.css' %}" rel="stylesheet">
 </head>
 <body class="skin-blue sidebar-mini" style="height: auto; min-height: 100%;">
     <div class="wrapper" style="height: auto; min-height: 100%;">
-
-      <!-- Main Header -->
       <header class="main-header">
-
-        <!-- Logo -->
-          <a href="index2.html" class="logo">
-      <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"></span>
-      <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>JINR</b>ex</span>
-    </a>
-<!--
-        <div class="login-logo">
-            <a href="/">System of organization and accounting of excursions in <b>JINR</b></a>
-        </div>
--->
-
-        <!-- Header Navbar -->
+        <a href="index2.html" class="logo">
+            <!-- mini logo for sidebar mini 50x50 pixels -->
+            <span class="logo-mini"></span>
+            <!-- logo for regular state and mobile devices -->
+            <span class="logo-lg"><b>jinr</b>ex</span>
+        </a>
         <nav class="navbar navbar-static-top" role="navigation">
-          <!-- Sidebar toggle button-->
             <a data-toggle="push-menu" role="button"><i class="fas fa-bars"></i></a>
-          <!-- Navbar Right Menu -->
-          
         </nav>
-      </header>
-      
-      <!-- /.content-wrapper -->
-
-      <!-- Main Footer -->
-<!--      <footer class="main-footer">-->
-        <!-- To the right -->
-<!--        <div class="pull-right hidden-xs">-->
-<!--          Anything you want-->
-<!--        </div>-->
-        <!-- Default to the left -->
-<!--        <strong>JINRex <a href="#">Company</a>.</strong> All rights reserved.-->
-<!--      </footer>-->
-
-      
-      <!-- Add the sidebar's background. This div must be placed
-      immediately after the control sidebar -->
-      <div class="control-sidebar-bg"></div>
-        
-    </div>
-    <!-- ./wrapper -->
-    
+    </header>
+    <div class="control-sidebar-bg"></div>
+  </div>
     {% block content %}
-
-        {% endblock %}
-
-    <!-- REQUIRED JS SCRIPTS -->
-    <!-- jQuery -->
+    {% endblock %}
+    <!-- required js scripts -->
+    <!-- jquery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <!-- Bootstrap 4 -->
+    <!-- bootstrap 4 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
-    <!-- AdminLTE App -->
+    <!-- adminlte app -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.4.18/js/adminlte.min.js"></script>
 
-    <!-- Angular -->
+    <!-- angular -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.8/angular.min.js"></script>
-    <!-- DataTables -->
+    <!-- datatables -->
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs/jszip-2.5.0/dt-1.10.18/af-2.3.3/b-1.5.6/b-colvis-1.5.6/b-flash-1.5.6/b-html5-1.5.6/b-print-1.5.6/cr-1.5.0/fc-3.2.5/fh-3.1.4/kt-2.5.0/r-2.2.2/rg-1.1.0/rr-1.2.4/sc-2.0.0/sl-1.3.0/datatables.min.js"></script>
 
     <script>
-        $('.sidebar-toggle-btn').pushMenu()
+        $('.sidebar-toggle-btn').pushmenu()
     </script>
     <script>
-            var AdminLTEOptions = {
-              //Enable sidebar expand on hover effect for sidebar mini
-              //This option is forced to true if both the fixed layout and sidebar mini
+            var adminlteoptions = {
+              //enable sidebar expand on hover effect for sidebar mini
+              //this option is forced to true if both the fixed layout and sidebar mini
               //are used together
-              sidebarExpandOnHover: true,
-              //BoxRefresh Plugin
-              enableBoxRefresh: true,
-              //Bootstrap.js tooltip
-              enableBSToppltip: true
+              sidebarexpandonhover: true,
+              //boxrefresh plugin
+              enableboxrefresh: true,
+              //bootstrap.js tooltip
+              enablebstoppltip: true
             };
           </script>
-        
+
           <script src="{% static 'js/app.js' %}" type="text/javascript"></script>
     </body>
 </html>

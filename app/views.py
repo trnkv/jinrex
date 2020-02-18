@@ -24,9 +24,8 @@ import pdb
 # permissions = Permission.objects.all().values()
 
 def get_facility_name(facility_id):
-    queryset_facility = Facility.objects.filter(id=facility_id).values('name')
-    facility = [val for val in queryset_facility if val in queryset_facility]
-    return facility[0]['name']
+    facility = Facility.objects.filter(id=facility_id).first()
+    return facility.name
 
 
 @login_required
@@ -35,41 +34,55 @@ def index(request):
 
 
 @login_required
-def profile(request, user_id):
+def profile(request):
     """Функция отображения профиля пользователя."""
-    user_groups = []   
+    user_groups = []
 
-    for g in request.user.groups.all().values():
-        # g - ЭТО dict
-        if g['name'] == 'Guide':
+    for g in request.user.groups.all():
+        info = {'group':'', 'excursions':[]}
+        if g.name == 'Guide':
+            info["group"] = g.name
             guide_user = User.objects.get(id=request.user.id)
             guide = Guide.objects.get(user=guide_user)
-            excursions = Excursion.objects.filter(guide=guide).values('facility', 'event', 'date')
-            excursions = [val for val in excursions if val in excursions]
-            for ex in excursions:
-                ex['facility'] = Facility.objects.filter(id=ex['facility']).values('name')[0]['name']
-            g['excursion'] = excursions
-        if g['name'] == 'Incharge':
+            excursions = Excursion.objects.filter(guide=guide)
+            if excursions.exists():
+                for ex in excursions:
+                    facility_name = ex.facility.name
+                    date = ex.date
+                    event = ex.event
+                    info["excursions"].append(
+                    {
+                        'facility': facility_name,
+                        'date': date.strftime("%d.%m.%Y"),
+                        'event': event
+                    })
+            else:
+                info["excursions"].append("Now you haven't any excursion.")
+
+        if g.name == 'Incharge':
+            info["group"] = g.name
             incharge_user = User.objects.get(id=request.user.id)
-            facilities = Incharge.objects.filter(user=incharge_user).values('facility')
-            facilities = [val for val in facilities if val in facilities]
-            for f in facilities:
-                f['facility'] = list(Facility.objects.filter(id=f['facility']).values('name'))[0]['name']
-            print(facilities)
-            g['excursion'] = facilities
-        if g['name'] == 'Organizator':
-            excursions = Excursion.objects.filter(organizator=request.user).values('facility', 'event', 'date')
-            excursions = [val for val in excursions if val in excursions]
+            incharge = Incharge.objects.filter(user=incharge_user).first()
+            facility_name = incharge.facility.name
+            info["excursions"].append(facility_name)
+
+        if g.name == 'Organizator':
+            info["group"] = g.name
+            excursions = Excursion.objects.filter(organizator=request.user)
             for ex in excursions:
-                ex['facility'] = Facility.objects.filter(id=ex['facility']).values('name')[0]['name']
-            g['excursion'] = excursions
-        user_groups.append(g)
+                facility_name = ex.facility.name
+                date = ex.date
+                event = ex.event
+                info["excursions"].append(
+                {
+                    'facility': facility_name,
+                    'date': date.strftime("%d.%m.%Y"),
+                    'event': event
+                })
+        user_groups.append(info)
 
-    # return JsonResponse({'user_groups': user_groups})
-
-    # return HttpResponseRedirect('/jinrex/profile/'+user_id, context={'user_groups': user_groups})
-
-    return render(request, 'profile.html', context={'user_groups': user_groups})
+    return JsonResponse({'user_groups': user_groups})
+    # return render(request, 'profile.html', context={'user_groups': json.dumps(user_groups)})
 
 
 # return JsonResponse({'user_groups':user_groups})
@@ -508,7 +521,7 @@ def view_guide_statistics(request):
     all_facilities = []
     all_guides = []
     facilities = []
-    
+
     for ex in all_excursions:
         all_facilities.append(ex.facility.name)
         all_guides.append(ex.guide)
