@@ -5,11 +5,7 @@
 <div class="card-body box-profile">
   <h3 class="profile-username text-center">{{ user.get_full_name }}</h3>
   <p class="text-muted text-center">@{{ user.get_username }}</p>
-  <ul class="list-group list-group-unbordered mb-3">
-    <li id="li_role" class="list-group-item">
-    		<a id="a_ex_info" class="float-right">
-    		</a>
-    </li>
+  <ul id="ul_roles_info" class="list-group list-group-unbordered mb-3">
   </ul>
 </div>
 
@@ -18,41 +14,32 @@ $(window).on('load', function(){
   $.ajax({
     url: 'get_profile/',
     success: function(rest_data){
-      console.log(rest_data);
-      for (let key in rest_data)
-        for (let group in rest_data[key])
-          for (item in rest_data[key][group])
+      // console_log(rest_data.user.group)
+      console.log(rest_data.user_groups);
+      for (let dict in rest_data.user_groups)
+        {
+          $('#ul_roles_info').append('<li id="li_ex_info_' + dict + '" class="list-group-item">'+
+            '<b>'+rest_data.user_groups[dict].group+'</b>');
+          for (var ex in rest_data.user_groups[dict].excursions)
             {
-              $('#li_role').append('<b>'+rest_data[key][group][item]+'</b>');
-              for (let i in rest_data[key][group][item])
-              console.log(rest_data[key][group][item][i]);
+              $('#li_ex_info_'+dict).append('<a id="a_ex_info" class="float-right">')
+              if (rest_data.user_groups[dict].excursions[ex].facility != undefined)
+              {
+                $('#a_ex_info').append(
+                  '<p>'+
+                    rest_data.user_groups[dict].excursions[ex].facility + ', ' +
+                    rest_data.user_groups[dict].excursions[ex].date + ', ' +
+                    rest_data.user_groups[dict].excursions[ex].event +
+                  '</p>');
+              }
+              else
+                $('#li_ex_info_'+dict).append(
+                  '<p class="float-right">'+
+                    rest_data.user_groups[dict].excursions[ex] +
+                    '</p></li>');
+              $('#li_ex_info_'+dict).append('</a>');
             }
-         // for (let role in rest_data[key])
-         //  {
-         //    $('#li_role').append('<b>'+rest_data[key][role]['group']+'</b>');
-         //    for (let ex in rest_data[key][role])
-         //      for (let ev in rest_data[key][role][ex])
-         //        $('#a_ex_info').append(
-         //          '<a class="float-right"><p>'+
-         //            rest_data[key][role][ex][ev]['date'] +
-         //          '</p></a>');
-         //  }
-
-      // });
-
-      // for (let key in rest_data)
-      //   for (let role in rest_data[key]) {
-      //     $('#li_role').append('<b>'+rest_data[key][role]['group']+'</b>');
-      //     for (let ex in rest_data[key][role])
-      //     {
-      //       console.log(rest_data[key][role][ex]['event'])
-      //     }
-      //       // $('#a_ex_info').append(
-      //       //   '<p>'+
-      //       //   rest_data[key][role][ex]['facility'] + ', ' + ex.date + ', ' + ex.event +
-      //       // '</p>')
-      //
-      // }
+        }
     },
     error: function(xhr, ajaxOptions, thrownError){
       console.log(xhr.status);
