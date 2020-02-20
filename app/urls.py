@@ -9,7 +9,7 @@ urlpatterns = [
 	url(r'^$', views.index, name='jinrex'),
 	url(r'^profile/$', views.show_profile_page, name='show_profile_page'),
 	url(r'^profile/get_profile/$', views.profile, name='profile'),
-	url(r'^blank/$', views.get_excursion_form, name='get_excursion_form'),
+	url(r'^blank/(?P<name_of_page>\w+\.html)/$', views.get_excursion_form, name='get_excursion_form'),
 	url(r'^blank/send_blank/$', views.send_excursion_form, name='send_excursion_form'),
 	url(r'^blank/get_areas/$', views.get_areas),
 	url(r'^schedule/$', views.view_excursions, name='view_excursions'),

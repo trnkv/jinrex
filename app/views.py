@@ -93,10 +93,10 @@ def profile(request):
 
 
 @login_required
-def get_excursion_form(request):
+def get_excursion_form(request, name_of_page):
     form = SendExcursionForm()
     print(timezone.localtime(timezone.now()))
-    return render(request, 'excursion_form.html', {'form': form})
+    return render(request, name_of_page, {'form': form})
 
 
 @login_required
