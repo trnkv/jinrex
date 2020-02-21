@@ -7,7 +7,7 @@
   <h4><i class="fas fa-edit"></i> <b>Send a new request for the organization of excursion</b></h4>
 </section>
 
-<form id="application_form" action="send_blank/" method="post" class="card" style="padding-left: 1%; padding-right: 1%;">
+<form id="application_form" action="{% url 'app:send_application' %}" method="post" class="card" style="padding-left: 1%; padding-right: 1%;">
 	{% csrf_token %}
 	<div class="row">
 		<div class="col">
@@ -108,7 +108,7 @@
 
           if (id_facility !== ''){
           	$.ajax ({
-	            url: "get_areas/",
+	            url: "{% url 'app:get_areas' %}",
 	            type: "post",
 	            data: {
 	            	csrfmiddlewaretoken: getCookie('csrftoken'),

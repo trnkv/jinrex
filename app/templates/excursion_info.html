@@ -220,7 +220,7 @@
 	console.log(id_facility)
 
 	$.ajax ({
-			url: "../../../blank/get_areas/",
+			url: "{% url 'app:get_areas' %}",
 			type: "post",
 			data: {
 				csrfmiddlewaretoken: getCookie('csrftoken'),

@@ -56,7 +56,7 @@ def profile(request):
                 user_groups.append(info_current_group)
         if g.name == 'Incharge':
             info_current_group = {'role':'', 'excursions':[]}
-            incharge = Incharge.objects.filter(user=request.user).first()
+            incharge = Incharge.objects.get(user=request.user)
             info_current_group['role'] = g.name
             info_current_group['excursions'].append(
                 {
@@ -80,13 +80,7 @@ def profile(request):
                 user_groups.append(info_current_group)
 
     # return JsonResponse({'user_groups': user_groups})
-
-    # return HttpResponseRedirect('/jinrex/profile/'+user_id, context={'user_groups': user_groups})
-
     return render(request, 'profile.html', context={'user_groups': user_groups})
-
-
-# return JsonResponse({'user_groups':user_groups})
 
 
 @login_required
@@ -101,47 +95,34 @@ def get_areas(request):
     if request.method == 'POST':
         id_facility = request.POST.get('facility')
         if id_facility != '0':
-            list_of_dict_areas = list(Area.objects.filter(facility=id_facility).values('name'))
+            queryset_areas = Area.objects.filter(facility=id_facility)
             areas = []
-            for d in list_of_dict_areas:
-                areas.append(d['name'])
-
-            incharge = Incharge.objects.filter(facility=id_facility).values('user_id')
-            incharge_id = User.objects.filter(pk=incharge[0]['user_id']).values('id')[0]['id']
-            incharge_first_name = User.objects.filter(pk=incharge[0]['user_id']).values('first_name')[0]['first_name']
-            incharge_last_name = User.objects.filter(pk=incharge[0]['user_id']).values('last_name')[0]['last_name']
-            incharge_username = User.objects.filter(pk=incharge[0]['user_id']).values('username')[0]['username']
+            for area in queryset_areas:
+                areas.append(area.name)
+            incharge = Incharge.objects.get(facility=id_facility)
 
             return JsonResponse({'areas': areas,
-                                 'id_incharge': incharge_id,
-                                 'info_incharge': incharge_first_name + " " + incharge_last_name + " (@" + incharge_username + ")"})
+                                 'id_incharge': incharge.user.id,
+                                 'info_incharge': incharge.user.first_name + " " + incharge.user.last_name + " (@" + incharge.user.get_username() + ")"})
 
         else:
             return JsonResponse({'result': 0})
 
 
 @login_required
-def send_excursion_form(request):
+def send_application(request):
     if request.method == 'POST':
-
         form = SendExcursionForm(request.POST)
 
-        # if form.is_valid():
-        facility_id = Facility.objects.get(id=request.POST.get('facility'))
-
+        facility = Facility.objects.get(id=request.POST.get('facility'))
         areas_ids = request.POST.getlist('areas')
-
         organizator = request.user
-
         guide_user = User.objects.get(id=request.POST.get('guide'))
         guide = Guide.objects.get(user=guide_user)
-
-        incharge = Incharge.objects.get(facility=request.POST.get('facility'))
-        incharge_id = Incharge.objects.filter(facility=request.POST.get('facility')).values('id')[0]['id']
-        incharge_user = User.objects.get(id=incharge_id)
+        incharge = Incharge.objects.get(facility=facility)
 
         new_ex = Excursion.objects.create(
-            facility=facility_id,
+            facility=facility,
             organizator=organizator,
             guide=guide,
             incharge=incharge,
@@ -157,7 +138,7 @@ def send_excursion_form(request):
         new_ex.areas.set(areas_ids)
         new_ex.save()
 
-        request.user.groups.add(Group.objects.filter(name='Organizator').values('id')[0]['id'])
+        request.user.groups.add(Group.objects.get(name='Organizator'))
 
         theme = 'New excursion'
         message = 'You have received a request for a new excursion. To accept or reject it please log in to the JINRex web service.'
