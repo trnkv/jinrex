@@ -153,80 +153,47 @@ def send_application(request):
 
 @login_required
 def view_excursions(request):
-    current_user = request.user
-    current_user_id = request.user.id
+    def add_info_about_current_excursions(ex_queryset, result_list):
+        for ex in ex_queryset:
+            print(ex)
+            info_current_excursion = {
+            'id_excursion':ex.id,
+            'facility':ex.facility.name,
+            'areas':[],
+            'date':ex.date,
+            'start_time':ex.start_time,
+            'stop_time':ex.stop_time,
+            'confirmed_by_guide': ex.confirmed_by_guide,
+            'confirmed_by_incharge': ex.confirmed_by_incharge,
+            'not_held': ex.not_held
+        }
+            queryset_areas = ex.areas.all()
+            for area in queryset_areas:
+                info_current_excursion['areas'].append(area.name)
+
+            result_list.append(info_current_excursion)
 
     user_excursions = []
-
-    for g in request.user.groups.all().values():
-        # g - ЭТО dict
-        if g['name'] == 'Guide':
-            guide_user = User.objects.get(id=current_user_id)
-            guide = Guide.objects.get(user=guide_user)
-            excursions_where_user_is_guide = Excursion.objects.filter(guide=guide).values('id', 'confirmed_by_guide', 'confirmed_by_incharge', 'facility', 'date', 'start_time', 'stop_time', 'not_held')
-            excursions_where_user_is_guide = [val for val in excursions_where_user_is_guide if val in excursions_where_user_is_guide]
-            for ex in excursions_where_user_is_guide:
-                excursion = Excursion.objects.get(id=ex['id'])
-                queryset = excursion.areas.all().values('name')
-                ex['facility'] = Facility.objects.filter(id=ex['facility']).values('name')[0]['name']
-                areas = [val for val in queryset if val in queryset]
-
-                ar = []
-                for area in areas:
-                    ar.append(area['name'])
-                ex['areas'] = ar
-                user_excursions.append(ex)
-
-        if g['name'] == 'Incharge':
-            incharge_user = User.objects.get(id=current_user_id)
-            incharge = Incharge.objects.get(user=incharge_user)
-            excursions_where_user_is_incharge = Excursion.objects.filter(incharge=incharge).values('id', 'confirmed_by_guide', 'confirmed_by_incharge', 'facility', 'date', 'start_time', 'stop_time', 'not_held')
-            excursions_where_user_is_incharge = [val for val in excursions_where_user_is_incharge if val in excursions_where_user_is_incharge]
-            for ex in excursions_where_user_is_incharge:
-                excursion = Excursion.objects.get(id=ex['id'])
-                queryset = excursion.areas.all().values('name')
-                ex['facility'] = Facility.objects.filter(id=ex['facility']).values('name')[0]['name']
-                areas = [val for val in queryset if val in queryset]
-
-                ar = []
-                for area in areas:
-                    ar.append(area['name'])
-                ex['areas'] = ar
-                user_excursions.append(ex)
-
-        if g['name'] == 'Organizator':
-            excursions_where_user_is_organizator = Excursion.objects.filter(organizator=current_user).values('id', 'confirmed_by_guide', 'confirmed_by_incharge', 'facility', 'date', 'start_time', 'stop_time', 'not_held')
-            excursions_where_user_is_organizator = [val for val in excursions_where_user_is_organizator if val in excursions_where_user_is_organizator]
-            for ex in excursions_where_user_is_organizator:
-                excursion = Excursion.objects.get(id=ex['id'])
-                queryset = excursion.areas.all().values('name')
-                ex['facility'] = Facility.objects.filter(id=ex['facility']).values('name')[0]['name']
-                areas = [val for val in queryset if val in queryset]
-
-                ar = []
-                for area in areas:
-                    ar.append(area['name'])
-                ex['areas'] = ar
-                user_excursions.append(ex)
+    for g in request.user.groups.all():
+        if g.name == 'Guide':
+            guide = Guide.objects.get(user=request.user)
+            excursions_where_user_is_guide = Excursion.objects.filter(guide=guide)
+            add_info_about_current_excursions(excursions_where_user_is_guide, user_excursions)
+        if g.name == 'Incharge':
+            incharge = Incharge.objects.get(user=request.user)
+            excursions_where_user_is_incharge = Excursion.objects.filter(incharge=incharge)
+            add_info_about_current_excursions(excursions_where_user_is_incharge, user_excursions)
+        if g.name == 'Organizator':
+            excursions_where_user_is_organizator = Excursion.objects.filter(organizator=request.user)
+            add_info_about_current_excursions(excursions_where_user_is_organizator, user_excursions)
 
     # return JsonResponse({'user_excursions': user_excursions})
-    #return user_excursions
 
-    all_excursions = Excursion.objects.all().values()
-    all_excursions = [val for val in all_excursions if val in all_excursions]
+    all_excursions_queryset = Excursion.objects.all()
+    all_excursions = []
+    add_info_about_current_excursions(all_excursions_queryset, all_excursions)
 
-    for d in all_excursions:
-        this_facilities = list(Facility.objects.filter(id=d['facility_id']).values('name'))
-        excursion = Excursion.objects.get(id=d['id'])
-        queryset = excursion.areas.all().values('name')
-        areas = [val for val in queryset if val in queryset]
-
-        ar = []
-        for area in areas:
-            ar.append(area['name'])
-
-        d['areas'] = ar
-        d['facility'] = this_facilities[0]['name']
+    # return JsonResponse({'all_excursions': all_excursions})
 
     return render(request, 'schedule.html', context={'my_excursions': user_excursions, 'all_excursions': all_excursions})
 

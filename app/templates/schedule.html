@@ -27,8 +27,8 @@
 			</thead>
 			<tbody class="table-hover">
 			  	{% for ex in my_excursions %}
-			  		<tr id="row_excursion_data_{{ ex.id }}" role="row" class="odd" onclick="clickLink(this)" data-toggle="tooltip" data-placement="top" title="Click to view full information" not-held="{{ ex.not_held }}">
-						<td class="ex_id" style="display: none;">{{ ex.id }}/</td>
+			  		<tr id="row_excursion_data_{{ ex.id_excursion }}" role="row" class="odd" onclick="clickLink(this)" data-toggle="tooltip" data-placement="top" title="Click to view full information" not-held="{{ ex.not_held }}">
+						<td class="ex_id" style="display: none;">{{ ex.id_excursion }}/</td>
 						<td class="td_confirmed_by_guide sorting_1">
 							{% if ex.confirmed_by_guide == True %}
 								<h5><span class='badge badge-success'><i class='fas fa-check'></i></span></h5>
@@ -97,8 +97,8 @@ $(document).ready(function() {
 		$("#selectButton").html(text);
 		if (text == 'All excursions'){
 			$("tbody").html('{% for ex in all_excursions %}'+
-			  		'<tr id="row_excursion_data_{{ ex.id }}" role="row" class="odd" onclick="clickLink(this)" data-toggle="tooltip" data-placement="top" title="Click to view full information" not-held="{{ ex.not_held }}">'+
-						'<td class="ex_id" style="display: none;">{{ ex.id }}/</td>'+
+			  		'<tr id="row_excursion_data_{{ ex.id_excursion }}" role="row" class="odd" onclick="clickLink(this)" data-toggle="tooltip" data-placement="top" title="Click to view full information" not-held="{{ ex.not_held }}">'+
+						'<td class="ex_id" style="display: none;">{{ ex.id_excursion }}/</td>'+
 						'<td class="td_confirmed_by_guide sorting_1">'+
 							'{% if ex.confirmed_by_guide == True %}'+
 								'<h5><span class=\'badge badge-success\'><i class=\'fas fa-check\'></i></span></h5>'+
