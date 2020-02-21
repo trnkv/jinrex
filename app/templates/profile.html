@@ -2,51 +2,37 @@
 {% block content %}
 
 <div class="card-body box-profile">
-                <h3 class="profile-username text-center">{{ user.get_full_name }}</h3>
-
-                <p class="text-muted text-center">@{{ user.get_username }}</p>
-
-                <ul class="list-group list-group-unbordered mb-3">
-                    {% for dict in user_groups %}
-                    	{% for key, value in dict.items %}
-                    		{% if key == 'name' %}
-			                  <li class="list-group-item">
-			                    	<b>{{ value }}</b>
-			                    	{% if value == 'Guide' %}
-			                    		<a class="float-right">
-				                    		{% for value in dict.excursion %}
-				                    			<p>
-				                    			{{ value.facility }},
-				                    			{{ value.event }},
-				                    			{{ value.date }}</p>
-				                    		{% endfor %}
-			                    		</a>
-			                    	{% endif %}
-									{% if value == 'Incharge' %}
-			                    		<a class="float-right">
-				                    		{% for value in dict.excursion %}
-				                    			<p>
-				                    				{{ value.facility }}
-												</p>
-				                    		{% endfor %}
-			                    		</a>
-			                    	{% endif %}
-			                    	{% if value == 'Organizator' %}
-			                    		<a class="float-right">
-				                    		{% for value in dict.excursion %}
-				                    			<p>
-				                    			{{ value.facility }},
-				                    			{{ value.event }},
-				                    			{{ value.date }}</p>
-				                    		{% endfor %}
-			                    	</a>
-			                    	{% endif %}
-			                  </li>
-		                  	{% endif %}
-		                {% endfor %}
-                    {% endfor %}
-                </ul>
-
-                <!-- <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a> -->
+	<h3 class="profile-username text-center">{{ user.get_full_name }}</h3>
+	<p class="text-muted text-center">@{{ user.get_username }}</p>
+	<ul class="list-group list-group-unbordered mb-3">
+		{% for dict in user_groups %}
+			{% for key, value in dict.items %}
+				{% if key == 'role' %}
+					<li class="list-group-item" style="padding: 1%;">
+						<b>{{ value }}</b>
+						{% if value == 'Guide' or value == 'Organizator' %}
+							<a class="float-right">
+								{% for value in dict.excursions %}
+									<p>
+									{{ value.facility }},
+									{{ value.event }},
+									{{ value.date }}</p>
+								{% endfor %}
+							</a>
+						{% endif %}
+						{% if value == 'Incharge' %}
+							<a class="float-right">
+								{% for value in dict.excursions %}
+									<p>
+										{{ value.facility }}
+									</p>
+								{% endfor %}
+							</a>
+						{% endif %}
+					</li>
+				{% endif %}
+			{% endfor %}
+		{% endfor %}
+	</ul>
 </div>
 {% endblock %}

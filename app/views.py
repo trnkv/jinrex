@@ -24,9 +24,8 @@ import pdb
 # permissions = Permission.objects.all().values()
 
 def get_facility_name(facility_id):
-    queryset_facility = Facility.objects.filter(id=facility_id).values('name')
-    facility = [val for val in queryset_facility if val in queryset_facility]
-    return facility[0]['name']
+    facility = Facility.objects.filter(id=facility_id).first()
+    return facility.name
 
 
 @login_required
@@ -35,35 +34,50 @@ def index(request):
 
 
 @login_required
-def profile(request, user_id):
+def profile(request):
     """Функция отображения профиля пользователя."""
     user_groups = []   
 
-    for g in request.user.groups.all().values():
-        # g - ЭТО dict
-        if g['name'] == 'Guide':
-            guide_user = User.objects.get(id=request.user.id)
-            guide = Guide.objects.get(user=guide_user)
-            excursions = Excursion.objects.filter(guide=guide).values('facility', 'event', 'date')
-            excursions = [val for val in excursions if val in excursions]
-            for ex in excursions:
-                ex['facility'] = Facility.objects.filter(id=ex['facility']).values('name')[0]['name']
-            g['excursion'] = excursions
-        if g['name'] == 'Incharge':
-            incharge_user = User.objects.get(id=request.user.id)
-            facilities = Incharge.objects.filter(user=incharge_user).values('facility')
-            facilities = [val for val in facilities if val in facilities]
-            for f in facilities:
-                f['facility'] = list(Facility.objects.filter(id=f['facility']).values('name'))[0]['name']
-            print(facilities)
-            g['excursion'] = facilities
-        if g['name'] == 'Organizator':
-            excursions = Excursion.objects.filter(organizator=request.user).values('facility', 'event', 'date')
-            excursions = [val for val in excursions if val in excursions]
-            for ex in excursions:
-                ex['facility'] = Facility.objects.filter(id=ex['facility']).values('name')[0]['name']
-            g['excursion'] = excursions
-        user_groups.append(g)
+    for g in request.user.groups.all():
+        if g.name == 'Guide':
+            info_current_group = {'role':'', 'excursions':[]}
+            guide = Guide.objects.get(user=request.user)       
+            excursions = Excursion.objects.filter(guide=guide)
+            if excursions.exists():
+                info_current_group['role'] = g.name
+                for ex in excursions:
+                    info_current_group['excursions'].append(
+                        {
+                            'facility': ex.facility.name,
+                            'date': ex.date,
+                            'event': ex.event
+                        }
+                    )
+                user_groups.append(info_current_group)
+        if g.name == 'Incharge':
+            info_current_group = {'role':'', 'excursions':[]}
+            incharge = Incharge.objects.filter(user=request.user).first()
+            info_current_group['role'] = g.name
+            info_current_group['excursions'].append(
+                {
+                    'facility': incharge.facility.name
+                }
+            )
+            user_groups.append(info_current_group)
+        if g.name == 'Organizator':
+            info_current_group = {'role':'', 'excursions':[]}
+            excursions = Excursion.objects.filter(organizator=request.user)
+            if excursions.exists():
+                for ex in excursions:
+                    info_current_group['role'] = g.name
+                    info_current_group['excursions'].append(
+                        {
+                            'facility': ex.facility.name,
+                            'date': ex.date,
+                            'event': ex.event
+                        }
+                    )
+                user_groups.append(info_current_group)
 
     # return JsonResponse({'user_groups': user_groups})
 
