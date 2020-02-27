@@ -483,3 +483,26 @@ def get_excursions_to_calendar(request):
         )
     return JsonResponse({'calendar':calendar})
     # return render(request, 'calendar.html', {'calendar':json.dumps(calendar)})
+
+def get_excursions_list(request):
+    from django.core import serializers
+
+    all_excursions_queryset = Excursion.objects.all()
+    result = []
+    for excursion in all_excursions_queryset:
+        event = {}
+        event['id'] = excursion.id
+        event['event'] = excursion.event
+        event['organizator'] = excursion.organizator.get_full_name() #TODO: bring to consistency with guide and incharge(.user.)
+        event['guide'] = excursion.guide.user.get_full_name() 
+        event['incharge'] = excursion.incharge.user.get_full_name() 
+        event['facility'] = excursion.facility.name
+        event['date'] = excursion.date
+        event['start_time'] = excursion.start_time
+        event['stop_time'] = excursion.stop_time
+        event['confirmed_by_guide'] = excursion.confirmed_by_guide
+        event['confirmed_by_incharge'] = excursion.confirmed_by_incharge
+
+        result.append(event)
+
+    return JsonResponse({'excursions':result})
