@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.template.loader import render_to_string
 from django.shortcuts import render_to_response
 import json
+import datetime
 
 from .models import Excursion, Area, Facility, Guide, Incharge, Chat, Message
 from django.contrib.auth.models import User, Group, Permission
@@ -96,11 +97,8 @@ def get_areas(request):
         id_facility = request.POST.get('facility')
         if id_facility != '0':
             queryset_areas = Area.objects.filter(facility=id_facility)
-            areas = []
-            for area in queryset_areas:
-                areas.append(area.name)
+            areas = [area.name for area in queryset_areas]
             incharge = Incharge.objects.get(facility=id_facility)
-
             return JsonResponse({'areas': areas,
                                  'id_incharge': incharge.user.id,
                                  'info_incharge': incharge.user.first_name + " " + incharge.user.last_name + " (@" + incharge.user.get_username() + ")"})
@@ -155,22 +153,18 @@ def send_application(request):
 def view_excursions(request):
     def add_info_about_current_excursions(ex_queryset, result_list):
         for ex in ex_queryset:
-            print(ex)
+            queryset_areas = ex.areas.all()
             info_current_excursion = {
             'id_excursion':ex.id,
             'facility':ex.facility.name,
-            'areas':[],
+            'areas':[area.name for area in queryset_areas],
             'date':ex.date,
             'start_time':ex.start_time,
             'stop_time':ex.stop_time,
             'confirmed_by_guide': ex.confirmed_by_guide,
             'confirmed_by_incharge': ex.confirmed_by_incharge,
             'not_held': ex.not_held
-        }
-            queryset_areas = ex.areas.all()
-            for area in queryset_areas:
-                info_current_excursion['areas'].append(area.name)
-
+            }
             result_list.append(info_current_excursion)
 
     user_excursions = []
@@ -203,97 +197,54 @@ def get_excursion(request, id_excursion):
 
     # return JsonResponse({'request': request.POST.dict})
 
-    queryset_desired_excursion = Excursion.objects.filter(id=id_excursion).values()
-    desired_excursion = [val for val in queryset_desired_excursion if val in queryset_desired_excursion]
+    qs_ex = Excursion.objects.get(id=id_excursion)
+    excursion_areas = qs_ex.areas.all()
+    excursion_info = {
+        'id': qs_ex.id,
+        'facility': qs_ex.facility.name,
+        'areas_names': [area.name for area in excursion_areas],
+        'areas_ids': [area.id for area in excursion_areas],
+        'organizator': qs_ex.organizator.first_name + ' ' + qs_ex.organizator.last_name + ' (@'+qs_ex.organizator.get_username() + ')',
+        'guide': qs_ex.guide.user.first_name + ' ' + qs_ex.guide.user.last_name + ' (@' + qs_ex.guide.user.get_username() + ')',
+        'incharge': qs_ex.incharge.user.first_name + ' ' + qs_ex.incharge.user.last_name + ' (@' + qs_ex.incharge.user.get_username() + ')',
+        'date': qs_ex.date.strftime("%d %b %Y"),
+        'start_time': qs_ex.start_time.strftime("%H:%M"),
+        'stop_time': qs_ex.stop_time.strftime("%H:%M"),
+        'language': qs_ex.language,
+        'target_audience': qs_ex.target_audience,
+        'participants': qs_ex.participants,
+        'event': qs_ex.event,
+        'confirmed_by_guide': qs_ex.confirmed_by_guide,
+        'confirmed_by_incharge': qs_ex.confirmed_by_incharge,
+        'not_held': qs_ex.not_held
+    }
 
-    desired_excursion[0]['facility'] = get_facility_name(desired_excursion[0]['facility_id'])
-
-    excursion = Excursion.objects.get(id=desired_excursion[0]['id'])
-    queryset_areas_names = excursion.areas.all().values('name')
-    queryset_areas_ids = excursion.areas.all().values('id')
-
-    list_areas_names = [val for val in queryset_areas_names if val in queryset_areas_names]
-    areas_names = []
-    for area in list_areas_names:
-        areas_names.append(area['name'])
-    desired_excursion[0]['areas_names'] = areas_names
-
-    list_areas_ids = [val for val in queryset_areas_ids if val in queryset_areas_ids]
-    areas_ids = []
-    for area in list_areas_ids:
-        areas_ids.append(area['id'])
-
-    desired_excursion[0]['areas_ids'] = areas_ids
-
-    user_organizator = list(User.objects.filter(id=desired_excursion[0]['organizator_id']))
-    desired_excursion[0]['organizator'] = user_organizator[0]
-
-    guide = list(Guide.objects.filter(id=desired_excursion[0]['guide_id']).values('user'))
-    user_guide = User.objects.get(id=guide[0]['user'])
-    desired_excursion[0]['guide'] = user_guide
-
-    incharge = list(Incharge.objects.filter(facility=desired_excursion[0]['facility_id']).values('user'))
-    user_incharge = User.objects.get(id=incharge[0]['user'])
-    desired_excursion[0]['incharge'] = user_incharge
-
-    # return  JsonResponse({'desired_excursion': desired_excursion})
+    # return  JsonResponse({'excursion_info': excursion_info})
 
     is_user_organizator = False
     is_user_guide = False
     is_user_incharge = False
 
-    # if request.user == user_guide and desired_excursion[0]['confirmed_by_guide']:
-    #     confirmed_by_guide = True
-    # if request.user == user_incharge and desired_excursion[0]['confirmed_by_incharge']:
-    #    confirmed_by_incharge = True
-    # if request.user == desired_excursion[0]['organizator'] and desired_excursion[0]['confirmed_guide'] and desired_excursion[0]['confirmed_incharge']:
-    #     confirmed = True
-
-
-    if request.user == desired_excursion[0]['organizator']:
+    if request.user == qs_ex.organizator:
         is_user_organizator = True
-
-    if request.user == desired_excursion[0]['guide']:
+    if request.user == qs_ex.guide:
         is_user_guide = True
-
-    if request.user == desired_excursion[0]['incharge']:
+    if request.user == qs_ex.incharge:
         is_user_incharge = True
 
-    # return JsonResponse({'ex':desired_excursion[0]})
-    #return JsonResponse({'incharge': desired_excursion[0]['incharge']})
+    form = ViewExcursionForm(initial=excursion_info)
 
-    form = ViewExcursionForm(initial={
-        'facility': desired_excursion[0]['facility_id'],
-        'areas': queryset_areas_ids,
-        'organizator': desired_excursion[0]['organizator'],
-        'guide': desired_excursion[0]['guide'],
-        'incharge': desired_excursion[0]['incharge'],
-        'event': desired_excursion[0]['event'],
-        'date': desired_excursion[0]['date'],
-        'start_time': desired_excursion[0]['start_time'],
-        'stop_time': desired_excursion[0]['stop_time'],
-        'language': desired_excursion[0]['language'],
-        'target_audience': desired_excursion[0]['target_audience'],
-        'participants': desired_excursion[0]['participants'],
-    })
-
+    # return form.as_ul()
     # return JsonResponse({'desired_excursion':desired_excursion})
 
-    chat = Chat.objects.filter(members__in=[request.user.id], excursion=id_excursion).values()
-    if len(chat) != 0:
-        messages = Message.objects.filter(chat=chat[0]['id']).values()
+    chat = Chat.objects.filter(members__in=[request.user.id], excursion=id_excursion)
+    if chat.exists():
+        messages = Message.objects.filter(chat=chat.first().id).values()
         for m in messages:
             m['author'] = User.objects.get(id=m['author_id'])
-        # return JsonResponse({
-        #               'desired_excursion': desired_excursion[0],
-        #               'form': form,
-        #               'chat': chat,
-        #               'messages': messages,
-        #               'form_message': MessageForm()
-        #               })
         return render(request, 'excursion_info.html',
                       {
-                      'desired_excursion': desired_excursion[0],
+                      'excursion': json.dumps(excursion_info),
                       'form': form,
                       'chat': chat,
                       'messages': messages,
@@ -305,18 +256,16 @@ def get_excursion(request, id_excursion):
     else:
         chat = create_chat(
             request,
-            desired_excursion[0]['organizator'],
-            desired_excursion[0]['incharge'],
-            desired_excursion[0]['guide'],
+            qs_ex.organizator,
+            qs_ex.incharge,
+            qs_ex.guide,
             int(id_excursion))
 
         #return JsonResponse({'chat':chat})
 
         return render(request, 'excursion_info.html',
                       {
-                      'desired_excursion': desired_excursion[0],
-                      # 'confirmed_guide': desired_excursion[0]['confirmed_guide'],
-                      # 'confirmed_incharge': desired_excursion[0]['confirmed_incharge'],
+                      'excursion': json.dumps(excursion_info),
                       'form': form,
                       'chat': chat,
                       'messages':'none',
@@ -326,7 +275,7 @@ def get_excursion(request, id_excursion):
                       })
 
 
-# return HttpResponse(form.as_p())
+    return HttpResponse(form.as_p())
 
 
 def create_chat(request, organizator, incharge, guide, id_excursion):
@@ -344,8 +293,8 @@ def create_chat(request, organizator, incharge, guide, id_excursion):
 
 @login_required
 def change_confirmed(request, id_excursion):
-    queryset_excursion = Excursion.objects.filter(id=id_excursion).values()
-    excursion = [val for val in queryset_excursion]
+    qs_ex = Excursion.objects.filter(id=id_excursion).values()
+    excursion = [val for val in qs_ex]
 
     this_guide = list(Guide.objects.filter(id=excursion[0]['guide_id']).values('user'))
     user_guide = User.objects.get(id=this_guide[0]['user'])
@@ -462,20 +411,37 @@ def view_areas_attendace(request):
 
 
 def view_guide_statistics(request):
+    return render(request, 'guides_statistics.html', {})
+
+def get_all_facilities():
+    all_excursions = Excursion.objects.filter(not_held = False)
+    all_facilities = []
+
+    for ex in all_excursions:
+        all_facilities.append(ex.facility.name)
+    all_facilities = sorted(list(set(all_facilities)), reverse=True)
+    return all_facilities
+
+def get_all_guides():
+    all_excursions = Excursion.objects.filter(not_held = False)
+    all_guides = []
+
+    for ex in all_excursions:
+        all_guides.append(ex.guide)
+    all_guides = list(set(all_guides))
+    return all_guides
+
+
+
+def get_guide_statistics(request):
     all_excursions = Excursion.objects.filter(not_held = False)
     #all_excursions = [val for val in all_excursions if val in all_excursions]
 
     guides = {}
     result_info = []
-    all_facilities = []
-    all_guides = []
+    all_facilities = get_all_facilities()
+    all_guides = get_all_guides()
     facilities = []
-    
-    for ex in all_excursions:
-        all_facilities.append(ex.facility.name)
-        all_guides.append(ex.guide)
-    all_facilities = list(set(all_facilities))
-    all_guides = list(set(all_guides))
 
     for guide in all_guides:
         result_info.append(dict(name=guide.user.get_username(), facilities={}))
@@ -491,10 +457,29 @@ def view_guide_statistics(request):
                         if ex.facility.name != other:
                             d['facilities'][other] = 0
                 break
-    return render(request, 'guides_statistics.html', context={'all_facilities':json.dumps(all_facilities),'guides': json.dumps(result_info)})
+    return JsonResponse({'all_facilities':all_facilities, 'guide_statistics':result_info})
+    # return render(request, 'guides_statistics.html', context={'all_facilities':json.dumps(all_facilities),'guides': json.dumps(result_info)})
 
 
 def view_calendar(request):
+    return render(request, 'calendar.html', {})
+
+
+def get_excursions_to_calendar(request):
     # return JsonResponse({'all_guides':list(Guide.objects.values())})
     # return json.dumps(list(Guide.objects.all()))
-    return render(request, 'calendar.html', {'all_guides':json.dumps(list(Guide.objects.values()))})
+    calendar = []
+    all_excursions = Excursion.objects.all()
+    for ex in all_excursions:
+        start = ex.date.strftime("%Y, %m, %d") + ', ' + ex.start_time.strftime("%H, %M")
+        end = ex.date.strftime("%Y, %m, %d") + ', ' + ex.stop_time.strftime("%H, %M")
+        print(start)
+        calendar.append(
+            {
+                'title': ex.facility.name + ', ' + ex.event,
+                'start': start,
+                'end': end
+            }
+        )
+    return JsonResponse({'calendar':calendar})
+    # return render(request, 'calendar.html', {'calendar':json.dumps(calendar)})
