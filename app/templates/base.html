@@ -114,7 +114,7 @@
           {% if user.is_authenticated %}
             <div class="user-panel">
               <div>
-                  <a href="{% url 'app:profile' %}">{{ user.get_full_name }}</a>
+                  <a id="user_name" href="{% url 'app:profile' %}">{{ user.get_full_name }}</a>
                 <!-- Status -->
                 <br><small><a href="#"><i class="fa fa-circle text-success"></i> Online</a></small>
               </div>

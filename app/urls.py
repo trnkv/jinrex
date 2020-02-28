@@ -24,5 +24,6 @@ urlpatterns = [
 	url(r'^guides/', views.view_guide_statistics, name='view_guide_statistics'),
 	url(r'^get_guide_statistics/', views.get_guide_statistics, name='get_guide_statistics'),
 	url(r'^calendar/', views.view_calendar, name='view_calendar'),
-	url(r'^get_excursions_to_calendar/', views.get_excursions_to_calendar, name='get_excursions_to_calendar')
+	url(r'^get_excursions_to_calendar/', views.get_excursions_to_calendar, name='get_excursions_to_calendar'),
+	url(r'^rest/get_excursions_list', views.get_excursions_list, name='get_excursions_list')
 ]
