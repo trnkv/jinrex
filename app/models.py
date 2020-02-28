@@ -106,7 +106,7 @@ class Excursion(models.Model):
 
     organizator = models.ForeignKey(User, related_name='user_organizator', default="", on_delete=models.DO_NOTHING)
     guide = models.ForeignKey(Guide, related_name='user_guide', default="", on_delete=models.DO_NOTHING)
-    incharge = models.ForeignKey(Incharge, related_name='user_incharge', default="", on_delete=models.DO_NOTHING)
+    incharge = models.ForeignKey(Incharge, related_name='user_incharge', default=None, null=True, blank=True, on_delete=models.DO_NOTHING)
 
     event = models.CharField(max_length=200)
     date = models.DateField()

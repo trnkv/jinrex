@@ -17,9 +17,9 @@ class MessageForm(ModelForm):
 class SendExcursionForm(ModelForm):
 	def __init__(self, *args, **kwargs):
 		super(SendExcursionForm, self).__init__(*args, **kwargs)
-		guides = Group.objects.get(name='Guide').user_set.all().values()
+		guides = Guide.objects.all()
 		choices_guide = [('0', '---------')]
-		choices_guide += ([(s['id'], '%s %s (@%s)' % (s['first_name'], s['last_name'], s['username'])) for s in guides])
+		choices_guide += ([(g.user.id, '%s %s (@%s)' % (g.user.first_name, g.user.last_name, g.user.get_username())) for g in guides])
 		self.fields['guide'].choices = choices_guide
 
 #		guides = Group.objects.get(name='Guide').user_set.all().values()
@@ -81,25 +81,14 @@ class ViewExcursionForm(ModelForm):
 	def __init__(self, *args, **kwargs):
 		super(ViewExcursionForm, self).__init__(*args, **kwargs)
 
-		guides = Group.objects.get(name='Guide').user_set.all().values()
+		guides = Guide.objects.all()
 		choices_guide = [('0', '---------')]
-		choices_guide += ([(s['id'] ,'%s %s (@%s)' % (s['first_name'], s['last_name'], s['username'])) for s in guides])
+		choices_guide += ([(g.user.id, '%s %s (@%s)' % (g.user.first_name, g.user.last_name, g.user.get_username())) for g in guides])
 		self.fields['guide'].choices = choices_guide
 
-		# print(self.fields['facility'].queryset[0])
-		# guides = Guide.objects.filter(facility=self.fields['facility'].queryset[0]).values()
-		# guides = [val for val in guides]
-		# print(guides)
-		# guides_users = []
-		# for i in range(len(guides)):
-		# 	guides_users.append([val for val in Group.objects.get(name='Guide').user_set.filter(id=guides[i]['user_id']).values()])
-		# choices_guide = []
-		# choices_guide += ([(s[0]['id'], '%s %s (@%s)' % (s[0]['first_name'], s[0]['last_name'], s[0]['username'])) for s in guides_users])
-		# self.fields['guide'].choices = choices_guide
-
-		incharges = Group.objects.get(name='Incharge').user_set.all().values()
+		incharges = Incharge.objects.all()
 		choices_incharge = [('0', '---------')]
-		choices_incharge += ([(s['id'] ,'%s %s (@%s)' % (s['first_name'], s['last_name'], s['username'])) for s in incharges])
+		choices_incharge += ([(i.user.id, '%s %s (@%s)' % (i.user.first_name, i.user.last_name, i.user.get_username())) for i in incharges])
 		self.fields['incharge'].choices = choices_incharge
 		# i = Incharge.objects.filter(id_facility=self.fields['facility'].queryset[0]).values('user_id')[0]['user_id']
 
