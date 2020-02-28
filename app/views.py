@@ -325,8 +325,9 @@ def change_confirmed(request, id_excursion):
             Excursion.objects.filter(id=id_excursion).update(confirmed_by_incharge=True)
             return HttpResponse(status=204)
     else:
-        created_incharge = Incharge.objects.create(facility=qs_ex.facility, user=request.user)
-        request.user.groups.add(Group.objects.get(name='Incharge'))
+        if Incharge.objects.filter(user=request.user).exists():
+            created_incharge = Incharge.objects.create(facility=qs_ex.facility, user=request.user)
+            request.user.groups.add(Group.objects.get(name='Incharge'))
         Excursion.objects.filter(id=id_excursion).update(incharge=created_incharge, confirmed_by_incharge=True)
         chat = Chat.objects.get(excursion=id_excursion)
         chat.members.add(request.user)
@@ -506,9 +507,27 @@ def get_excursions_to_calendar(request):
     for ex in all_excursions:
         start = ex.date.strftime("%Y, %m, %d") + ', ' + ex.start_time.strftime("%H, %M")
         end = ex.date.strftime("%Y, %m, %d") + ', ' + ex.stop_time.strftime("%H, %M")
-        print(start)
+        excursion_areas = ex.areas.all()
         calendar.append(
             {
+                'id': ex.id,
+                'facility': ex.facility.id,
+                'areas_names': [area.name for area in excursion_areas],
+                'areas_ids': [area.id for area in excursion_areas],
+                'organizator': ex.organizator.id,
+                'guide': ex.guide.user.id,
+                'incharge': ex.incharge.user.get_username(),
+                'date': ex.date,
+                'start_time': ex.start_time.strftime("%H:%M"),
+                'stop_time': ex.stop_time.strftime("%H:%M"),
+                'language': ex.language,
+                'target_audience': ex.target_audience,
+                'participants': ex.participants,
+                'event': ex.event,
+                'confirmed_by_guide': ex.confirmed_by_guide,
+                'confirmed_by_incharge': ex.confirmed_by_incharge,
+                'not_held': ex.not_held,
+                
                 'title': ex.facility.name + ', ' + ex.event,
                 'start': start,
                 'end': end
