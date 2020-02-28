@@ -6,7 +6,7 @@ from . import views
 app_name = 'app'
 
 urlpatterns = [
-	url(r'^$', views.index, name='jinrex'),
+	url(r'^$', views.view_calendar, name='view_calendar'),
 	url(r'^profile/$', views.profile, name='profile'),
 	url(r'^blank/$', views.get_excursion_form, name='get_excursion_form'),
 	url(r'^send_application/$', views.send_application, name='send_application'),
