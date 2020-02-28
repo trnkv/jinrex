@@ -15,19 +15,24 @@
     <div class="card">
         <div class="card-header ui-sortable-handle" style="cursor: move;">
             <h3 class="card-title">
-              <i class="fas fa-chart-pie mr-1"></i>
+              <i class="fas fa-list mr-1"></i>
               Excursion list
             </h3>
+            <!-- Top buttons for choosing my excursions or all -->
             <div class="card-tools">
-                <ul class="nav nav-pills ml-auto">
+                <!-- <ul class="nav nav-pills ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#my-list" data-toggle="tab">My excursions</a>
+                        <button type="submit" class="btn btn-block btn-default btn-sm">My excursions</button>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#all-list" data-toggle="tab">All</a>
+                        <button type="submit" class="btn btn-block btn-default btn-sm">All excursions</button>
                     </li>
-                </ul>
-            </div>
+                </ul> -->
+                <div class="btn-group">
+                    <button id="show_my_excursions" type="button" class="btn btn-default">My excursions</button>
+                    <button id="show_all_excursions"type="button" class="btn btn-default">All excursions</button>
+                </div>
+            </div> 
         </div><!-- /.card-header -->
         <div class="card-body">
             <div class="table-responsive">
@@ -42,7 +47,6 @@
                             <th class="sorting">Stop Time</th>
                             <th class="sorting">Event</th>
                             <th class="sorting">Organizer</th>
-
                         </tr>
                     </thead>
                 </table>
@@ -54,6 +58,103 @@
 
 $(document).ready(function() {
     var excursions_data = [];
+    var table = null;
+
+    function draw_datatable(data) {
+        //Create datatable from input data 
+        table = $("#schedule_table").DataTable({
+            paging: true,
+            lengthChange: false,
+            searching: true,
+            ordering: true,
+            order: [[ 3, "desc" ]], // By default order by date
+            info: true,
+            autoWidth: false,
+            createdRow: function( row, data, dataIndex ) {
+                var start_time = moment(data.date + 'T' + data.start_time);
+                var now = moment();
+                if (start_time > now) {
+                    if ((data.confirmed_by_guide!=true) || (data.confirmed_by_incharge!=true))
+                        $(row).css('background-color', '#FEAAB3');
+                        //$(row).addClass('red');
+                    else
+                        $(row).css('background-color', '#AAFFBE');
+                }
+                else {
+                    $(row).css('background-color', '#C2C2C2');
+                }
+            },
+            data: data.excursions,
+            columns: [
+                { 
+                    data: "guide",
+                    render: function ( data, type, row ) {
+                        var text_color = 'red';
+                        if (row.confirmed_by_guide==true)
+                            return '<span style="color:green">'+ data + '</span>';
+                        return '<b style="color:red">'+ data + '</b>';
+                    }
+                },
+                { 
+                    data: "incharge", 
+                    render: function ( data, type, row ) {
+                        var text_color = 'red';
+                        if (row.confirmed_by_incharge==true)
+                            return '<span style="color:green">'+ data + '</span>';
+                        return '<b style="color:red">'+ data + '</b>';
+                    }
+                },
+                { data: "facility" },
+                {
+                    data: "date",
+                    render: function ( data, type, row ) {
+                        moment_data = moment(data, '')
+                        return moment_data.format('YYYY-MM-DD'); ;
+                    }
+                },
+                { 
+                    data: "start_time",
+                    render: function ( data, type, row ) {
+                        var start_time = moment(row.date + 'T' + row.start_time);
+                        return start_time.format('HH:mm'); ;
+                    }
+                },
+                {
+                    data: "stop_time",
+                    render: function ( data, type, row ) {
+                        var stop_time = moment(row.date + 'T' + row.stop_time);
+                        return stop_time.format('HH:mm');
+                    }
+                },
+                { data: "event" },
+                { data: "organizator" },
+            ]
+        });
+        // By default filter by user name
+        var user_name = $('#user_name').text();
+        console.log(user_name);
+        table.search(user_name);
+        table.draw();
+
+        // Add event on row click
+        $('#schedule_table tbody').on('click', 'tr', function () {
+            var data = table.row( this ).data();
+            var url = window.location.href + 'get_excursion/' + data.id; 
+            window.location.href = url;
+        } );
+
+        $('#show_my_excursions').on('click', function () {
+            var user_name = $('#user_name').text();
+            table.search(user_name);
+            table.draw();
+        } );
+
+        $('#show_all_excursions').on('click', function () {
+            var user_name = $('#user_name').text();
+            table.search("");
+            table.draw();
+        } );
+    }
 
     $.ajax ({
         url: "{% url 'app:get_excursions_list' %}",
@@ -62,64 +163,9 @@ $(document).ready(function() {
             csrfmiddlewaretoken: getCookie('csrftoken'),
         },
         success: function(data) {
+            console.log('Data received:');
             console.log(data);
-            var table = $("#schedule_table").DataTable({
-                paging: true,
-                lengthChange: false,
-                searching: true,
-                ordering: true,
-                order: [[ 3, "desc" ]], // By default order by date
-                info: true,
-                autoWidth: false,
-                createdRow: function( row, data, dataIndex ) {
-                    console.log(data.date + 'T' + data.start_time);
-                    var start_time = moment(data.date + 'T' + data.start_time);
-                    var now = moment();
-                    if (start_time > now) {
-                        if ((data.confirmed_by_guide!=true) || (data.confirmed_by_incharge!=true))
-                            $(row).css('background-color', '#FEAAB3');
-                            //$(row).addClass('red');
-                        else
-                            $(row).css('background-color', '#AAFFBE');
-                    }
-                    else {
-                        $(row).css('background-color', '#C2C2C2');
-                    }
-                },
-                data: data.excursions,
-                columns: [
-                    { 
-                        data: "guide",
-                        render: function ( data, type, row ) {
-                            var text_color = 'red';
-                            if (row.confirmed_by_guide==true)
-                                return '<span style="color:green">'+ data + '</span>';
-                            return '<b style="color:red">'+ data + '</b>';
-                        }
-                    },
-                    { 
-                        data: "incharge", 
-                        render: function ( data, type, row ) {
-                            var text_color = 'red';
-                            if (row.confirmed_by_incharge==true)
-                                return '<span style="color:green">'+ data + '</span>';
-                            return '<b style="color:red">'+ data + '</b>';
-                        }
-                    },
-                    { data: "facility" },
-                    {
-                        data: "date",
-                        render: function ( data, type, row ) {
-                            moment_data = moment(data, '')
-                            return moment_data.format('YYYY-MM-DD'); ;
-                        }
-                    },
-                    { data: "start_time" },
-                    { data: "stop_time" },
-                    { data: "event" },
-                    { data: "organizator" },
-                ]
-            });
+            draw_datatable(data);
         },
         error: function(xhr, ajaxOptions, thrownError) {
             console.log(xhr.status);
@@ -127,110 +173,23 @@ $(document).ready(function() {
             console.log(thrownError);
         },
     })
-    
-    
-
-    $(".page-item.active .page-link").css('background-color', '#3c8dbc');
-    $(".page-item.active .page-link").css('border-color', '#3c8dbc');
-
-    $("div.dataTables_filter").append('<h5 style="float: left;"><span class="badge badge-pill badge-secondary"><b>Held</b></span></h5>');
-    $("div.dataTables_filter").append('<h5 style="float: left;"><span class="badge badge-pill" style="background-color: #ef9a9a;"><b>Not held</b></span></h5>');
-
-    $("div.toolbar").append(
-        '<div class="btn-group dropright" >'+
-        '<button type="button" id="selectButton" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 122px;">My excursions</button>'+
-        '<ul class="dropdown-menu scrollable-menu" id="ex_categories">'+
-        '<li><a class="dropdown-item" href="#">My excursions</a></li>'+
-        '<div class="dropdown-divider"></div>'+
-        '<li><a class="dropdown-item" href="#">All excursions</a></li>'+
-        '</ul></div>'
-    );
-    //$("div.toolbar").css('margin-bottom', '0.5%');
-
-    // Change text on the Select button
-    // and call Ajax to show All excursions
-    $("#ex_categories li a").on("click", function () {
-        var text = $(this).text();
-        $("#selectButton").html(text);
-        if (text == 'All excursions'){
-            $("tbody").html('{% for ex in all_excursions %}'+
-                    '<tr id="row_excursion_data_{{ ex.id_excursion }}" role="row" class="odd" onclick="clickLink(this)" data-toggle="tooltip" data-placement="top" title="Click to view full information" not-held="{{ ex.not_held }}">'+
-                        '<td class="ex_id" style="display: none;">{{ ex.id_excursion }}/</td>'+
-                        '<td class="td_confirmed_by_guide sorting_1">'+
-                            '{% if ex.confirmed_by_guide == True %}'+
-                                '<h5><span class=\'badge badge-success\'><i class=\'fas fa-check\'></i></span></h5>'+
-                            '{% else %}'+
-                                '<h5><span class=\'badge badge-danger\'><i class=\'fas fa-times\'></i></span></h5>'+
-                            '{% endif %}'+
-                        '</td>'+
-                        '<td class="td_confirmed_by_incharge sorting_1">'+
-                            '{% if ex.confirmed_by_incharge == True %}'+
-                                '<h5><span class=\'badge badge-success\'><i class=\'fas fa-check\'></i></span></h5>'+
-                            '{% else %}'+
-                                '<h5><span class=\'badge badge-danger\'><i class=\'fas fa-times\'></i></span></h5>'+
-                            '{% endif %}'+
-                        '</td>'+
-                        '<td id="facility">{{ ex.facility }}</td>'+
-                        '<td id="area">'+
-                            '{% for area in ex.areas %}'+
-                                '{{ area }}'+
-                            '{% endfor %}'+
-                        '</td>'+
-                        '<td id="date" date-mdy="{{ ex.date|date:'m.d.Y' }}" ex-id="{{ ex.id }}">{{ ex.date }}</td>'+
-                        '<td id="start_time">{{ ex.start_time|time:'H:i' }}</td>'+
-                        '<td id="stop_time">{{ ex.stop_time|time:'H:i' }}</td>'+
-                    '</tr>'+
-                '{% endfor %}');
-                change_rows_color();
-        }
-        else
-            document.location.reload(true);
-
-    });
-
-    change_rows_color();
 });
 
-function change_rows_color(){
-    $('table').each(function() {
-        $(this).find('tr').each(function () {
-            // change color to grey if start_date < current_date
-            $(this).find('#date').each(function (i) {
-                const date = new Date($(this).attr("date-mdy"));
-                const ex_id = $(this).attr("ex-id");
-                const cur_date = new Date('{{ current_date }}');
-                if (date < cur_date){
-                    $('#row_excursion_data_'+ex_id).css('background-color', '#cccccc');
-                }
-            });
-
-            // change color to red if excursion is not held
-            const not_held = $(this).attr("not-held");
-            if (not_held == 'True')
-                $(this).css('background-color','#ef9a9a');
-        });
-    });
-};
-
-function clickLink(elem){
-    location = 'get_excursion/' + elem.getElementsByClassName("ex_id")[0].innerText;
-}
-
 function getCookie(name){
-        var cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
             }
         }
-        return cookieValue;
     }
+    return cookieValue;
+}
 
 </script>
 
