@@ -8,298 +8,305 @@
 {% now "H:i" as current_time %}
 
 <section class="content-header">
-  <h4><i class="fas fa-eye"></i> <b>View application</b></h4>
+	<h4><i class="fas fa-eye"></i> <b>View application</b></h4>
 </section><br>
 
-<label id="changefield_info" style="padding:5px 40px; background-color: #f0ad4e;"><i class="fas fa-exclamation-circle"></i> To change some field just enter a new value and click CHANGE EXCURSION</label>
+<label id="changefield_info" style="padding:5px 40px; background-color: #f0ad4e;"><i
+		class="fas fa-exclamation-circle"></i> To change some field just enter a new value and click CHANGE
+	EXCURSION</label>
 
 <div id="formDiv">
-	<form style="margin-top: 15px;" id="myForm" action="{% url 'app:change_excursion' desired_excursion.id %}" method="post">{% csrf_token %}
+	<form style="margin-top: 15px;" id="myForm" action="{% url 'app:change_excursion' excursion.id %}" method="post">
+		{% csrf_token %}
 		<table class="table card">
 			<tr id="row1">
-				<th id="confirm_held_info">
-					<!-- {{ desired_excursion.is_confirmed }} -->
-					{{ user_can_edit_form }}
-				</th>
+				<th id="confirm_held_info"></th>
 				<th colspan="3">{{ form.facility|as_crispy_field }}</th>
 				<th>
 					<label for="id_id_facility" class="col-form-label  requiredField">
-					Select areas:<span class="asteriskField">*</span>
+						Select areas:<span class="asteriskField">*</span>
 					</label>
 					{{ form.areas|safe }}
-					<div id="areas_ids" style="display: none;">
-						{% for id in desired_excursion.areas_ids %}
-							<div>{{ id }}</div>
-						{% endfor %}
-					</div>
-				</th>
-			</tr>
+</div>
+</th>
+</tr>
 
-			<tr id="row2">
-				<th colspan="2">{{ form.organizator|as_crispy_field }}</th>
-				<th>{{ form.guide|as_crispy_field }}</th>
-				<th>{{ form.incharge|as_crispy_field }}</th>
-				<th>{{ form.event|as_crispy_field }}</th>
-				<th>{{ form.date|as_crispy_field }}</th>
-			</tr>
+<tr id="row2">
+	<th colspan="2">{{ form.organizator|as_crispy_field }}</th>
+	<th>{{ form.guide|as_crispy_field }}</th>
+	<th>{{ form.incharge|as_crispy_field }}</th>
+	<th>{{ form.event|as_crispy_field }}</th>
+	<th>{{ form.date|as_crispy_field }}</th>
+</tr>
 
-			<tr id="row3">
-				<th colspan="2">{{ form.start_time|as_crispy_field }}</th>
-				<th>{{ form.stop_time|as_crispy_field }}</th>
-				<th>{{ form.language|as_crispy_field }}</th>
-				<th>{{ form.target_audience|as_crispy_field }}</th>
-				<th>{{ form.participants|as_crispy_field }}</th>
-			</tr>
-		</table>
-		<input type="submit" style="display: none;"/>
-	</form>
+<tr id="row3">
+	<th colspan="2">{{ form.start_time|as_crispy_field }}</th>
+	<th>{{ form.stop_time|as_crispy_field }}</th>
+	<th>{{ form.language|as_crispy_field }}</th>
+	<th>{{ form.target_audience|as_crispy_field }}</th>
+	<th>{{ form.participants|as_crispy_field }}</th>
+</tr>
+</table>
+<input type="submit" style="display: none;" />
+</form>
 
-  <div class="row justify-content-between">
+<div class="row justify-content-between">
 	<div class="col-2">
-	  <a role="button" id="bt_back" class="btn btn-primary" href="{% url 'app:view_excursions' %}" style="float: left;">GO BACK</a>
+		<a role="button" id="bt_back" class="btn btn-primary" href="{% url 'app:view_excursions' %}"
+			style="float: left;">GO BACK</a>
 	</div>
 	<div id="additional_buttons" class="col-2">
 	</div>
-  </div>
+</div>
 </div>
 
 <!-- MODAL FOR CHANGING EXCURSION DATA -->
 <div class="modal fade" id="myModal_change" role="dialog">
-    <div class="modal-dialog">
+	<div class="modal-dialog">
 
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header" style="padding:25px 50px; background-color: #f0ad4e;">
-          <h4>
-          	<span class="glyphicon glyphicon-bell"></span> Are you sure you want to change the details of this excursion?
-          </h4>
-        </div>
-        <div class="modal-body" style="padding:40px 50px;">
-              <label><span class="glyphicon glyphicon-edit"></span> The status of the excursion will be changed to "UNCONFIRMED".</label>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-danger btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
-          <button id="modal_submit_changes" type="submit" class="btn btn-success" onclick="submit_changes()"><span class="glyphicon glyphicon-ok"></span> Yes, I'm sure</button>
-        </div>
-      </div>
-    </div>
-  </div>
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header" style="padding:25px 50px; background-color: #f0ad4e;">
+				<h4>
+					<span class="glyphicon glyphicon-bell"></span> Are you sure you want to change the details of this
+					excursion?
+				</h4>
+			</div>
+			<div class="modal-body" style="padding:40px 50px;">
+				<label><span class="glyphicon glyphicon-edit"></span> The status of the excursion will be changed to
+					"UNCONFIRMED".</label>
+			</div>
+			<div class="modal-footer">
+				<button type="submit" class="btn btn-danger btn-default pull-left" data-dismiss="modal"><span
+						class="glyphicon glyphicon-remove"></span> Cancel</button>
+				<button id="modal_submit_changes" type="submit" class="btn btn-success" onclick="submit_changes()"><span
+						class="glyphicon glyphicon-ok"></span> Yes, I'm sure</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 <!-- Блок для отображения чата -->
 <div class="panel">
 	{% if chat.error %}
-		<h5>{{ chat.error }}</h5>
+	<h5>{{ chat.error }}</h5>
 	{% else %}
 	<!-- Time Zone -->
 	{% load tz %}
-		<h3 class="lbl_chat panel panel-body">Chat</h3>
-			{% if messages != 'none' %}
-				{% for message in messages %}
-					<div class="list-group-item {% if not message.is_readed %}unreaded{% endif %}">
-					    <div class="reply-body">
-					        <ul class="list-inline">
-					            <li class="drop-left-padding">
-					                <strong class="list-group-item-heading">
-					                	<a href=""><span class="glyphicon glyphicon-user"></span>{{ message.author }}</a>
-					                </strong>
-					            </li>
-					            <li class="pull-right text-muted"><small>{{ message.pub_date|utc }}</small></li>
-					        </ul>
-					        <div>{{ message.message|safe }}</div>
-					    </div>
-					</div>
-			    {% endfor %}
-			{% endif %}
+	<h3 class="lbl_chat panel panel-body">Chat</h3>
+	{% if messages != 'none' %}
+	{% for message in messages %}
+	<div class="list-group-item {% if not message.is_readed %}unreaded{% endif %}">
+		<div class="reply-body">
+			<ul class="list-inline">
+				<li class="drop-left-padding">
+					<strong class="list-group-item-heading">
+						<a href=""><span class="glyphicon glyphicon-user"></span>{{ message.author }}</a>
+					</strong>
+				</li>
+				<li class="pull-right text-muted"><small>{{ message.pub_date|utc }}</small></li>
+			</ul>
+			<div>{{ message.message|safe }}</div>
+		</div>
+	</div>
+	{% endfor %}
+	{% endif %}
 
-			{% for val in chat %}
-		    <!-- Блок для отображения поля для отправки сообщения в чат -->
-			<div id="message_form">
-				<label>Enter your message</label>
-				<form id="message-form" method="post" action="send_message/{{ val.id }}/">
-					{% csrf_token %}
-					<p>{{ form_message }}</p>
-					<button type="submit" class="btn btn-success">
-						<span class="fas fa-comment"></span> Send
-					</button>
-				</form>
-			</div>
-			{% endfor %}
+	{% for val in chat %}
+	<!-- Блок для отображения поля для отправки сообщения в чат -->
+	<div id="message_form">
+		<label>Enter your message</label>
+		<form id="message-form" method="post" action="send_message/{{ val.id }}/">
+			{% csrf_token %}
+			<p>{{ form_message }}</p>
+			<button type="submit" class="btn btn-success">
+				<span class="fas fa-comment"></span> Send
+			</button>
+		</form>
+	</div>
+	{% endfor %}
 	{% endif %}
 </div>
 
 
 <script type="text/javascript">
-	$(window).on('load', function(){
-		// alert("{{ current_time }}");
-	$('#id_message').addClass('form-control');
+	$(window).on('load', function () {
 
-    {% if is_user_guide == True or is_user_incharge == True %}
-    {
-    	{% if is_user_guide == True %}
-			{% if desired_excursion.confirmed_by_guide == False %}
-				$('#additional_buttons').append(
-					'<a id="bt_confirm" class="btn btn-warning" style="margin-left: auto;" href="change_confirmed/" onclick="this.style.display=\'none\'; location.reload(); return true;">CONFIRM EXCURSION</a>'
-					);
+		$('#id_message').addClass('form-control');
+
+		{% if is_user_guide == True or is_user_incharge == True %}
+		{
+			{% if is_user_guide == True %}
+			{% if excursion.confirmed_by_guide == False %}
+			$('#additional_buttons').append(
+				'<a id="bt_confirm" class="btn btn-warning" style="margin-left: auto;" href="change_confirmed/" onclick="this.style.display=\'none\'; location.reload(); return true;">CONFIRM EXCURSION</a>'
+			);
 			{% else %}
-				$('#myForm').append("<h4><span class=\"badge badge-warning\">You have already confirmed this excursion</span></h4>");
+			$('#myForm').append("<h4><span class=\"badge badge-warning\">You have already confirmed this excursion</span></h4>");
 			{% endif %}
-		{% else %}
+			{% else %}
 			{% if is_user_incharge == True %}
-				{% if desired_excursion.confirmed_by_incharge == False %}
-					$('#additional_buttons').append(
-						'<a id="bt_confirm" class="btn btn-warning" style="margin-left: auto;" href="change_confirmed/" onclick="this.style.display=\'none\'; location.reload(); return true;">CONFIRM EXCURSION</a>'
-						)
-				{% else %}
-					$('#myForm').append("<h4><span class=\"badge badge-warning\">You have already confirmed this excursion</span></h4>");
-				{% endif %}
+			{% if excursion.confirmed_by_incharge == False %}
+			$('#additional_buttons').append(
+				'<a id="bt_confirm" class="btn btn-warning" style="margin-left: auto;" href="change_confirmed/" onclick="this.style.display=\'none\'; location.reload(); return true;">CONFIRM EXCURSION</a>'
+			)
+			{% else %}
+			$('#myForm').append("<h4><span class=\"badge badge-warning\">You have already confirmed this excursion</span></h4>");
 			{% endif %}
+			{% endif %}
+			{% endif %}
+
+			$('#confirm_held_info').show();
+			$('#changefield_info').hide();
+			$("#myForm :input").prop('readonly', true);
+			$('#id_guide').attr('disabled', true);
+			$('#id_facility').attr('disabled', true);
+		}
 		{% endif %}
 
-      	$('#confirm_held_info').show();
-		$('#changefield_info').hide();
-		$("#myForm :input").prop('readonly', true);
-		$('#id_guide').attr('disabled', true);
-		$('#id_facility').attr('disabled', true);
-    }
-    {% endif %}
+		{% if is_user_organizator == True %}
+		{
+			$('#confirm_held_info').show();
+			$('#changefield_info').show();
+			$("#myForm :input").prop('readonly', false);
+			$('#id_guide').attr('disabled', false);
+			$('#id_facility').attr('disabled', false);
 
-	{% if is_user_organizator == True %}
-    {
-    	$('#confirm_held_info').show();
-		$('#changefield_info').show();
-		$("#myForm :input").prop('readonly', false);
-		$('#id_guide').attr('disabled', false);
-		$('#id_facility').attr('disabled', false);
+			$('#additional_buttons').append(
+				'<button id="bt_change" class="btn btn-warning" style="margin-left: auto;" data-toggle="modal" data-target="#myModal_change">CHANGE EXCURSION</button>'
+			)
+		}
+		{% endif %}
 
-		$('#additional_buttons').append(
-			'<button id="bt_change" class="btn btn-warning" style="margin-left: auto;" data-toggle="modal" data-target="#myModal_change">CHANGE EXCURSION</button>'
-		)
-    }
-    {% endif %}
-
-    {% if is_user_organizator == False and is_user_guide == False and is_user_incharge == False %}
+		{% if is_user_organizator == False and is_user_guide == False and is_user_incharge == False %}
 		$('#confirm_held_info').hide();
 		$('#changefield_info').hide();
 		$("#myForm :input").prop('readonly', true);
 		$('#id_guide').attr('disabled', true);
 		$('#id_facility').attr('disabled', true);
-	{% endif %}
+		{% endif %}
 
-	{% if desired_excursion.confirmed_by_guide == False and desired_excursion.confirmed_by_incharge == False %}
+		{% if excursion.confirmed_by_guide == False and excursion.confirmed_by_incharge == False %}
 		$('#confirm_held_info').text("This excursion is not confirmed by guide and incharge.");
 		$('#confirm_held_info').addClass("text-danger");
-	{% else %}
-		{% if desired_excursion.confirmed_by_guide == True and desired_excursion.confirmed_by_incharge == True %}
-			$('#confirm_held_info').text("This excursion is confirmed by guide and incharge.");
-			$('#confirm_held_info').addClass("text-success");
 		{% else %}
-			$('#confirm_held_info').text("This excursion is not confirmed by guide or incharge.");
-			$('#confirm_held_info').addClass("text-danger");
+		{% if excursion.confirmed_by_guide == True and excursion.confirmed_by_incharge == True %}
+		$('#confirm_held_info').text("This excursion is confirmed by guide and incharge.");
+		$('#confirm_held_info').addClass("text-success");
+		{% else %}
+		$('#confirm_held_info').text("This excursion is not confirmed by guide or incharge.");
+		$('#confirm_held_info').addClass("text-danger");
 		{% endif %}
-	{% endif %}
+		{% endif %}
 
-	{% if desired_excursion.not_held == False %}
-	console.log('{{ current_date }}')
-	console.log('{{ desired_excursion.date|date:"Y-m-d" }}')
-		{% if current_date <= desired_excursion.date|date:"Y-m-d" %}
-			$('#confirm_held_info').append("<br><br><span style=\"color: gray;\">This excursion will be held.</span>");
-		{% else %}
-			{% if current_date >= desired_excursion.date|date:"Y-m-d" and current_time >= desired_excursion.start_time|time:"H:i" %}
-				$('#confirm_held_info').append("<br><br><span>This excursion has been held.</span><a id=\"bt_not_held\" class=\"btn btn-danger\" style=\"margin-left: auto;\" href=\"mark_as_not_held\" onclick=\"this.style.display=\'none\'; location.reload(); return true;\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Click to mark the excursion as untried\">NOT HELD</a>");
-				$('#bt_change').attr('disabled', true);
-				$("#myForm :input").prop('readonly', true);
-				$('#id_guide').attr('disabled', true);
-				$('#id_facility').attr('disabled', true);
+		{% comment %}
+		{% if excursion.not_held == False %}
+			console.log('{{ current_date }}')
+			console.log('{{ excursion.date|date:"Y-m-d" }}')
+			{% if current_date <= excursion.date | date: "Y-m-d" %}
+				$('#confirm_held_info').append("<br><br><span style=\"color: gray;\">This excursion will be held.</span>");
+			{% else %}
+				{% if current_date >= excursion.date | date: "Y-m-d" and current_time >= excursion.start_time | time: "H:i" %}
+					$('#confirm_held_info').append("<br><br><span>This excursion has been held.</span><a id=\"bt_not_held\" class=\"btn btn-danger\" style=\"margin-left: auto;\" href=\"mark_as_not_held\" onclick=\"this.style.display=\'none\'; location.reload(); return true;\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Click to mark the excursion as untried\">NOT HELD</a>");
+					$('#bt_change').attr('disabled', true);
+					$("#myForm :input").prop('readonly', true);
+					$('#id_guide').attr('disabled', true);
+					$('#id_facility').attr('disabled', true);
+				{% endif %}
 			{% endif %}
+		{% else %}
+			$('#confirm_held_info').append("<br><br><span style=\"color: #d9534f;\">This excursion has not been held.</span>");
 		{% endif %}
-	{% else %}
-		$('#confirm_held_info').append("<br><br><span style=\"color: #d9534f;\">This excursion has not been held.</span>");
-	{% endif %}
+		{% endcomment %}
 
-	id_facility = $("#id_facility").val();
-	console.log(id_facility)
-
-	$.ajax ({
-			url: "{% url 'app:get_areas' %}",
+		id_facility = $("#id_facility").val();
+		$.ajax({
+			url: "{% url 'app:get_all_areas_by_facility_id' %}",
 			type: "post",
 			data: {
-				csrfmiddlewaretoken: getCookie('csrftoken'),
 				'facility': id_facility,
+				csrfmiddlewaretoken: getCookie('csrftoken'),
 			},
-			success: function(data) {
+			success: function (data) {
 				// if current area doesn't belong to current facility then
 				//clear its input and hide its label
 				// else show it
 				$('#id_areas li').each(function () {
-					var str = $.trim($(this).text());
-					if (!data['areas'].includes(str)) {
-						$('#id_areas li label input').each(function () {
-							var chb = $(this);
-							$('#areas_ids div').each(function () {
-								if (chb.val() == $(this).text())
-									chb.prop('checked', true);
-								else chb.prop('checked', false);
-							})
-						})
+					
+					var cur_area = $.trim($(this).text());
+					if (!data['areas'].includes(cur_area)) {
 						$(this).hide();
 					}
-					else $(this).show();
 				});
-
-				$('#id_areas li label input').each(function () {
-					var chb = $(this);
-					$('#areas_ids div').each(function () {
-
-						if (chb.val() == $(this).text())
-							chb.prop('checked', true);
-					})
-				})
 
 				// $('#id_incharge').append('<option value='+data['id_incharge']+' selected>'+data['id_incharge']+'</option>');
 				$('#id_incharge').attr('disabled', 'disabled');
 				$('#id_organizator').attr('disabled', 'disabled');
 			},
-			error: function(xhr, ajaxOptions, thrownError) {
+			error: function (xhr, ajaxOptions, thrownError) {
 				console.log(xhr.status);
 				console.log(xhr.responseText);
 				console.log(thrownError);
 			},
 		})
 
-		$('#id_areas li label input').each(function () {
-			var chb = $(this);
-			$('#areas_ids div').each(function () {
+		$.ajax({
+			url: "{% url 'app:get_selected_areas_by_excursion_id' %}",
+			type: "post",
+			data: {
+				'excursion': '{{ excursion.id }}',
+				csrfmiddlewaretoken: getCookie('csrftoken'),
+			},
+			success: function (data) {
+				// if current area doesn't belong to current facility then
+				//clear its input and hide its label
+				// else show it
+				$('#id_areas li').each(function () {
+					var cur_area = $.trim($(this).text());
+					if (data['areas_names'].includes(cur_area)) {
+						$(this).find('label').find('input').each(function () {
+							var chb = $(this);
+							chb.prop('checked', true);
+						})
+					}
+				});
 
-				if (chb.val() == $(this).text())
-					chb.prop('checked', true);
-			})
+				// $('#id_incharge').append('<option value='+data['id_incharge']+' selected>'+data['id_incharge']+'</option>');
+				$('#id_incharge').attr('disabled', 'disabled');
+				$('#id_organizator').attr('disabled', 'disabled');
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				console.log(xhr.status);
+				console.log(xhr.responseText);
+				console.log(thrownError);
+			},
 		})
 
-		$('#bt_change').on('click', function(e){
-		  $('#myModal_change').modal('show');
-		  e.preventDefault();
+		$('#bt_change').on('click', function (e) {
+			$('#myModal_change').modal('show');
+			e.preventDefault();
 		});
 	})
 
-	$("#id_facility").change(function() {
+	$("#id_facility").change(function () {
 
-          var id_facility = $(this).val();
+		var id_facility = $(this).val();
 
-          if (id_facility !== ""){
-          	$.ajax ({
-	            url: "../../../blank/get_areas/",
-	            type: "post",
-	            data: {
-	            	csrfmiddlewaretoken: getCookie('csrftoken'),
-	                'id_facility': id_facility,
-	            },
-	            success: function(data) {
-	            	// set all checkboxes.checked = false
-	            	$('#id_areas li label input').each(function () {
-				        $(this).prop('checked', false);
-				    });
+		if (id_facility !== "") {
+			$.ajax({
+				url: "{% url 'app:get_all_areas_by_facility_id' %}",
+				type: "post",
+				data: {
+					'facility': id_facility,
+					csrfmiddlewaretoken: getCookie('csrftoken'),
+				},
+				success: function (data) {
+					// set all checkboxes.checked = false
+					$('#id_areas li label input').each(function () {
+						$(this).prop('checked', false);
+					});
 
-				    $('#id_areas li label input').each(function () {
+					$('#id_areas li label input').each(function () {
 						var chb = $(this);
 						$('#areas_ids div').each(function () {
 
@@ -308,19 +315,12 @@
 						})
 					})
 
-	            	// if current area doesn't belong to current facility then hide its label
-	            	// else show it
-	            	$('#id_areas li').each(function () {
-					    var str = $.trim($(this).text()); //name of each area
+					// if current area doesn't belong to current facility then hide its label
+					// else show it
+					$('#id_areas li').each(function () {
+						var str = $.trim($(this).text()); //name of each area
 						if (!(data['areas'].includes(str))) {
-							$('label input').prop('checked', false)
-								//console.log($(this)[0].prop('checked'))
-								//$(this)[0].checked = false;
-								// $('#areas_ids div').each(function () {
-								// 	if ($('label input').val() != $(this).text())
-								// 		$(this).remove();
-								// })
-
+							$('label input').prop('checked', false);
 							$(this).hide();
 						}
 						else {
@@ -328,43 +328,43 @@
 						}
 					});
 
-					$('#id_incharge').append('<option value='+data['id_incharge']+' selected>'+data['info_incharge']+'</option>');
-	            	$('#id_incharge').attr('disabled', 'disabled');
-	            	$('#id_organizator').attr('disabled', 'disabled');
+					$('#id_incharge').append('<option value=' + 0 + ' selected>' + '-------' + '</option>');
+					$('#id_incharge').attr('disabled', 'disabled');
+					$('#id_organizator').attr('disabled', 'disabled');
 				},
-				error: function(xhr, ajaxOptions, thrownError) {
-	                console.log(xhr.status);
-	                console.log(xhr.responseText);
-	                console.log(thrownError);
-	            },
-        	});
-          }
-          else
-          	if (id_facility == "") {
-          	$.ajax ({
-	            url: "../../../blank/get_areas/",
-	            type: "post",
-	            data: {
-	            	csrfmiddlewaretoken: getCookie('csrftoken'),
-	                'id_facility': 0,
-	            },
-	            success: function(data) {
-	            	$('#id_areas li label input').each(function () {
-	            		$(this).prop('checked', false);
-	            	})
+				error: function (xhr, ajaxOptions, thrownError) {
+					console.log(xhr.status);
+					console.log(xhr.responseText);
+					console.log(thrownError);
+				},
+			});
+		}
+		else
+			if (id_facility == "") {
+				$.ajax({
+					url: "{% url 'app:get_all_areas_by_facility_id' %}",
+					type: "post",
+					data: {
+						csrfmiddlewaretoken: getCookie('csrftoken'),
+						'facility': 0,
+					},
+					success: function (data) {
+						$('#id_areas li label input').each(function () {
+							$(this).prop('checked', false);
+						})
 
-	            	$('#id_areas li').each(function () {
-	            		$(this).show();
-	            	})
-				},
-				error: function(xhr, ajaxOptions, thrownError) {
-	                console.log(xhr.status);
-	                console.log(xhr.responseText);
-	                console.log(thrownError);
-	            },
-        	});
-          }
-    })
+						$('#id_areas li').each(function () {
+							$(this).show();
+						})
+					},
+					error: function (xhr, ajaxOptions, thrownError) {
+						console.log(xhr.status);
+						console.log(xhr.responseText);
+						console.log(thrownError);
+					},
+				});
+			}
+	})
 
 	function submit_changes() {
 		$('#myModal_change').modal('hide');
@@ -376,34 +376,34 @@
 	function submit_confirm() {
 		// $('#myModal_confirm').modal('hide');
 		// $('#id_incharge').attr('disabled', false);
-		$.ajax ({
-	        url: "change_confirmed/",
-	        type: "get",
-	        success: function(data) {
-	        	document.location.reload(true);
-	        },
-	        error: function(xhr, ajaxOptions, thrownError) {
-	            console.log(xhr.status);
-	            console.log(xhr.responseText);
-	            console.log(thrownError);
-	        }
+		$.ajax({
+			url: "change_confirmed/",
+			type: "get",
+			success: function (data) {
+				document.location.reload(true);
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				console.log(xhr.status);
+				console.log(xhr.responseText);
+				console.log(thrownError);
+			}
 		});
 	};
 
-	function getCookie(name){
-	    var cookieValue = null;
-	    if (document.cookie && document.cookie !== '') {
-	        var cookies = document.cookie.split(';');
-	        for (var i = 0; i < cookies.length; i++) {
-	            var cookie = jQuery.trim(cookies[i]);
-	            // Does this cookie string begin with the name we want?
-	            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-	                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-	                break;
-	            }
-	        }
-    	}
-    	return cookieValue;
+	function getCookie(name) {
+		var cookieValue = null;
+		if (document.cookie && document.cookie !== '') {
+			var cookies = document.cookie.split(';');
+			for (var i = 0; i < cookies.length; i++) {
+				var cookie = jQuery.trim(cookies[i]);
+				// Does this cookie string begin with the name we want?
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
 	}
 
 </script>

@@ -108,7 +108,7 @@
 
           if (id_facility !== ''){
           	$.ajax ({
-	            url: "{% url 'app:get_areas' %}",
+	            url: "{% url 'app:get_all_areas_by_facility_id' %}",
 	            type: "post",
 	            data: {
 	            	csrfmiddlewaretoken: getCookie('csrftoken'),
@@ -136,7 +136,9 @@
 		            //		$(this).prop('selected', true);
 		            //	}
 	            	//})
-					$('#id_incharge').text("Incharge: " + data['info_incharge']);
+					if (data['incharges'].length > 1)
+						$('#id_incharge').text("Incharges: " + data['incharges']);
+					else $('#id_incharge').text("Incharge: " + data['incharges']);
 					$('#id_incharge').css('background-color', '#f0ad4e');
 					$('#id_incharge').css('padding', '1%');
 
@@ -150,7 +152,7 @@
           }
           else {
           	$.ajax ({
-	            url: "get_areas/",
+	            url: "{% url 'app:get_all_areas_by_facility_id' %}",
 	            type: "post",
 	            data: {
 	            	csrfmiddlewaretoken: getCookie('csrftoken'),
