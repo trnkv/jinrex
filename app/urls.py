@@ -11,6 +11,7 @@ urlpatterns = [
 	url(r'^blank/$', views.get_excursion_form, name='get_excursion_form'),
 	url(r'^send_application/$', views.send_application, name='send_application'),
 	url(r'^get_all_areas/$', views.get_all_areas_by_facility_id, name='get_all_areas_by_facility_id'),
+	url(r'^get_guides_ids_by_facility/$', views.get_guides_ids_by_facility, name='get_guides_ids_by_facility'),
 	url(r'^get_selected_areas/$', views.get_selected_areas_by_excursion_id, name='get_selected_areas_by_excursion_id'),
 	url(r'^schedule/$', views.view_excursions, name='view_excursions'),
 	url(r'^schedule/get_excursion/(\d+)/$', views.get_excursion),

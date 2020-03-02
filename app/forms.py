@@ -1,8 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from django.contrib.auth.models import User, Group, Permission
-from .models import Excursion, Area, Facility, Incharge, Message, Guide
-
+from .models import *
 
 class MessageForm(ModelForm):
 	class Meta:
