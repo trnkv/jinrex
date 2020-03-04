@@ -40,8 +40,10 @@
 </tr>
 
 <tr id="row3">
-	<th colspan="2">{{ form.start_time|as_crispy_field }}</th>
-	<th>{{ form.stop_time|as_crispy_field }}</th>
+	<th colspan="2" class="clockpicker" data-placement="bottom" data-align="top" data-autoclose="true">
+		{{ form.start_time|as_crispy_field }}</th>
+	<th class="clockpicker" data-placement="bottom" data-align="top" data-autoclose="true">
+		{{ form.stop_time|as_crispy_field }}</th>
 	<th>{{ form.language|as_crispy_field }}</th>
 	<th>{{ form.target_audience|as_crispy_field }}</th>
 	<th>{{ form.participants|as_crispy_field }}</th>
@@ -130,29 +132,66 @@
 
 
 <script type="text/javascript">
+	function get_guides_ids_by_facility(id_facility) {
+		$.ajax({
+			url: "{% url 'app:get_guides_ids_by_facility' %}",
+			type: "post",
+			data: {
+				csrfmiddlewaretoken: getCookie('csrftoken'),
+				'facility': id_facility,
+			},
+			success: function (data) {
+				$('#id_guide option').each(function () {
+					var guide_id = $(this).val().toString();
+					if (data['guides_ids'].indexOf(guide_id) == -1) {
+						console.log(data['guides_ids'].indexOf(guide_id))
+						$(this).hide();
+					}
+					else $(this).show();
+				});
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				console.log(xhr.status);
+				console.log(xhr.responseText);
+				console.log(thrownError);
+			},
+		});
+	}
+
+
 	$(window).on('load', function () {
+		id_facility = $("#id_facility").val();
+		get_guides_ids_by_facility(id_facility);
+
+		$('#id_date').datepicker({
+			format: 'yyyy-mm-dd',
+			todayHighlight: true,
+		});
+		$('.clockpicker').clockpicker();
 
 		$('#id_message').addClass('form-control');
 
 		{% if is_user_guide == True or is_user_incharge == True %}
 		{
 			{% if is_user_guide == True %}
-			{% if excursion.confirmed_by_guide == False %}
-			$('#additional_buttons').append(
-				'<a id="bt_confirm" class="btn btn-warning" style="margin-left: auto;" href="change_confirmed/" onclick="this.style.display=\'none\'; location.reload(); return true;">CONFIRM EXCURSION</a>'
-			);
-			{% else %}
-			$('#myForm').append("<h4><span class=\"badge badge-warning\">You have already confirmed this excursion</span></h4>");
-			{% endif %}
+				console.log('User is Guide')
+				{% if excursion.confirmed_by_guide == False %}
+					$('#additional_buttons').append(
+						'<a id="bt_confirm" class="btn btn-warning" style="margin-left: auto;" href="change_confirmed/" onclick="this.style.display=\'none\'; location.reload(); return true;">CONFIRM EXCURSION</a>'
+					);
+				{% else %}
+					$('#myForm').append("<h4><span class=\"badge badge-warning\">You have already confirmed this excursion</span></h4>");
+				{% endif %}
 			{% else %}
 			{% if is_user_incharge == True %}
-			{% if excursion.confirmed_by_incharge == False %}
-			$('#additional_buttons').append(
-				'<a id="bt_confirm" class="btn btn-warning" style="margin-left: auto;" href="change_confirmed/" onclick="this.style.display=\'none\'; location.reload(); return true;">CONFIRM EXCURSION</a>'
-			)
-			{% else %}
-			$('#myForm').append("<h4><span class=\"badge badge-warning\">You have already confirmed this excursion</span></h4>");
-			{% endif %}
+				console.log('User is Incharge')
+				{% if excursion.confirmed_by_incharge == False %}
+					$('#additional_buttons').append(
+						'<a id="bt_confirm" class="btn btn-warning" style="margin-left: auto;" href="change_confirmed/" onclick="this.style.display=\'none\'; location.reload(); return true;">CONFIRM EXCURSION</a>'
+					)
+				{% else %}
+					$('#myForm').append("<h4><span class=\"badge badge-warning\">You have already confirmed this excursion</span></h4>");
+				{% endif %}
 			{% endif %}
 			{% endif %}
 
@@ -201,25 +240,25 @@
 
 		{% comment %}
 		{% if excursion.not_held == False %}
-			console.log('{{ current_date }}')
-			console.log('{{ excursion.date|date:"Y-m-d" }}')
-			{% if current_date <= excursion.date | date: "Y-m-d" %}
-				$('#confirm_held_info').append("<br><br><span style=\"color: gray;\">This excursion will be held.</span>");
-			{% else %}
-				{% if current_date >= excursion.date | date: "Y-m-d" and current_time >= excursion.start_time | time: "H:i" %}
-					$('#confirm_held_info').append("<br><br><span>This excursion has been held.</span><a id=\"bt_not_held\" class=\"btn btn-danger\" style=\"margin-left: auto;\" href=\"mark_as_not_held\" onclick=\"this.style.display=\'none\'; location.reload(); return true;\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Click to mark the excursion as untried\">NOT HELD</a>");
-					$('#bt_change').attr('disabled', true);
-					$("#myForm :input").prop('readonly', true);
-					$('#id_guide').attr('disabled', true);
-					$('#id_facility').attr('disabled', true);
-				{% endif %}
-			{% endif %}
+		console.log('{{ current_date }}')
+		console.log('{{ excursion.date|date:"Y-m-d" }}')
+		{% if current_date <= excursion.date | date: "Y-m-d" %}
+		$('#confirm_held_info').append("<br><br><span style=\"color: gray;\">This excursion will be held.</span>");
 		{% else %}
-			$('#confirm_held_info').append("<br><br><span style=\"color: #d9534f;\">This excursion has not been held.</span>");
+		{% if current_date >= excursion.date | date: "Y-m-d" and current_time >= excursion.start_time | time: "H:i" %}
+		$('#confirm_held_info').append("<br><br><span>This excursion has been held.</span><a id=\"bt_not_held\" class=\"btn btn-danger\" style=\"margin-left: auto;\" href=\"mark_as_not_held\" onclick=\"this.style.display=\'none\'; location.reload(); return true;\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Click to mark the excursion as untried\">NOT HELD</a>");
+		$('#bt_change').attr('disabled', true);
+		$("#myForm :input").prop('readonly', true);
+		$('#id_guide').attr('disabled', true);
+		$('#id_facility').attr('disabled', true);
+		{% endif %}
+		{% endif %}
+		{% else %}
+		$('#confirm_held_info').append("<br><br><span style=\"color: #d9534f;\">This excursion has not been held.</span>");
 		{% endif %}
 		{% endcomment %}
 
-		id_facility = $("#id_facility").val();
+		
 		$.ajax({
 			url: "{% url 'app:get_all_areas_by_facility_id' %}",
 			type: "post",
@@ -232,7 +271,7 @@
 				//clear its input and hide its label
 				// else show it
 				$('#id_areas li').each(function () {
-					
+
 					var cur_area = $.trim($(this).text());
 					if (!data['areas'].includes(cur_area)) {
 						$(this).hide();
@@ -291,6 +330,7 @@
 	$("#id_facility").change(function () {
 
 		var id_facility = $(this).val();
+		get_guides_ids_by_facility(id_facility);
 
 		if (id_facility !== "") {
 			$.ajax({
@@ -305,6 +345,7 @@
 					$('#id_areas li label input').each(function () {
 						$(this).prop('checked', false);
 					});
+					$('#id_guide').prop('selectedIndex', 0);
 
 					$('#id_areas li label input').each(function () {
 						var chb = $(this);
@@ -352,6 +393,7 @@
 						$('#id_areas li label input').each(function () {
 							$(this).prop('checked', false);
 						})
+						$('#id_guide').prop('selectedIndex', 0);
 
 						$('#id_areas li').each(function () {
 							$(this).show();

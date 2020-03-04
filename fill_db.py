@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 """
 Generates random excursion and its data.
 """
@@ -16,6 +14,7 @@ import random
 import sys
 import datetime
 import string
+import csv
 
 
 def get_random_string(length):
@@ -88,9 +87,23 @@ def generate_user():
     return new_user
 
 
+def generate_user_by_username(username):
+    # create user
+    new_user, is_created = User.objects.get_or_create(
+        username=username,
+        first_name=username,
+        last_name=username,
+    )
+    if is_created:
+        new_user.set_password('1')
+        new_user.save()
+    return new_user
+
+
 def add_guide(facility_name):
     try:
-        existing_guide = Guide.objects.get(facility=Facility.objects.get(name=facility_name))
+        existing_guide = Guide.objects.get(
+            facility=Facility.objects.get(name=facility_name))
         return existing_guide
     except ObjectDoesNotExist:
         user = generate_user()
@@ -102,6 +115,16 @@ def add_guide(facility_name):
             new_guide.facility.set([Facility.objects.get(name=facility_name)])
             new_guide.save()
         return new_guide
+
+
+def make_user_guide(facility_name, user):
+    new_guide, is_created = Guide.objects.get_or_create(
+        user=user,
+    )
+    if is_created:
+        new_guide.facility.set([Facility.objects.get(name=facility_name)])
+        new_guide.save()
+    return new_guide
 
 
 def add_incharge(facility_name):
@@ -119,6 +142,14 @@ def add_incharge(facility_name):
         if is_created:
             new_incharge.save()
         return new_incharge
+
+
+def make_user_incharge(facility_name, user):
+    new_incharge, is_created = Incharge.objects.get_or_create(
+        user=user,
+        facility = Facility.objects.get(name=facility_name)
+    )
+    return new_incharge
 
 
 def add_organizator(user):
@@ -156,29 +187,47 @@ def generate_excursion(facility, areas, organizator, guide, incharge):
         new_excursion.areas.add(a for a in areas)
     return new_excursion
 
-def main():
-    facility = generate_facility()
-    area = generate_area([facility])
-    guide = add_guide(facility.name)
-    incharge = add_incharge(facility.name)
-    organizator = add_organizator(generate_user())
 
-    excursion = generate_excursion(
-        facility, area, organizator, guide, incharge)
-    print('Generated! The excursion info: \n')
-    print('Facility: ', excursion.facility.name, "\n")
-    print('Areas: ', excursion.areas.all(), "\n")
-    print('Organizator: ', excursion.organizator.user.get_full_name(), "\n")
-    print('Guide: ', excursion.guide.user.get_full_name(), "\n")
-    print('Icharge: ', excursion.incharge.user.get_full_name(), "\n")
-    print('Event: ', excursion.event, "\n")
-    print('Date: ', excursion.date, "\n")
-    print('Start Time: ', excursion.start_time, "\n")
-    print('Stop Time: ', excursion.stop_time, "\n")
-    print('Language: ', excursion.language, "\n")
-    print('Target Audience: ', excursion.target_audience, "\n")
-    print('Participants: ', excursion.participants)
-    print('------------------------------------')
+def main():
+    # facility = generate_facility()
+    # area = generate_area([facility])
+    # guide = add_guide(facility.name)
+    # incharge = add_incharge(facility.name)
+    # organizator = add_organizator(generate_user())
+
+    with open('test_users/incharges.csv', 'r') as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        # the below statement will skip the first row
+        next(csv_reader)
+        for row in csv_reader:
+            new_user = generate_user_by_username(row[0])
+            make_user_incharge(row[2], new_user)
+            print('Created Incharge = %s in Facility = %s' % (row[0], row[2]))
+
+    with open('test_users/guides.csv', 'r') as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        # the below statement will skip the first row
+        next(csv_reader)
+        for row in csv_reader:
+            new_user = generate_user_by_username(row[0])
+            make_user_guide(row[2], new_user)
+            print('Created Guide = %s in Facility = %s' % (row[0], row[2]))
+
+    # excursion = generate_excursion(facility, area, organizator, guide, incharge)
+    # print('Generated! The excursion info: \n')
+    # print('Facility: ', excursion.facility.name, "\n")
+    # print('Areas: ', excursion.areas.all(), "\n")
+    # print('Organizator: ', excursion.organizator.user.get_full_name(), "\n")
+    # print('Guide: ', excursion.guide.user.get_full_name(), "\n")
+    # print('Icharge: ', excursion.incharge.user.get_full_name(), "\n")
+    # print('Event: ', excursion.event, "\n")
+    # print('Date: ', excursion.date, "\n")
+    # print('Start Time: ', excursion.start_time, "\n")
+    # print('Stop Time: ', excursion.stop_time, "\n")
+    # print('Language: ', excursion.language, "\n")
+    # print('Target Audience: ', excursion.target_audience, "\n")
+    # print('Participants: ', excursion.participants)
+    # print('------------------------------------')
 
 
 if __name__ == "__main__":

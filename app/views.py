@@ -260,9 +260,9 @@ def get_excursion(request, id_excursion):
     is_user_guide = False
     is_user_incharge = False
 
-    if request.user == qs_ex.organizator:
+    if request.user == qs_ex.organizator.user:
         is_user_organizator = True
-    if request.user == qs_ex.guide:
+    if request.user == qs_ex.guide.user:
         is_user_guide = True
 
     # to add an opportunity for any incharge to confirm his participation
@@ -298,9 +298,9 @@ def get_excursion(request, id_excursion):
     else:
         chat = create_chat(
             request,
-            qs_ex.organizator,
-            qs_ex.incharge,
-            qs_ex.guide,
+            qs_ex.organizator.user,
+            incharge,
+            qs_ex.guide.user,
             int(id_excursion))
 
         # return JsonResponse({'chat':chat})
@@ -326,7 +326,8 @@ def create_chat(request, organizator, incharge, guide, id_excursion):
         chat = Chat.objects.create(
             excursion=Excursion.objects.get(id=id_excursion))
         chat.members.add(organizator)
-        chat.members.add(incharge)
+        if incharge != None:
+            chat.members.add(incharge)
         chat.members.add(guide)
         chat = Chat.objects.filter(excursion=id_excursion).values()
         return [v for v in chat]
@@ -339,6 +340,11 @@ def change_confirmed(request, id_excursion):
 
     current_guide = qs_ex.guide
 
+    if request.user == current_guide.user:
+        Excursion.objects.filter(id=id_excursion).update(
+            confirmed_by_guide=True)
+        return HttpResponse(status=204)
+
     current_incharge = qs_ex.incharge
 
     if current_incharge != None:
@@ -347,19 +353,10 @@ def change_confirmed(request, id_excursion):
                 confirmed_by_incharge=True)
             return HttpResponse(status=204)
     else:
-        if Incharge.objects.filter(user=request.user).exists():
-            created_incharge = Incharge.objects.create(
-                facility=qs_ex.facility, user=request.user)
-            # request.user.groups.add(Group.objects.get(name='Incharge'))
-        Excursion.objects.filter(id=id_excursion).update(
-            incharge=created_incharge, confirmed_by_incharge=True)
+        get_incharge, is_created = Incharge.objects.get_or_create(user=request.user, facility=qs_ex.facility)
+        Excursion.objects.filter(id=id_excursion).update(incharge=get_incharge, confirmed_by_incharge=True)
         chat = Chat.objects.get(excursion=id_excursion)
         chat.members.add(request.user)
-        return HttpResponse(status=204)
-
-    if request.user == current_guide.user:
-        Excursion.objects.filter(id=id_excursion).update(
-            confirmed_by_guide=True)
         return HttpResponse(status=204)
 
     return HttpResponse(status=500)
@@ -395,7 +392,7 @@ def change_excursion(request, id_excursion):
         facility=Facility.objects.get(id=request.POST.get('facility')),
         incharge=incharge,
         guide=new_guide,
-        organizator=request.user,
+        organizator=Organizator.objects.get(user=request.user),
         event=request.POST.get('event'),
         date=request.POST.get('date'),
         start_time=request.POST.get('start_time'),
