@@ -134,7 +134,7 @@ $(document).ready(function () {
                     title: excursion.event,
                     start: start_time,
                     end: stop_time,
-                    url: '../schedule/get_excursion/' + excursion.id,
+                    url: '../get_excursion/' + excursion.id,
                     backgroundColor: backgroundColor,
                     borderColor: borderColor,
 
@@ -150,13 +150,14 @@ $(document).ready(function () {
             header: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'month,agendaWeek,agendaDay'
+                right: 'month,agendaWeek,agendaDay,listWeek'
             },
             buttonText: {
                 today: 'today',
                 month: 'month',
                 week: 'week',
-                day: 'day'
+                day: 'day',
+                listWeek: 'list'
             },
             nowIndicator: true,
             events:  events,
@@ -164,7 +165,9 @@ $(document).ready(function () {
             droppable: false, // this allows things to be dropped onto the calendar !!!
             displayEventEnd: true,
             weekends: true, // Start on Mondays
+            firstDay: 1,
             timeFormat: 'H:mm', // Show full time (do not ommit zeroes)
+            // themeSystem: 'bootstrap',
             eventRender: function(event, element) { 
                 console.log(element);
                 element.find('.fc-title').append("<br/>");

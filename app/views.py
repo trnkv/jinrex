@@ -424,6 +424,8 @@ def change_excursion(request, id_excursion):
     if incharge == None and old_incharge != None:
         chat.members.remove(old_incharge.user)
 
+
+    return HttpResponse(status=204)
     return render(request, 'submitted.html', context={'result': 'The excursion is updated!'})
     # else: return render(request, 'submitted.html', context={'result': 'Mistakes were made in filling out the form. Please correct the errors and resend again.'})
 
@@ -436,7 +438,7 @@ def send_message(request, id_excursion, chat_id):
         message.author = request.user
         message.save()
 
-    return HttpResponseRedirect('/../jinrex/schedule/get_excursion/'+id_excursion)
+    return HttpResponseRedirect('/../jinrex/get_excursion/'+id_excursion)
 
 
 def mark_as_not_held(request, id_excursion):

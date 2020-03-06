@@ -1,12 +1,13 @@
 from django.conf.urls import url
 from django.urls import path
+from django.views.generic import RedirectView
 
 from . import views
 
 app_name = 'app'
 
 urlpatterns = [
-	url(r'^$', views.view_calendar, name='view_calendar'),
+	url(r'^$', RedirectView.as_view(url="/jinrex/calendar/", permanent=True)),
 	url(r'^profile/$', views.profile, name='profile'),
 	url(r'^blank/$', views.get_excursion_form, name='get_excursion_form'),
 	url(r'^send_application/$', views.send_application, name='send_application'),

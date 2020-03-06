@@ -14,7 +14,7 @@
 <section class="col-lg-12 col-xs-12 connectedSortable ui-sortable">
     <!-- Custom tabs (Charts with tabs)-->
     <div class="card">
-        <div class="card-header ui-sortable-handle" style="cursor: move;">
+        <div class="card-header ui-sortable-handle">
             <h3 class="card-title">
               <i class="fas fa-eye mr-1"></i>
               Excursion Info
@@ -73,6 +73,7 @@
 		</div>
 	</div>
 </div>
+</div>
 
 <!-- MODAL FOR CHANGING EXCURSION DATA -->
 <div class="modal fade" id="myModal_change" role="dialog">
@@ -100,47 +101,76 @@
 	</div>
 </div>
 
-<!-- Блок для отображения чата -->
-<div class="panel">
-	{% if chat.error %}
-	<h5>{{ chat.error }}</h5>
-	{% else %}
-	<!-- Time Zone -->
-	{% load tz %}
-	<h3 class="lbl_chat panel panel-body">Chat</h3>
-	{% if messages != 'none' %}
-	{% for message in messages %}
-	<div class="list-group-item {% if not message.is_readed %}unreaded{% endif %}">
-		<div class="reply-body">
-			<ul class="list-inline">
-				<li class="drop-left-padding">
-					<strong class="list-group-item-heading">
-						<a href=""><span class="glyphicon glyphicon-user"></span>{{ message.author }}</a>
-					</strong>
-				</li>
-				<li class="pull-right text-muted"><small>{{ message.pub_date|utc }}</small></li>
-			</ul>
-			<div>{{ message.message|safe }}</div>
+<!-- INFORMATION MODAL -->
+<div class="modal fade" id="modal_info" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header" style="padding:25px 50px; background-color: #28a745;">
+				<h4>
+					<i class="fas fa-thumbs-up"></i> Done!
+				</h4>
+			</div>
+			<div class="modal-body" style="padding:40px 50px;">
+				<label><span class="glyphicon glyphicon-edit"></span> This application has been updated. Notifications will be sent to the Guide, Incharge and Organizator.</label>
+			</div>
+			<div class="modal-footer">
+				<button id="modal_submit" type="submit" class="btn btn-success" data-dismiss="modal"><span class="fas fa-ok"></span> OK</button>
+			</div>
 		</div>
-	</div>
-	{% endfor %}
-	{% endif %}
 
-	{% for val in chat %}
-	<!-- Блок для отображения поля для отправки сообщения в чат -->
-	<div id="message_form">
-		<label>Enter your message</label>
-		<form id="message-form" method="post" action="send_message/{{ val.id }}/">
-			{% csrf_token %}
-			<p>{{ form_message }}</p>
-			<button type="submit" class="btn btn-success">
-				<span class="fas fa-comment"></span> Send
-			</button>
-		</form>
 	</div>
-	{% endfor %}
-	{% endif %}
 </div>
+
+</div>
+
+<!-- Блок для отображения чата -->
+<div class="card">
+	<div class="card-header ui-sortable-handle">
+		<h3 class="card-title">
+		  <i class="fas fa-comment mr-1"></i>
+		  Chat
+		</h3>
+	</div>
+	<div class="card-body">
+			{% if chat.error %}
+			<h5>{{ chat.error }}</h5>
+			{% else %}
+			<!-- Time Zone -->
+			{% load tz %}
+			{% if messages != 'none' %}
+			{% for message in messages %}
+				
+		<!-- <div class="reply-body"> -->
+			<ul class="list-group-flush p-0 m-0">
+				<li class="list-group-item">
+						<strong class="list-group-item-heading">
+							<a class="text-primary"><span class="fas fa-user text-primary"></span> {{ message.author }}</a>
+						</strong>
+					<div class="pull-right text-muted"><small>{{ message.pub_date|utc }}</small></div>
+					
+					<div>{{ message.message|safe }}</div>
+				</li>
+			</ul>
+		<!-- </div> -->
+				
+			{% endfor %}
+			{% endif %}
+
+			{% for val in chat %}
+			<!-- Блок для отображения поля для отправки сообщения в чат -->
+			<div id="message_form">
+				<label>Enter your message</label>
+				<form id="message-form" method="post" action="send_message/{{ val.id }}/">
+					{% csrf_token %}
+					<p>{{ form_message }}</p>
+					<button type="submit" class="btn btn-success">
+						<span class="fas fa-comment"></span> Send
+					</button>
+				</form>
+			</div>
+			{% endfor %}
+			{% endif %}
+	</div>
 
 
 <script type="text/javascript">
@@ -422,8 +452,29 @@
 		$('#myModal_change').modal('hide');
 		$('#id_organizator').attr('disabled', false);
 		$('#id_incharge').attr('disabled', false);
-		$("#myForm").submit();
+		// $("#myForm").submit();
+		submit_change();
+
 	};
+
+	function submit_change() {
+		$.ajax({
+			url: "{% url 'app:change_excursion' excursion.id %}",
+			type: "POST",
+			data: $("#myForm").serialize(),
+			success: function (data) {
+				$('#modal_info').modal('show');
+				$('#modal_submit').click(function(){
+					document.location.reload(true);
+				}); 
+			},
+			error: function (xhr, ajaxOptions, thrownError) {
+				console.log(xhr.status);
+				console.log(xhr.responseText);
+				console.log(thrownError);
+			}
+		});
+	}
 
 	function submit_confirm() {
 		// $('#myModal_confirm').modal('hide');
