@@ -84,6 +84,9 @@ $(document).ready(function() {
                 else {
                     $(row).css('background-color', '#C2C2C2');
                 }
+                $(row).attr('data-toggle', 'tooltip');
+                $(row).attr('data-placement', 'top');
+                $(row).attr('title', 'Click to view full information');
             },
             data: data.excursions,
             columns: [
