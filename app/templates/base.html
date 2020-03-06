@@ -17,6 +17,41 @@
         tbody tr.selected td {
           background-color: #ffd659;
         }
+
+        .bordered-table {
+          border-width: 1px;
+          border-style: solid;
+          border-color: #ddd;
+        }
+        .red-pulsing {
+          box-shadow: 0 0 0 rgba(255,0,0, 0.4) !important;
+          animation: pulse 1s infinite !important;
+        }
+        @-webkit-keyframes pulse {
+          0% {
+            -webkit-box-shadow: 0 0 5px 0 rgba(255,0,0, 0.4);
+          }
+          70% {
+              -webkit-box-shadow: 0 0 5px 10px rgba(255,0,0, 0);
+          }
+          100% {
+              -webkit-box-shadow: 0 0 5px 0 rgba(255,0,0, 0);
+          }
+        }
+        @keyframes pulse {
+          0% {
+            -moz-box-shadow: 0 0 1px 0 rgba(255,0,0, 0.4);
+            box-shadow: 0 0 1px 0 rgba(255,0,0, 0.4);
+          }
+          70% {
+              -moz-box-shadow: 0 0 5px 10px rgba(255,0,0, 0);
+              box-shadow: 0 0 5px 10px rgba(255,0,0, 0);
+          }
+          100% {
+              -moz-box-shadow: 0 0 1px 0 rgba(255,0,0, 0);
+              box-shadow: 0 0 1px 0 rgba(255,0,0, 0);
+          }
+        }
     </style>
     <style>
       @media screen and (max-width:600px) /*for small screen like mobile*/
