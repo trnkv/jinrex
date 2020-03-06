@@ -68,8 +68,9 @@ def profile(request):
         )
         user_roles.append(info_current_role)
     if Organizator.objects.filter(user=request.user).exists():
+        organizator = Organizator.objects.get(user=request.user)
         info_current_role = {'role': '', 'excursions': []}
-        excursions = Excursion.objects.filter(organizator=request.user)
+        excursions = Excursion.objects.filter(organizator=organizator)
         if excursions.exists():
             for ex in excursions:
                 info_current_role['role'] = 'Organizator'
