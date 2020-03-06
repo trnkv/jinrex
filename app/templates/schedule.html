@@ -13,7 +13,7 @@
 <section class="col-lg-12 col-xs-12 connectedSortable ui-sortable">
     <!-- Custom tabs (Charts with tabs)-->
     <div class="card">
-        <div class="card-header ui-sortable-handle" style="cursor: move;">
+        <div class="card-header ui-sortable-handle">
             <h3 class="card-title">
               <i class="fas fa-list mr-1"></i>
               Excursion list
@@ -139,8 +139,10 @@ $(document).ready(function() {
         // Add event on row click
         $('#schedule_table tbody').on('click', 'tr', function () {
             var data = table.row( this ).data();
-            var url = window.location.href + 'get_excursion/' + data.id; 
+            var url = '/jinrex/get_excursion/' + data.id;            
             window.location.href = url;
+            // console.log(url);
+            
         } );
 
         $('#show_my_excursions').on('click', function () {

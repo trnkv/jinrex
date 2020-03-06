@@ -4,138 +4,203 @@
 {% load tz %}
 
 <section class="content-header">
-  <h4><i class="fas fa-edit"></i> <b>Send a new request for the organization of excursion</b></h4>
+	<h4></h4>
 </section>
 
-<form id="application_form" action="{% url 'app:send_application' %}" method="post" class="card" style="padding-left: 1%; padding-right: 1%;">
-	{% csrf_token %}
-	<div class="row">
-		<div class="col">
-				{{ form.facility|as_crispy_field }}
+<section class="col-lg-12 col-xs-12 connectedSortable ui-sortable">
+    <!-- Custom tabs (Charts with tabs)-->
+    <div class="card">
+        <div class="card-header ui-sortable-handle">
+            <h3 class="card-title">
+              <i class="fas fa-edit mr-1"></i>
+              Send a new request for the organization of excursion
+            </h3>
+        </div><!-- /.card-header -->
+        <div class="card-body">
+			<form id="application_form" style="padding-left: 1%; padding-right: 1%;">
+				{% csrf_token %}
+				<div class="row">
+					<div class="col">
+						{{ form.facility|as_crispy_field }}
+					</div>
+					<div class="col">
+						<label for="id_id_facility" class="col-form-label  requiredField">
+							Select areas:<span class="asteriskField">*</span>
+						</label>
+						{{ form.areas|safe }}
+					</div>
+					<div class="col align-self-center">
+						<label id="id_incharge"></label><br>
+					</div>
+					<div class="col">
+						{{ form.guide|as_crispy_field }}
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						{{ form.event|as_crispy_field }}
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						{{ form.date|as_crispy_field }}
+					</div>
+					<div class="col">
+						<div class="input-group clockpicker" data-placement="bottom" data-align="top" data-autoclose="true">
+							{{ form.start_time|as_crispy_field }}
+						</div>
+					</div>
+					<div class="col">
+						<div class="input-group clockpicker" data-placement="bottom" data-align="top" data-autoclose="true">
+							{{ form.stop_time|as_crispy_field }}
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						{{ form.language|as_crispy_field }}
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						{{ form.target_audience|as_crispy_field }}
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						{{ form.participants|as_crispy_field }}
+					</div>
+				</div>
+				<input type="submit" style="display: none;" />
+			</form>
+			<button id="bt_change" class="btn btn-block btn-warning" data-toggle="modal" data-target="#myModal">SEND</button>
 		</div>
-		<div class="col">
-      <label for="id_id_facility" class="col-form-label  requiredField">
-		      Select areas:<span class="asteriskField">*</span>
-  		</label>
-				{{ form.areas|safe }}
-		</div>
-		<div class="col align-self-center">
-				<label id="id_incharge"></label><br>
-		</div>
-        <div class="col">
-			{{ form.guide|as_crispy_field }}
-		</div>
-	</div>
-	<div class="row">
-        <div class="col">
-			{{ form.event|as_crispy_field }}
-		</div>
-    </div>
-	<div class="row">
-      <div class="col">
-			   {{ form.date|as_crispy_field }}
-      </div>
-      <div class="col">
-        <div class="input-group clockpicker" data-placement="bottom" data-align="top" data-autoclose="true">
-  			     {{ form.start_time|as_crispy_field }}
-        </div>
-  		</div>
-      <div class="col">
-        <div class="input-group clockpicker" data-placement="bottom" data-align="top" data-autoclose="true">
-            {{ form.stop_time|as_crispy_field }}
-        </div>
-  		</div>
-  </div>
-	<div class="row">
-        <div class="col">
-			{{ form.language|as_crispy_field }}
-		</div>
-    </div>
-	<div class="row">
-        <div class="col">
-			{{ form.target_audience|as_crispy_field }}
-		</div>
-    </div>
-	<div class="row">
-        <div class="col">
-			{{ form.participants|as_crispy_field }}
-		</div>
-    </div>
-	<input type="submit" style="display: none;"/>
-</form>
-<button id="bt_change" class="btn btn-block btn-warning" data-toggle="modal" data-target="#myModal">SEND</button>
 
 <!-- MODAL FOR CONFIRMATION -->
 <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
+	<div class="modal-dialog">
 
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header" style="padding:25px 50px; background-color: #f0ad4e;">
-          <h4>
-          	<span class="glyphicon glyphicon-bell"></span> Are you sure you want to send a request for this excursion?
-          </h4>
-        </div>
-        <div class="modal-body" style="padding:40px 50px;">
-              <label><span class="glyphicon glyphicon-edit"></span> The status of the excursion will be set to "UNCONFIRMED" until the responsible person and the guide approve it.</label>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-danger btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Cancel</button>
-          <button id="modal_submit" type="submit" class="btn btn-success" onclick="submit_changes()"><span class="glyphicon glyphicon-ok"></span> Yes, I'm sure</button>
-        </div>
-      </div>
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header" style="padding:25px 50px; background-color: #f0ad4e;">
+				<h4>
+					<span class="glyphicon glyphicon-bell"></span> Are you sure you want to send a request for this
+					excursion?
+				</h4>
+			</div>
+			<div class="modal-body" style="padding:40px 50px;">
+				<label><span class="glyphicon glyphicon-edit"></span> The status of the excursion will be set to
+					"UNCONFIRMED" until the responsible person and the guide approve it.</label>
+			</div>
+			<div class="modal-footer">
+				<button type="submit" class="btn btn-danger btn-default pull-left" data-dismiss="modal"><span
+						class="glyphicon glyphicon-remove"></span> Cancel</button>
+				<button id="modal_submit" type="submit" class="btn btn-success" onclick="submit_changes()"><span
+						class="glyphicon glyphicon-ok"></span> Yes, I'm sure</button>
+			</div>
+		</div>
 
-    </div>
-  </div>
+	</div>
+</div>
+</div>
+
+<!-- INFORMATION MODAL -->
+<div class="modal fade" id="modal_info" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header" style="padding:25px 50px; background-color: #28a745;">
+				<h4>
+					<i class="fas fa-thumbs-up"></i> Done!
+				</h4>
+			</div>
+			<div class="modal-body" style="padding:40px 50px;">
+				<label><span class="glyphicon glyphicon-edit"></span> Your application has been registered. Notifications will be sent to the Guide, Incharge and Organizator.</label>
+			</div>
+			<div class="modal-footer">
+				<button id="modal_submit" type="submit" class="btn btn-success" data-dismiss="modal"><span
+						class="fas fa-ok"></span> OK</button>
+			</div>
+		</div>
+
+	</div>
 </div>
 
 <script type="text/javascript">
-	$(document).ready(function() {
+	function get_guides_ids_by_facility(id_facility)
+	{
+		$.ajax({
+				url: "{% url 'app:get_guides_ids_by_facility' %}",
+				type: "post",
+				data: {
+					csrfmiddlewaretoken: getCookie('csrftoken'),
+					'facility': id_facility,
+				},
+				success: function (data) {
+					$('#id_guide option').each(function () {
+						var guide_id = $(this).val().toString();
+						if (data['guides_ids'].indexOf(guide_id) == -1) {
+							console.log(data['guides_ids'].indexOf(guide_id))
+							$(this).hide();
+						}
+						else $(this).show();
+					});
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+					console.log(xhr.status);
+					console.log(xhr.responseText);
+					console.log(thrownError);
+				},
+			});
+	}
+
+	$(document).ready(function () {
 		$('#id_areas li').each(function () {
 			$(this).hide();
 		});
 
 		$("select").addClass("form-control select2 select2-hidden-accessible");
 		$('#id_date').datepicker({
-      format: 'yyyy-mm-dd',
+			format: 'yyyy-mm-dd',
+			todayHighlight: true,
 		});
-    $('.clockpicker').clockpicker();
+		$('.clockpicker').clockpicker();
 	});
 
-    $("#id_facility").change(function() {
+	$("#id_facility").change(function () {
 
-          var id_facility = $(this).val();
+		var id_facility = $(this).val();
 
-          if (id_facility !== ''){
-          	$.ajax ({
-	            url: "{% url 'app:get_all_areas_by_facility_id' %}",
-	            type: "post",
-	            data: {
-	            	csrfmiddlewaretoken: getCookie('csrftoken'),
-	                'facility': id_facility,
-	            },
-	            success: function(data) {
-	            	// set all checkboxes.checked = false
-	            	$('#id_areas li label input').each(function () {
-				        $(this).prop('checked', false);
-				    });
+		if (id_facility !== '') {
+			$.ajax({
+				url: "{% url 'app:get_all_areas_by_facility_id' %}",
+				type: "post",
+				data: {
+					csrfmiddlewaretoken: getCookie('csrftoken'),
+					'facility': id_facility,
+				},
+				success: function (data) {
+					// set all checkboxes.checked = false
+					$('#id_areas li label input').each(function () {
+						$(this).prop('checked', false);
+					});
+					$('#id_guide').prop('selectedIndex', 0);
 
-	            	// if current area doesn't belong to current facility then hide its label
-	            	// else show it
-	            	$('#id_areas li').each(function () {
-    					    var str = $.trim($(this).text());
-      						if (!data['areas'].includes(str)) {
-      							$(this).hide();
-      						}
-      						else $(this).show();
-      					});
+					// if current area doesn't belong to current facility then hide its label
+					// else show it
+					$('#id_areas li').each(function () {
+						var str = $.trim($(this).text());
+						if (!data['areas'].includes(str)) {
+							$(this).hide();
+						}
+						else $(this).show();
+					});
 
-	            	//$('#id_incharge option').each(function(){
-	            	//	var id_incharge = $(this).val();
-		            //	if (data['id_incharge']==id_incharge){
-		            //		$(this).prop('selected', true);
-		            //	}
-	            	//})
+					//$('#id_incharge option').each(function(){
+					//	var id_incharge = $(this).val();
+					//	if (data['id_incharge']==id_incharge){
+					//		$(this).prop('selected', true);
+					//	}
+					//})
 					if (data['incharges'].length > 1)
 						$('#id_incharge').text("Incharges: " + data['incharges']);
 					else $('#id_incharge').text("Incharge: " + data['incharges']);
@@ -143,59 +208,72 @@
 					$('#id_incharge').css('padding', '1%');
 
 				},
-				error: function(xhr, ajaxOptions, thrownError) {
-	                console.log(xhr.status);
-	                console.log(xhr.responseText);
-	                console.log(thrownError);
-	            },
-        	});
-          }
-          else {
-          	$.ajax ({
-	            url: "{% url 'app:get_all_areas_by_facility_id' %}",
-	            type: "post",
-	            data: {
-	            	csrfmiddlewaretoken: getCookie('csrftoken'),
-	                'facility': 0,
-	            },
-	            success: function(data) {
-	            	document.location.reload(true);
+				error: function (xhr, ajaxOptions, thrownError) {
+					console.log(xhr.status);
+					console.log(xhr.responseText);
+					console.log(thrownError);
 				},
-				error: function(xhr, ajaxOptions, thrownError) {
-	                console.log(xhr.status);
-	                console.log(xhr.responseText);
-	                console.log(thrownError);
-	            },
-        	});
-          }
-    })
+			});
+			get_guides_ids_by_facility(id_facility);
+		}
+		else {
+			$.ajax({
+				url: "{% url 'app:get_all_areas_by_facility_id' %}",
+				type: "post",
+				data: {
+					csrfmiddlewaretoken: getCookie('csrftoken'),
+					'facility': 0,
+				},
+				success: function (data) {
+					document.location.reload(true);
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+					console.log(xhr.status);
+					console.log(xhr.responseText);
+					console.log(thrownError);
+				},
+			});
+		}
+	})
 
-    $('#bt_change').on('click', function(e){
-		  $('#myModal').modal('show');
-		  e.preventDefault();
+	$('#bt_change').on('click', function (e) {
+		$('#myModal').modal('show');
+		e.preventDefault();
 	});
 
-    function getCookie(name){
-	    var cookieValue = null;
-	    if (document.cookie && document.cookie !== '') {
-	        var cookies = document.cookie.split(';');
-	        for (var i = 0; i < cookies.length; i++) {
-	            var cookie = jQuery.trim(cookies[i]);
-	            // Does this cookie string begin with the name we want?
-	            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-	                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-	                break;
-	            }
-	        }
-    	}
-    	return cookieValue;
+	function getCookie(name) {
+		var cookieValue = null;
+		if (document.cookie && document.cookie !== '') {
+			var cookies = document.cookie.split(';');
+			for (var i = 0; i < cookies.length; i++) {
+				var cookie = jQuery.trim(cookies[i]);
+				// Does this cookie string begin with the name we want?
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
 	}
 
 	function submit_changes() {
 		$('#myModal').modal('hide');
-		$('#id_incharge').attr('disabled', false);
 		$('#div_id_confirmed label input').prop('checked', true);
-		$("#application_form").submit();
+		$.ajax({
+				url: "{% url 'app:send_application' %}",
+				type: "POST",
+				data: $("#application_form").serialize(), // serializes the form's elements.
+				success: function (data) {
+						$('#modal_info').modal('show');
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+					console.log(xhr.status);
+					console.log(xhr.responseText);
+					console.log(thrownError);
+				},
+			});
+		// $("#application_form").submit();
 	};
 
 </script>
