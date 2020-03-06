@@ -52,14 +52,19 @@
 </style>
 
 <section class="content-header">
-  <h4><i class="fas fa-chart-pie"></i> <b>Guides statistics</b></h4>
+  <h4></h4>
 </section>
 
-<div class="card card-danger">
-  <div class="card-header">
-    <h3 class="card-title">For current year ({{ current_year }})</h3>
-  </div>
-  <div class="card-body">
+<section class="col-lg-12 col-xs-12 connectedSortable ui-sortable">
+  <!-- Custom tabs (Charts with tabs)-->
+  <div class="card card-danger">
+      <div class="card-header ui-sortable-handle">
+          <h3 class="card-title">
+            <i class="fas fa-chart-pie mr-1"></i>
+            Guides statistics
+          </h3>
+      </div>
+      <div class="card-body">
     <div class="chartjs-size-monitor">
       <div class="chartjs-size-monitor-expand">
         <div class=""></div>
@@ -70,10 +75,12 @@
     </div>
     <canvas id="barChart"
       style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 611px;"
-      width="611" height="250" class="chartjs-render-monitor"></canvas>
+      width="611" height="250" class="chartjs-render-monitor">
+    </canvas>
   </div>
   <!-- /.card-body -->
 </div>
+</section>
 
 <script>
   $.ajax({
