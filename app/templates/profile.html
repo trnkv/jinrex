@@ -5,7 +5,7 @@
 	<h3 class="profile-username text-center">{{ user.get_full_name }}</h3>
 	<p class="text-muted text-center">@{{ user.get_username }}</p>
 	<ul class="list-group list-group-unbordered mb-3">
-		{% for dict in user_groups %}
+		{% for dict in user_roles %}
 			{% for key, value in dict.items %}
 				{% if key == 'role' %}
 					<li class="list-group-item" style="padding: 1%;">

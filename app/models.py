@@ -1,6 +1,6 @@
 from django.db import models
 import uuid # Required for unique instances
-from django.contrib.auth.models import  User, Group, Permission
+from django.contrib.auth.models import  User
 from django.core.validators import RegexValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -16,6 +16,7 @@ from django.urls import reverse #Used to generate URLs by reversing the URL patt
 
 
 # Create your models here.
+
 class Phone(models.Model):
     user = models.OneToOneField(User, on_delete=models.DO_NOTHING )
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,17}$', message="Phone number must be entered in the format: '+71234567890'. Up to 17 digits allowed.")
@@ -96,6 +97,16 @@ class Guide(models.Model):
         return self.user.get_full_name() + ' (@' + self.user.get_username() + ')'
 
 
+class Organizator(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=None)
+
+    def __str__(self):
+        """
+        String for representing the Model object.
+        """
+        return self.user.get_full_name() + ' (@' + self.user.get_username() + ')'
+
+
 class Excursion(models.Model):
     """
     Model representing an excursion.
@@ -104,7 +115,7 @@ class Excursion(models.Model):
     facility = models.ForeignKey('Facility', on_delete=models.DO_NOTHING)
     areas = models.ManyToManyField(Area)
 
-    organizator = models.ForeignKey(User, related_name='user_organizator', default="", on_delete=models.DO_NOTHING)
+    organizator = models.ForeignKey(Organizator, related_name='user_organizator', default="", on_delete=models.DO_NOTHING)
     guide = models.ForeignKey(Guide, related_name='user_guide', default="", on_delete=models.DO_NOTHING)
     incharge = models.ForeignKey(Incharge, related_name='user_incharge', default=None, null=True, blank=True, on_delete=models.DO_NOTHING)
 

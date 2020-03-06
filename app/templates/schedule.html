@@ -140,8 +140,10 @@ $(document).ready(function() {
         // Add event on row click
         $('#schedule_table tbody').on('click', 'tr', function () {
             var data = table.row( this ).data();
-            var url = window.location.href + 'get_excursion/' + data.id; 
+            var url = '/jinrex/get_excursion/' + data.id;            
             window.location.href = url;
+            // console.log(url);
+            
         } );
 
         $('#show_my_excursions').on('click', function () {

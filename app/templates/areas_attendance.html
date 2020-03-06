@@ -8,18 +8,32 @@
 
 
 <section class="content-header">
-  <h4><i class="fas fa-chart-pie"></i> <b>Areas attendance</b></h4>
+  <h4></h4>
 </section>
 
-<div class="card card-danger">
-    <div class="card-header">
-      <h3 class="card-title">For current year ({{ current_year }})</h3>
-    </div>
-    <div class="card-body"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+<section class="col-lg-12 col-xs-12 connectedSortable ui-sortable">
+  <!-- Custom tabs (Charts with tabs)-->
+  <div class="card card-danger">
+      <div class="card-header ui-sortable-handle">
+          <h3 class="card-title">
+            <i class="fas fa-chart-pie mr-1"></i>
+            Areas attendance
+          </h3>
+      </div>
+      <div class="card-body">
+        <div class="chartjs-size-monitor">
+          <div class="chartjs-size-monitor-expand">
+            <div class=""></div>
+          </div>
+          <div class="chartjs-size-monitor-shrink">
+            <div class=""></div>
+          </div>
+        </div>
       <canvas id="donutChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%; display: block; width: 597px;" width="597" height="250" class="chartjs-render-monitor"></canvas>
     </div>
     <!-- /.card-body -->
 </div>
+</section>
 
 
 <script>
