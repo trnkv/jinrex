@@ -121,8 +121,8 @@ class Excursion(models.Model):
 
     event = models.CharField(max_length=200)
     date = models.DateField()
-    start_time = models.TimeField(default=timezone.localtime)
-    stop_time = models.TimeField(default=timezone.localtime)
+    start_time = models.TimeField(default=timezone.localtime().strftime("%H:%M"))
+    stop_time = models.TimeField(default=timezone.localtime().strftime("%H:%M"))
     language = models.CharField(max_length=200)
     target_audience = models.CharField(max_length=200)
     participants = models.IntegerField()
