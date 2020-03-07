@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+{% load staticfiles %}
 
 <section class="content-header">
   <h4></h4>
@@ -11,7 +12,7 @@
         <div class="card-header">
             <h1 class="card-title">
               <i class="far fa-calendar-alt"></i>
-              Excursion list
+              Calendar
             </h1>
             <!-- Top buttons for choosing my excursions or all -->
 <!--             <div class="card-tools">
@@ -150,14 +151,16 @@ $(document).ready(function () {
             header: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'month,agendaWeek,agendaDay,listWeek'
+                right: 'month,agendaWeek,agendaDay,listMonth'
             },
+            theme: true,
+            themeSystem:'bootstrap4',
             buttonText: {
                 today: 'today',
                 month: 'month',
                 week: 'week',
                 day: 'day',
-                listWeek: 'list'
+                listMonth: 'list'
             },
             nowIndicator: true,
             events:  events,
@@ -189,9 +192,15 @@ $(document).ready(function () {
                 }
             } 
         })
+        
+        setTheme('flatly');
         $('#calendar').fullCalendar('rerenderEvents');
         $('#calendar table').addClass('bordered-table');
         console.log($('#calendar').fullCalendar());        
+    }
+    // ======= Set Theme for Calendar =========
+    function setTheme(themeName){
+        $('head').append("<link href='{%  static 'css/fullcalendar/themes/themeName/bootstrap.css' %}' rel='stylesheet' />".replace('themeName', themeName));
     }
 
     // Initiate data load and draw the calendar ---------------------
