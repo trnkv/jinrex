@@ -10,6 +10,7 @@ urlpatterns = [
 	url(r'^$', RedirectView.as_view(url="/jinrex/calendar/", permanent=True)),
 	url(r'^profile/$', views.profile, name='profile'),
 	url(r'^blank/$', views.get_excursion_form, name='get_excursion_form'),
+	url(r'^contacts/$', views.view_contacts, name='view_contacts'),
 	url(r'^send_application/$', views.send_application, name='send_application'),
 	url(r'^get_all_areas/$', views.get_all_areas_by_facility_id, name='get_all_areas_by_facility_id'),
 	url(r'^get_guides_ids_by_facility/$', views.get_guides_ids_by_facility, name='get_guides_ids_by_facility'),

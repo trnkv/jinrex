@@ -604,3 +604,7 @@ def get_excursions_list(request):
         result.append(event)
 
     return JsonResponse({'excursions': result})
+
+
+def view_contacts(request):
+    return render(request, 'contacts.html', context={})
