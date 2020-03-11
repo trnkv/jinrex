@@ -153,8 +153,9 @@ $(document).ready(function () {
                 center: 'title',
                 right: 'month,agendaWeek,agendaDay,listMonth'
             },
-            theme: true,
-            themeSystem:'bootstrap4',
+            {% comment %} theme: true, {% endcomment %}
+            {% comment %} themeSystem:'bootstrap4', {% endcomment %}
+            height: 650,
             buttonText: {
                 today: 'today',
                 month: 'month',
@@ -193,7 +194,7 @@ $(document).ready(function () {
             } 
         })
         
-        setTheme('flatly');
+        {% comment %} setTheme('flatly'); {% endcomment %}
         $('#calendar').fullCalendar('rerenderEvents');
         $('#calendar table').addClass('bordered-table');
         console.log($('#calendar').fullCalendar());        

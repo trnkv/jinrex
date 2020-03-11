@@ -334,11 +334,9 @@ def create_chat(request, organizator, incharge, guide, id_excursion):
         return [v for v in chat]
     # return redirect(get_excursion(id_excursion))
 
-
 @login_required
-def change_confirmed(request, id_excursion):
+def change_confirmed_by_guide(request, id_excursion):
     qs_ex = Excursion.objects.get(id=id_excursion)
-
     current_guide = qs_ex.guide
 
     if request.user == current_guide.user:
@@ -346,6 +344,10 @@ def change_confirmed(request, id_excursion):
             confirmed_by_guide=True)
         return HttpResponse(status=204)
 
+
+@login_required
+def change_confirmed_by_incharge(request, id_excursion):
+    qs_ex = Excursion.objects.get(id=id_excursion)
     current_incharge = qs_ex.incharge
 
     if current_incharge != None:
