@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="content-header">
+  <h4></h4>
+</section>
+<section class="col-lg-12 col-xs-12 connectedSortable ui-sortable">
+    <!-- Custom tabs (Charts with tabs)-->
+    <div class="card">
+        <div class="card-header ui-sortable-handle">
+            <h3 class="card-title">
+              <i class="fa fa-info-circle"></i>
+              Contacts
+            </h3>
+        </div><!-- /.card-header -->
+        <div class="card-body">
+            {% comment %} <div class="card-header text-muted border-bottom-0">
+                Programmers
+            </div> {% endcomment %}
+            <div class="card-body pt-0">
+                <div class="row">
+                    <div class="col-7">
+                        <h2 class="lead"><b>Anna Ilina</b></h2>
+                        {% comment %} <p class="text-muted text-sm"><b>About: </b> Web Designer / UX / Graphic Artist / Coffee Lover </p> {% endcomment %}
+                        <ul class="ml-4 mb-0 fa-ul text-muted">
+                        {% comment %} <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Address: Demo Street 123, Demo City 04312, NJ</li> {% endcomment %}
+                        {% comment %} <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Phone #: + 800 - 12 12 23 52</li> {% endcomment %}
+                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-envelope"></i></span> Email: <span class="noselect">anna.ilina.1307@yandex.ru</span></li>
+                        </ul>
+                    </div>
+                    <div class="">
+                        <h2 class="lead"><b>Igor Pelevanyuk</b></h2>
+                        {% comment %} <p class="text-muted text-sm"><b>About: </b> Web Designer / UX / Graphic Artist / Coffee Lover </p> {% endcomment %}
+                        <ul class="ml-4 mb-0 fa-ul text-muted">
+                        {% comment %} <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Address: Demo Street 123, Demo City 04312, NJ</li> {% endcomment %}
+                        {% comment %} <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Phone #: + 800 - 12 12 23 52</li> {% endcomment %}
+                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-envelope"></i></span> Email: </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
