@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.template.loader import render_to_string
-from django.shortcuts import render_to_response
 import json
 import datetime
 
@@ -278,9 +277,14 @@ def get_excursion(request, id_excursion):
 
     # return form.as_ul()
     # return JsonResponse({'desired_excursion':desired_excursion})
-
-    chat = Chat.objects.filter(
-        members__in=[request.user.id], excursion=id_excursion)
+    chat = Chat.objects.none()
+    if is_user_organizator:
+        chat = Chat.objects.filter(organizator=Organizator.objects.get(user=request.user), excursion=id_excursion)
+    if is_user_guide:
+        chat = Chat.objects.filter(guide=Guide.objects.get(user=request.user), excursion=id_excursion)
+    if is_user_incharge:
+        chat = Chat.objects.filter(incharge=Incharge.objects.get(user=request.user), excursion=id_excursion)
+        
     if chat.exists():
         messages = Message.objects.filter(chat=chat.first().id).values()
         for m in messages:
@@ -297,11 +301,12 @@ def get_excursion(request, id_excursion):
                           'is_user_incharge': is_user_incharge
                       })
     else:
+        print(qs_ex.organizator)
         chat = create_chat(
             request,
-            qs_ex.organizator.user,
-            incharge,
-            qs_ex.guide.user,
+            qs_ex.organizator,
+            qs_ex.incharge,
+            qs_ex.guide,
             int(id_excursion))
 
         # return JsonResponse({'chat':chat})
@@ -321,18 +326,20 @@ def get_excursion(request, id_excursion):
 
 
 def create_chat(request, organizator, incharge, guide, id_excursion):
-    if request.user != organizator and request.user != incharge and request.user != guide:
+    if request.user != organizator.user and request.user != guide.user:
+        if incharge != None and request.user != incharge.user:
+            return {'error': 'You can not view this chat because you are not in members of this excursion.'}
         return {'error': 'You can not view this chat because you are not in members of this excursion.'}
-    else:
-        chat = Chat.objects.create(
-            excursion=Excursion.objects.get(id=id_excursion))
-        chat.members.add(organizator)
+    elif request.user == organizator.user or request.user == guide.user or request.user == incharge.user:
+        ex = Excursion.objects.get(id=id_excursion)
+        chat = Chat.objects.create(excursion=ex, organizator=organizator, guide=guide)
         if incharge != None:
-            chat.members.add(incharge)
-        chat.members.add(guide)
+            chat.incharge = incharge
         chat = Chat.objects.filter(excursion=id_excursion).values()
         return [v for v in chat]
+
     # return redirect(get_excursion(id_excursion))
+
 
 @login_required
 def change_confirmed_by_guide(request, id_excursion):
@@ -340,9 +347,8 @@ def change_confirmed_by_guide(request, id_excursion):
     current_guide = qs_ex.guide
 
     if request.user == current_guide.user:
-        Excursion.objects.filter(id=id_excursion).update(
-            confirmed_by_guide=True)
-        return HttpResponse(status=204)
+        Excursion.objects.filter(id=id_excursion).update(confirmed_by_guide=True)
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required
@@ -352,17 +358,14 @@ def change_confirmed_by_incharge(request, id_excursion):
 
     if current_incharge != None:
         if request.user == current_incharge.user:
-            Excursion.objects.filter(id=id_excursion).update(
-                confirmed_by_incharge=True)
-            return HttpResponse(status=204)
+            Excursion.objects.filter(id=id_excursion).update(confirmed_by_incharge=True)
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     else:
         get_incharge, is_created = Incharge.objects.get_or_create(user=request.user, facility=qs_ex.facility)
         Excursion.objects.filter(id=id_excursion).update(incharge=get_incharge, confirmed_by_incharge=True)
-        chat = Chat.objects.get(excursion=id_excursion)
-        chat.members.add(request.user)
-        return HttpResponse(status=204)
-
-    return HttpResponse(status=500)
+        Chat.objects.filter(excursion=id_excursion).update(incharge=get_incharge)
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    
 
 
 @login_required
@@ -420,16 +423,14 @@ def change_excursion(request, id_excursion):
     # user_new_guide = User.objects.get(id=new_guide[0]['user'])
 
     # Updating Chat members
-    chat = Chat.objects.get(excursion=id_excursion)
-    if (current_guide.user != new_guide_user):
-        chat.members.remove(current_guide.user)
-        chat.members.add(new_guide_user)
+    chat = Chat.objects.filter(excursion=id_excursion)
+    if (current_guide != new_guide):
+        chat.update(guide=new_guide)
     if incharge == None and old_incharge != None:
-        chat.members.remove(old_incharge.user)
-
+        chat.update(incharge=None)
 
     return HttpResponse(status=204)
-    return render(request, 'submitted.html', context={'result': 'The excursion is updated!'})
+    # return render(request, 'submitted.html', context={'result': 'The excursion is updated!'})
     # else: return render(request, 'submitted.html', context={'result': 'Mistakes were made in filling out the form. Please correct the errors and resend again.'})
 
 
@@ -446,7 +447,7 @@ def send_message(request, id_excursion, chat_id):
 
 def mark_as_not_held(request, id_excursion):
     Excursion.objects.filter(id=id_excursion).update(not_held=True)
-    return HttpResponse(status=204)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 def view_facilities_attendace(request):

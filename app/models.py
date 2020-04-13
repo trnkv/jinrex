@@ -18,7 +18,7 @@ from django.urls import reverse #Used to generate URLs by reversing the URL patt
 # Create your models here.
 
 class Phone(models.Model):
-    user = models.OneToOneField(User, on_delete=models.DO_NOTHING )
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,17}$', message="Phone number must be entered in the format: '+71234567890'. Up to 17 digits allowed.")
     phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True,  unique=True) # validators should be a list
 
@@ -76,8 +76,8 @@ class Incharge(models.Model):
     """
     Model representing a person incharge of the excursion.
     """
-    facility = models.ForeignKey('Facility', on_delete=models.DO_NOTHING)
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=None)
+    facility = models.ForeignKey('Facility', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
 
     def __str__(self):
         """
@@ -88,7 +88,7 @@ class Incharge(models.Model):
 
 class Guide(models.Model):
     facility = models.ManyToManyField(Facility)
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=None)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
 
     def __str__(self):
         """
@@ -98,7 +98,7 @@ class Guide(models.Model):
 
 
 class Organizator(models.Model):
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, default=None)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
 
     def __str__(self):
         """
@@ -112,12 +112,12 @@ class Excursion(models.Model):
     Model representing an excursion.
     """
     id = models.AutoField(verbose_name='id_excursion', serialize=False, auto_created=True, primary_key=True)
-    facility = models.ForeignKey('Facility', on_delete=models.DO_NOTHING)
+    facility = models.ForeignKey('Facility', on_delete=models.CASCADE)
     areas = models.ManyToManyField(Area)
 
-    organizator = models.ForeignKey(Organizator, related_name='user_organizator', default="", on_delete=models.DO_NOTHING)
-    guide = models.ForeignKey(Guide, related_name='user_guide', default="", on_delete=models.DO_NOTHING)
-    incharge = models.ForeignKey(Incharge, related_name='user_incharge', default=None, null=True, blank=True, on_delete=models.DO_NOTHING)
+    organizator = models.ForeignKey(Organizator, related_name='user_organizator', default="", on_delete=models.CASCADE)
+    guide = models.ForeignKey(Guide, related_name='user_guide', default="", on_delete=models.CASCADE)
+    incharge = models.ForeignKey(Incharge, related_name='user_incharge', default=None, null=True, blank=True, on_delete=models.CASCADE)
 
     event = models.CharField(max_length=200)
     date = models.DateField()
@@ -141,8 +141,11 @@ class Excursion(models.Model):
 
 # Модели для реализации чата
 class Chat(models.Model):
-    excursion = models.OneToOneField(Excursion, on_delete=models.DO_NOTHING)
-    members = models.ManyToManyField(User, verbose_name=_("Member"))
+    excursion = models.OneToOneField(Excursion, on_delete=models.CASCADE)
+    # members = models.ManyToManyField(User, verbose_name=_("Member"))
+    organizator = models.ForeignKey(Organizator, on_delete=models.CASCADE)
+    guide = models.ForeignKey(Guide, on_delete=models.CASCADE)
+    incharge = models.ForeignKey(Incharge, default=None, null=True, blank=True, on_delete=models.CASCADE)
 
     def get_absolute_url(self):
         return reverse('messages', (), {'chat_id': self.pk })
@@ -152,8 +155,8 @@ class Chat(models.Model):
 
 
 class Message(models.Model):
-    chat = models.ForeignKey(Chat, verbose_name=_("Chat"), on_delete=models.DO_NOTHING)
-    author = models.ForeignKey(User, verbose_name=_("User"), on_delete=models.DO_NOTHING)
+    chat = models.ForeignKey(Chat, verbose_name=_("Chat"), on_delete=models.CASCADE)
+    author = models.ForeignKey(User, verbose_name=_("User"), on_delete=models.CASCADE)
     message = models.TextField(_("Message"))
     pub_date = models.DateTimeField(_('Date'), default=timezone.now)
     is_readed = models.BooleanField(_('Readed'), default=False)
