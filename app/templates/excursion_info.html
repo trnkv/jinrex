@@ -111,7 +111,7 @@
 				</h4>
 			</div>
 			<div class="modal-body" style="padding:40px 50px;">
-				<label><span class="glyphicon glyphicon-edit"></span> This application has been updated. Notifications will be sent to the Guide, Incharge and Organizator.</label>
+				<label id="text_info"><span class="glyphicon glyphicon-edit"></span> This application has been updated. Notifications will be sent to the Guide, Incharge and Organizator.</label>
 			</div>
 			<div class="modal-footer">
 				<button id="modal_submit" type="submit" class="btn btn-success" data-dismiss="modal"><span class="fas fa-ok"></span> OK</button>
@@ -246,6 +246,7 @@
 
 		{% if is_user_organizator %}
 		{
+			console.log('User is Organizator')
 			$('#confirm_held_info').show();
 			$('#changefield_info').show();
 			$("#myForm :input").prop('readonly', false);
@@ -254,6 +255,10 @@
 
 			$('#additional_buttons').append(
 				'<button id="bt_change" class="btn btn-warning" style="margin-left: auto;" data-toggle="modal" data-target="#myModal_change">CHANGE EXCURSION</button>'
+			)
+			// добавить проверку, была ли экскурсия проведена
+			$('#additional_buttons').append(
+				'<button id="bt_gen_report" class="btn btn-success" style="margin-left: auto;" data-toggle="modal" >GENERATE REPORT</button>'
 			)
 		}
 		{% endif %}
@@ -360,10 +365,32 @@
 			},
 		})
 
+		// событие нажатия на кнопку CHANGE EXCURSION
 		$('#bt_change').on('click', function (e) {
 			$('#myModal_change').modal('show');
 			e.preventDefault();
-		});
+		})
+
+		// событие нажатия на кнопку GENERATE REPORT
+		$('#bt_gen_report').on('click', function (e){
+				$.ajax({
+				url: "{% url 'app:generate_report' %}",
+				type: "POST",
+				data: {
+					'id_excursion': '{{ excursion.id }}',
+					csrfmiddlewaretoken: getCookie('csrftoken'),
+				},
+				success: function (data) {
+						$('#text_info').text('Document was downloaded!');
+						$('#modal_info').modal('show');
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+					console.log(xhr.status);
+					console.log(xhr.responseText);
+					console.log(thrownError);
+				},
+			});
+		})
 	})
 
 	$("#id_facility").change(function () {

@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.template.loader import render_to_string
 import json
 import datetime
+import os
 
 from .models import *
 from django.contrib.auth.models import User, Group
@@ -16,6 +17,7 @@ from django.utils import timezone
 
 import pdb
 import collections  # for sorting dict in view_guide_statistics
+from docxtpl import DocxTemplate # for reports generating
 
 
 # Функция отображения для домашней страницы сайта.
@@ -284,6 +286,11 @@ def get_excursion(request, id_excursion):
         chat = Chat.objects.filter(guide=Guide.objects.get(user=request.user), excursion=id_excursion)
     if is_user_incharge:
         chat = Chat.objects.filter(incharge=Incharge.objects.get(user=request.user), excursion=id_excursion)
+
+    print(is_user_guide)
+    print(id_excursion)
+    print(request.user)
+    print(chat)
         
     if chat.exists():
         messages = Message.objects.filter(chat=chat.first().id).values()
@@ -429,7 +436,7 @@ def change_excursion(request, id_excursion):
     if incharge == None and old_incharge != None:
         chat.update(incharge=None)
 
-    return HttpResponse(status=204)
+    return HttpResponse(status=200)
     # return render(request, 'submitted.html', context={'result': 'The excursion is updated!'})
     # else: return render(request, 'submitted.html', context={'result': 'Mistakes were made in filling out the form. Please correct the errors and resend again.'})
 
@@ -532,7 +539,7 @@ def get_guide_statistics(request):
     return JsonResponse({'all_facilities': all_facilities, 'guide_statistics': result_info})
     # return render(request, 'guides_statistics.html', context={'all_facilities':json.dumps(all_facilities),'guides': json.dumps(result_info)})
 
-
+@login_required
 def view_calendar(request):
     return render(request, 'calendar.html', {})
 
@@ -608,6 +615,48 @@ def get_excursions_list(request):
 
     return JsonResponse({'excursions': result})
 
-
+@login_required
 def view_contacts(request):
     return render(request, 'contacts.html', context={})
+
+def generate_report(request):
+    
+    excursion = Excursion.objects.get(id=request.POST.get('id_excursion'))
+    excursion_areas = excursion.areas.all()
+    areas_names = [area.name for area in excursion_areas]
+    visited_photos = visited_museum = visited_micc = visited_micccr = visited_lectures =  False
+
+    for name in areas_names:
+        if name == 'Photos':
+            visited_photos = True 
+        if name == 'Museum':
+            visited_museum = True
+        if name == 'MICC':
+            visited_micc = True
+        if name == 'MICC CR':
+            visited_micccr = True
+        if name == 'Lectures':
+            visited_lectures = True
+
+    context = {'facility': excursion.facility,
+        'date': excursion.date.strftime("%d.%m.%y") ,
+        'time':  excursion.start_time.strftime("%H:%M") + '-' + excursion.stop_time.strftime("%H:%M"),
+        'guide': excursion.guide.user.get_full_name(),
+        'language': excursion.language,
+        'auditory': excursion.target_audience,
+        'occasion': excursion.event,
+        'participants': excursion.participants,
+        'visited_photos': visited_photos,
+        'visited_museum': visited_museum,
+        'visited_micc': visited_micc,
+        'visited_micccr': visited_micccr,
+        'visited_lectures' : visited_lectures
+    }
+    current_dir = os.path.dirname(__file__)  # get current directory
+    template_file = os.path.join(current_dir, 'report_template.docx')
+    doc = DocxTemplate(template_file)
+    doc.render(context)
+    generated_report_file_path = f"reports/{context['facility']}_{context['date']}_generated_report.docx"
+    doc.save(generated_report_file_path)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    
